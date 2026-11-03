@@ -1,0 +1,83 @@
+{
+  "code_and_aggregate_results_complete": true,
+  "selected_model": "M8",
+  "model_comparisons": 7,
+  "test_applicants": 2806,
+  "applicant_aggregate_consistency_checked": true,
+  "bundle_verified": true,
+  "deployment_status": "Local Streamlit verified separately; Docker engine unavailable; AWS is a template only.",
+  "scientific_limits": [
+    "Invitation-only evaluation; weak negative labels.",
+    "Promotion rule added after exploratory comparisons.",
+    "Outcome-dependent cleaned snapshots; no temporal guarantee.",
+    "Skill dictionary human review remains pending."
+  ],
+  "review_date": "2026-11-03",
+  "pipeline_execution": "complete isolated run with verified prepared-input reuse",
+  "fresh_cleaning": {
+    "fresh_raw_cleaning_executed": true,
+    "clean_csv_identical_to_evaluated_input": true
+  },
+  "app": {
+    "refactored_imports_and_bundle_load": true,
+    "recommendations": 10,
+    "streamlit_form_submission": true,
+    "exceptions": 0
+  },
+  "executed_report_notebooks": [
+    "02_clean_data.ipynb",
+    "03_models.ipynb",
+    "04_sentence_bert.ipynb",
+    "05_significance_and_regions.ipynb",
+    "06_pull_and_normalize_skills.ipynb",
+    "07_rerankers_and_final_model.ipynb"
+  ],
+  "previous_inference_parity": {
+    "profiles": 32,
+    "encoder_max_absolute_difference_vs_cache": 2.4400651454925537e-07,
+    "exact_top10_lists_matching": 32,
+    "group_top10_lists_matching": 32
+  },
+  "removed_redundant_files": [
+    "results/m9/summary.json",
+    "results/m9/per_applicant.csv",
+    "results/m9/metrics_strict.csv",
+    "results/m9/metrics_grouped.csv",
+    "results/m9/selection.json",
+    "results/m9/development_weights.csv",
+    "results/m9/run_manifest.json",
+    "results/m9/subgroups.csv",
+    "docs/history/initial_final_model_verdict.md",
+    "docs/history/requirements-initial-m9.txt",
+    "docs/history/initial_deployment_handoff.md",
+    "m9_skills/EXTRACTION_NOTES.md",
+    "figures/all_models_recall.png",
+    "figures/recall_by_model.png",
+    "figures/strict_vs_grouped.png",
+    "m9_skills/outputs/validated_run/vacancy_skills.jsonl",
+    "m9_skills/outputs/validated_run/unmatched_structured.csv",
+    "m9_skills/outputs/validated_run/cv_skills.jsonl",
+    "m9_skills/validation/charts/validation_overview.svg",
+    "m9_skills/validation/charts/coverage_by_sphere.svg",
+    "docs/serving_verification.json",
+    "docs/streamlit_verification.json",
+    "docs/inference_parity.json",
+    "docs/cleanup_manifest.json",
+    "docs/deployment_handoff.md",
+    "docs/verification.json"
+  ],
+  "verification_scope": "The reuse run re-fitted/evaluated/exported/analyzed/reviewed. Raw cleaning was separately regenerated and matched exactly. Existing catalog embeddings and skill sidecars were hash-verified rather than regenerated.",
+  "post_run_maintenance": "Removed raw preview logging and consolidated report/document views; scoring and selection configuration unchanged.",
+  "current_source_sha256": {
+    "recommender/analysis.py": "b237336bf9d62571947b7d0d9377f3c96200237c59b9fc28c10ee886bf1344f8",
+    "recommender/serving.py": "43c57a8bf7da52cc1ed07eef1973dee495668e9fd72489396fbd083cfe13d511",
+    "recommender/__init__.py": "7880b29eb072d267d3ebb86473f4117420f37de0f94dd739c4ad4d97bba37532",
+    "recommender/core.py": "fc4075f326d8921de9d68e80974078ea93738773cf1a7df4c174329c2800526c",
+    "recommender/shared.py": "bce3615a9905bbba3ec0a0a6f468e693109ce024c5c7a2288e25ef7d52a740da",
+    "recommender/experiment.py": "f88cf990ed1a224896a978192971fc5a8efa38de859618b432c95e34a53562ca",
+    "recommender/pipeline.py": "8c95c7a92da7ef2f3411b405080ac104a70a5337e56442675a30dcc63214ec55",
+    "recommender/cleaning.py": "95f23b1cf26883599745ab9fdf6e26098fa757e597227bc2850947d85a9c12a0",
+    "app.py": "2592534067e158ea15babec81330d58fdb7638abcf72a164a4b8da6e63358ded",
+    "deploy/aws/deploy.py": "11dd60b4b5eac0c9e02a6a3eb40ca6ee21d5fe26d87a2721bd1a865adb5dc2a6"
+  }
+}

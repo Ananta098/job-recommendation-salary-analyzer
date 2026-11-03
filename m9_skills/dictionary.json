@@ -1,0 +1,800 @@
+{
+  "version": "0.1.0-review",
+  "skills": [
+    {
+      "id": "computer",
+      "canonical": "Работа с компьютером",
+      "domain": "digital",
+      "aliases": [
+        "работа с компьютером",
+        "работы с компьютером",
+        "знание работы с компьютером",
+        "уверенный пользователь пк",
+        "пользователь пк",
+        "владение пк"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "office",
+      "canonical": "Офисные программы",
+      "domain": "digital",
+      "aliases": [
+        "офисные программы",
+        "офисных программ",
+        "офисными программами",
+        "офисными компьютерными программами"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "excel",
+      "canonical": "Microsoft Excel",
+      "domain": "digital",
+      "aliases": [
+        "microsoft excel",
+        "excel",
+        "эксель",
+        "экселе"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "word",
+      "canonical": "Microsoft Word",
+      "domain": "digital",
+      "aliases": [
+        "microsoft word",
+        "word"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "1c",
+      "canonical": "1С",
+      "domain": "digital",
+      "aliases": [
+        "1с",
+        "1c",
+        "программой 1с",
+        "программ 1с"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "accounting",
+      "canonical": "Бухгалтерский учет",
+      "domain": "accounting",
+      "aliases": [
+        "бухгалтерский учет",
+        "бухгалтерского учета",
+        "бухгалтерский учёт",
+        "ведение бухгалтерского учета"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "tax_law",
+      "canonical": "Налоговое законодательство",
+      "domain": "accounting",
+      "aliases": [
+        "налоговое законодательство",
+        "налогового законодательства"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "tax_reporting",
+      "canonical": "Налоговая отчетность",
+      "domain": "accounting",
+      "aliases": [
+        "налоговая отчетность",
+        "налоговой отчетности",
+        "составление налоговой отчетности"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "financial_reporting",
+      "canonical": "Бухгалтерская отчетность",
+      "domain": "accounting",
+      "aliases": [
+        "бухгалтерская отчетность",
+        "бухгалтерской отчетности",
+        "бухгалтерской (финансовой) отчетности"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "hr_records",
+      "canonical": "Кадровая документация",
+      "domain": "administration",
+      "aliases": [
+        "кадровая документация",
+        "кадровой документации",
+        "ведение кадровой документации"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "document_handling",
+      "canonical": "Работа с документами",
+      "domain": "administration",
+      "aliases": [
+        "работа с документами",
+        "работать с документами",
+        "работы с документами"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teaching_plan",
+      "canonical": "Планирование учебного процесса",
+      "domain": "education",
+      "aliases": [
+        "планирование и организация учебного процесса",
+        "планирование учебного процесса"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teaching",
+      "canonical": "Обучение обучающихся",
+      "domain": "education",
+      "aliases": [
+        "обучение обучающихся",
+        "обучения обучающихся"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "parents",
+      "canonical": "Взаимодействие с родителями",
+      "domain": "education",
+      "aliases": [
+        "взаимодействие с родителями",
+        "взаимодействия с родителями"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teaching_assessment",
+      "canonical": "Педагогический контроль",
+      "domain": "education",
+      "aliases": [
+        "педагогический контроль",
+        "контроль успеваемости"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "sanitary",
+      "canonical": "Соблюдение санитарных норм",
+      "domain": "health_safety",
+      "aliases": [
+        "соблюдение санитарных правил",
+        "соблюдение санитарных норм",
+        "санпин"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "driving",
+      "canonical": "Вождение автомобиля",
+      "domain": "transport",
+      "aliases": [
+        "вождение автомобиля",
+        "вождения автомобиля",
+        "управление автомобилем"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "traffic_rules",
+      "canonical": "Правила дорожного движения",
+      "domain": "transport",
+      "aliases": [
+        "правила дорожного движения",
+        "правил дорожного движения"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "client_needs",
+      "canonical": "Выявление потребностей клиента",
+      "domain": "sales",
+      "aliases": [
+        "выявление потребностей клиента",
+        "выявления потребностей клиента"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "electrical_maintenance",
+      "canonical": "Ремонт и обслуживание электрооборудования",
+      "domain": "manufacturing",
+      "aliases": [
+        "ремонт и обслуживание электрооборудования",
+        "ремонту и обслуживанию электрооборудования"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teamwork",
+      "canonical": "Работа в команде",
+      "domain": "soft",
+      "aliases": [
+        "работа в команде",
+        "работать в команде",
+        "работы в команде"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "communication",
+      "canonical": "Коммуникабельность",
+      "domain": "soft",
+      "aliases": [
+        "коммуникабельность"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "stress",
+      "canonical": "Стрессоустойчивость",
+      "domain": "soft",
+      "aliases": [
+        "стрессоустойчивость"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "attention",
+      "canonical": "Внимательность к деталям",
+      "domain": "soft",
+      "aliases": [
+        "внимательность к деталям"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "python",
+      "canonical": "Python",
+      "domain": "technical",
+      "aliases": [
+        "python",
+        "питон"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "sql",
+      "canonical": "SQL",
+      "domain": "technical",
+      "aliases": [
+        "sql"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "cpp",
+      "canonical": "C++",
+      "domain": "technical",
+      "aliases": [
+        "c++"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "csharp",
+      "canonical": "C#",
+      "domain": "technical",
+      "aliases": [
+        "c#"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "dotnet",
+      "canonical": ".NET",
+      "domain": "technical",
+      "aliases": [
+        ".net"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    }
+  ]
+}

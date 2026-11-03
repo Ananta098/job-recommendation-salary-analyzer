@@ -1,0 +1,9 @@
+{
+  "primary": "paired permutation test on applicant-level grouped Recall@10 differences versus same-run M8",
+  "paired_bootstrap_resamples": 10000,
+  "seed": 42,
+  "multiple_comparisons": "Holm adjustment across models within each strict/grouped family",
+  "regional_analysis": "Descriptive; fewer than 20 test applicants flagged. Counts use applicant region for applications and vacancy region for job counts.",
+  "selected_model": "M8",
+  "limitations": "Observed invitation groups are incomplete relevance labels; historical test set has been inspected previously. No temporal or causal guarantee."
+}

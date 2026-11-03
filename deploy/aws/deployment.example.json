@@ -1,0 +1,8 @@
+{
+  "region": "",
+  "bucket": "",
+  "allowed_cidr": "",
+  "stack_name": "job-recommender",
+  "instance_type": "t3.large",
+  "profile": ""
+}

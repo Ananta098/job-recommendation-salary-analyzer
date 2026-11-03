@@ -1,0 +1,20 @@
+-c requirements-app.lock.txt
+# Frozen serving versions used in the verified local environment.
+# Docker installs the CPU torch wheel separately before this file.
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.15.3
+scikit-learn==1.7.2
+joblib==1.4.2
+xgboost==3.4.1
+sentence-transformers==5.2.0
+torch==2.10.0
+transformers==4.57.6
+tokenizers==0.22.2
+safetensors==0.7.0
+huggingface-hub==0.36.0
+streamlit==1.45.1
+pyarrow==19.0.0
+
+sentencepiece==0.2.1
+sacremoses==0.1.1

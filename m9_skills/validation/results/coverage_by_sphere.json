@@ -1,0 +1,290 @@
+[
+  {
+    "sphere": "Образование, наука",
+    "vacancies": 5344,
+    "baseline_recognized": 1889,
+    "expanded_recognized": 1976,
+    "baseline_coverage": 0.3534805389221557,
+    "expanded_coverage": 0.36976047904191617
+  },
+  {
+    "sphere": "Производство",
+    "vacancies": 5065,
+    "baseline_recognized": 1291,
+    "expanded_recognized": 1460,
+    "baseline_coverage": 0.25488647581441265,
+    "expanded_coverage": 0.2882527147087858
+  },
+  {
+    "sphere": "Здравоохранение и социальное обеспечение",
+    "vacancies": 5014,
+    "baseline_recognized": 1563,
+    "expanded_recognized": 1650,
+    "baseline_coverage": 0.3117271639409653,
+    "expanded_coverage": 0.329078579976067
+  },
+  {
+    "sphere": "Продажи, закупки, снабжение, торговля",
+    "vacancies": 2397,
+    "baseline_recognized": 1189,
+    "expanded_recognized": 1228,
+    "baseline_coverage": 0.49603671255736337,
+    "expanded_coverage": 0.5123070504797663
+  },
+  {
+    "sphere": "ЖКХ, эксплуатация",
+    "vacancies": 2361,
+    "baseline_recognized": 850,
+    "expanded_recognized": 879,
+    "baseline_coverage": 0.36001694197373996,
+    "expanded_coverage": 0.37229987293519695
+  },
+  {
+    "sphere": "Государственная служба, некоммерческие организации",
+    "vacancies": 1955,
+    "baseline_recognized": 675,
+    "expanded_recognized": 700,
+    "baseline_coverage": 0.3452685421994885,
+    "expanded_coverage": 0.35805626598465473
+  },
+  {
+    "sphere": "Транспорт, автобизнес, логистика, склад, ВЭД",
+    "vacancies": 1848,
+    "baseline_recognized": 675,
+    "expanded_recognized": 692,
+    "baseline_coverage": 0.3652597402597403,
+    "expanded_coverage": 0.37445887445887444
+  },
+  {
+    "sphere": "Бухгалтерия, налоги, управленческий учет",
+    "vacancies": 1622,
+    "baseline_recognized": 1245,
+    "expanded_recognized": 1253,
+    "baseline_coverage": 0.7675709001233045,
+    "expanded_coverage": 0.7725030826140568
+  },
+  {
+    "sphere": "Работы, не требующие квалификации",
+    "vacancies": 1445,
+    "baseline_recognized": 228,
+    "expanded_recognized": 261,
+    "baseline_coverage": 0.15778546712802768,
+    "expanded_coverage": 0.1806228373702422
+  },
+  {
+    "sphere": "Строительство, ремонт, стройматериалы, недвижимость",
+    "vacancies": 1411,
+    "baseline_recognized": 407,
+    "expanded_recognized": 441,
+    "baseline_coverage": 0.2884479092841956,
+    "expanded_coverage": 0.31254429482636426
+  },
+  {
+    "sphere": "Информационные технологии, телекоммуникации, связь",
+    "vacancies": 1346,
+    "baseline_recognized": 687,
+    "expanded_recognized": 700,
+    "baseline_coverage": 0.5104011887072808,
+    "expanded_coverage": 0.5200594353640416
+  },
+  {
+    "sphere": "Пищевая промышленность",
+    "vacancies": 1303,
+    "baseline_recognized": 357,
+    "expanded_recognized": 430,
+    "baseline_coverage": 0.27398311588641594,
+    "expanded_coverage": 0.33000767459708363
+  },
+  {
+    "sphere": "Административная работа, секретариат, АХО",
+    "vacancies": 1288,
+    "baseline_recognized": 648,
+    "expanded_recognized": 667,
+    "baseline_coverage": 0.5031055900621118,
+    "expanded_coverage": 0.5178571428571429
+  },
+  {
+    "sphere": "Машиностроение",
+    "vacancies": 1206,
+    "baseline_recognized": 308,
+    "expanded_recognized": 395,
+    "baseline_coverage": 0.25538971807628524,
+    "expanded_coverage": 0.3275290215588723
+  },
+  {
+    "sphere": "Рабочие специальности",
+    "vacancies": 1115,
+    "baseline_recognized": 217,
+    "expanded_recognized": 257,
+    "baseline_coverage": 0.19461883408071748,
+    "expanded_coverage": 0.2304932735426009
+  },
+  {
+    "sphere": "Искусство, культура и развлечения",
+    "vacancies": 981,
+    "baseline_recognized": 412,
+    "expanded_recognized": 421,
+    "baseline_coverage": 0.4199796126401631,
+    "expanded_coverage": 0.4291539245667686
+  },
+  {
+    "sphere": "Безопасность, службы охраны",
+    "vacancies": 913,
+    "baseline_recognized": 228,
+    "expanded_recognized": 240,
+    "baseline_coverage": 0.2497261774370208,
+    "expanded_coverage": 0.2628696604600219
+  },
+  {
+    "sphere": "Электроэнергетика",
+    "vacancies": 883,
+    "baseline_recognized": 337,
+    "expanded_recognized": 344,
+    "baseline_coverage": 0.38165345413363533,
+    "expanded_coverage": 0.3895809739524349
+  },
+  {
+    "sphere": "Сельское хозяйство, экология, ветеринария",
+    "vacancies": 791,
+    "baseline_recognized": 235,
+    "expanded_recognized": 238,
+    "baseline_coverage": 0.2970922882427307,
+    "expanded_coverage": 0.3008849557522124
+  },
+  {
+    "sphere": "Туризм, гостиницы, рестораны",
+    "vacancies": 688,
+    "baseline_recognized": 224,
+    "expanded_recognized": 299,
+    "baseline_coverage": 0.32558139534883723,
+    "expanded_coverage": 0.43459302325581395
+  },
+  {
+    "sphere": "Банки, кредит, страхование, пенсионное обеспечение",
+    "vacancies": 637,
+    "baseline_recognized": 337,
+    "expanded_recognized": 339,
+    "baseline_coverage": 0.5290423861852434,
+    "expanded_coverage": 0.5321821036106751
+  },
+  {
+    "sphere": "Услуги населению, сервисное обслуживание",
+    "vacancies": 586,
+    "baseline_recognized": 339,
+    "expanded_recognized": 347,
+    "baseline_coverage": 0.5784982935153583,
+    "expanded_coverage": 0.5921501706484642
+  },
+  {
+    "sphere": "Юриспруденция",
+    "vacancies": 548,
+    "baseline_recognized": 199,
+    "expanded_recognized": 206,
+    "baseline_coverage": 0.36313868613138683,
+    "expanded_coverage": 0.3759124087591241
+  },
+  {
+    "sphere": "Металлургия, металлообработка",
+    "vacancies": 524,
+    "baseline_recognized": 119,
+    "expanded_recognized": 151,
+    "baseline_coverage": 0.22709923664122136,
+    "expanded_coverage": 0.2881679389312977
+  },
+  {
+    "sphere": "Добывающая промышленность",
+    "vacancies": 426,
+    "baseline_recognized": 74,
+    "expanded_recognized": 78,
+    "baseline_coverage": 0.17370892018779344,
+    "expanded_coverage": 0.18309859154929578
+  },
+  {
+    "sphere": "Лесная, деревообрабатывающая, целлюлозно-бумажная промышленность",
+    "vacancies": 403,
+    "baseline_recognized": 99,
+    "expanded_recognized": 104,
+    "baseline_coverage": 0.2456575682382134,
+    "expanded_coverage": 0.25806451612903225
+  },
+  {
+    "sphere": "Химическая, нефтехимическая, топливная промышленность",
+    "vacancies": 374,
+    "baseline_recognized": 87,
+    "expanded_recognized": 93,
+    "baseline_coverage": 0.232620320855615,
+    "expanded_coverage": 0.24866310160427807
+  },
+  {
+    "sphere": "Спорт, фитнес, салоны красоты",
+    "vacancies": 343,
+    "baseline_recognized": 121,
+    "expanded_recognized": 130,
+    "baseline_coverage": 0.35276967930029157,
+    "expanded_coverage": 0.37900874635568516
+  },
+  {
+    "sphere": "Кадровая служба, управление персоналом",
+    "vacancies": 320,
+    "baseline_recognized": 205,
+    "expanded_recognized": 218,
+    "baseline_coverage": 0.640625,
+    "expanded_coverage": 0.68125
+  },
+  {
+    "sphere": "Легкая промышленность",
+    "vacancies": 233,
+    "baseline_recognized": 84,
+    "expanded_recognized": 85,
+    "baseline_coverage": 0.3605150214592275,
+    "expanded_coverage": 0.3648068669527897
+  },
+  {
+    "sphere": "Маркетинг, реклама, PR",
+    "vacancies": 159,
+    "baseline_recognized": 92,
+    "expanded_recognized": 95,
+    "baseline_coverage": 0.5786163522012578,
+    "expanded_coverage": 0.5974842767295597
+  },
+  {
+    "sphere": "Консалтинг, стратегическое развитие, управление",
+    "vacancies": 139,
+    "baseline_recognized": 65,
+    "expanded_recognized": 70,
+    "baseline_coverage": 0.4676258992805755,
+    "expanded_coverage": 0.5035971223021583
+  },
+  {
+    "sphere": "Высший менеджмент",
+    "vacancies": 77,
+    "baseline_recognized": 37,
+    "expanded_recognized": 38,
+    "baseline_coverage": 0.4805194805194805,
+    "expanded_coverage": 0.4935064935064935
+  },
+  {
+    "sphere": "Домашний персонал",
+    "vacancies": 9,
+    "baseline_recognized": 2,
+    "expanded_recognized": 2,
+    "baseline_coverage": 0.2222222222222222,
+    "expanded_coverage": 0.2222222222222222
+  },
+  {
+    "sphere": "Unknown",
+    "vacancies": 1,
+    "baseline_recognized": 0,
+    "expanded_recognized": 0,
+    "baseline_coverage": 0.0,
+    "expanded_coverage": 0.0
+  },
+  {
+    "sphere": "Развлечения, Мода, Шоу-бизнес",
+    "vacancies": 1,
+    "baseline_recognized": 0,
+    "expanded_recognized": 0,
+    "baseline_coverage": 0.0,
+    "expanded_coverage": 0.0
+  }
+]

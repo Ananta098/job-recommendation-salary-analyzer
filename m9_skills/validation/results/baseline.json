@@ -1,0 +1,1353 @@
+{
+  "dictionary_version": "0.1.0-review",
+  "dictionary_sha256": "e1f79a3cf54bab11bb4dee8147140ff2f08f73ead9659d3374eb6a7938440f57",
+  "canonical_skills": 29,
+  "annotation_basis": "Agent-reviewed diagnostics; human decisions separately counted. Not independent or representative evaluation.",
+  "excluded_case_ids": [
+    "corpus-38"
+  ],
+  "by_suite": {
+    "authored_challenge": {
+      "cases": 40,
+      "true_positive": 13,
+      "false_positive": 3,
+      "false_negative": 21,
+      "precision": 0.8125,
+      "recall": 0.38235294117647056,
+      "f1": 0.52,
+      "exact_match_cases": 16,
+      "assertion_error_cases": 3,
+      "cases_with_out_of_inventory_gaps": 0
+    },
+    "corpus_diagnostic": {
+      "cases": 39,
+      "true_positive": 6,
+      "false_positive": 0,
+      "false_negative": 7,
+      "precision": 1.0,
+      "recall": 0.46153846153846156,
+      "f1": 0.631578947368421,
+      "exact_match_cases": 32,
+      "assertion_error_cases": 0,
+      "cases_with_out_of_inventory_gaps": 26
+    }
+  },
+  "human_reviewed_only": null,
+  "human_reviewed_cases": 0,
+  "details": [
+    {
+      "case_id": "corpus-00",
+      "suite": "corpus_diagnostic",
+      "text": "Заказ товаров",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "заказ товаров"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-01",
+      "suite": "corpus_diagnostic",
+      "text": "готовность к обучению и получению новых знаний",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "обучаемость"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-02",
+      "suite": "corpus_diagnostic",
+      "text": "чистоплотность",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "чистоплотность"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-03",
+      "suite": "corpus_diagnostic",
+      "text": "Расчет и начисление заработной платы",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "расчет заработной платы"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-04",
+      "suite": "corpus_diagnostic",
+      "text": "знание 1с предприятие",
+      "expected_ids": [
+        "1c"
+      ],
+      "predicted_ids": [
+        "1c"
+      ],
+      "true_positive": [
+        "1c"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-05",
+      "suite": "corpus_diagnostic",
+      "text": "Знания в сфере продаж",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "знания в сфере продаж"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-06",
+      "suite": "corpus_diagnostic",
+      "text": "владение компьютером на уровне уверенного пользователя",
+      "expected_ids": [
+        "computer"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "computer"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-07",
+      "suite": "corpus_diagnostic",
+      "text": "Знание санитарных норм и правил, гигиенических нормативов (СанПиН, ГН)",
+      "expected_ids": [
+        "sanitary"
+      ],
+      "predicted_ids": [
+        "sanitary"
+      ],
+      "true_positive": [
+        "sanitary"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-08",
+      "suite": "corpus_diagnostic",
+      "text": "Работа с первичной документацией",
+      "expected_ids": [
+        "document_handling"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "document_handling"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-09",
+      "suite": "corpus_diagnostic",
+      "text": "телефонные переговоры",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "телефонные переговоры"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-10",
+      "suite": "corpus_diagnostic",
+      "text": "Знание Microsoft Excel",
+      "expected_ids": [
+        "excel"
+      ],
+      "predicted_ids": [
+        "excel"
+      ],
+      "true_positive": [
+        "excel"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-11",
+      "suite": "corpus_diagnostic",
+      "text": "работа с документацией",
+      "expected_ids": [
+        "document_handling"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "document_handling"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-12",
+      "suite": "corpus_diagnostic",
+      "text": "Работа в системе электронного документооборота (Бухгалтер)",
+      "expected_ids": [
+        "records_management"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "records_management"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-13",
+      "suite": "corpus_diagnostic",
+      "text": "высокая трудоспособность",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "работоспособность"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-14",
+      "suite": "corpus_diagnostic",
+      "text": "Пунктуальность",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "пунктуальность"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-15",
+      "suite": "corpus_diagnostic",
+      "text": "Целеустремленность",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "целеустремленность"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-16",
+      "suite": "corpus_diagnostic",
+      "text": "Работа с закупочной документацией",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "закупочная документация"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-17",
+      "suite": "corpus_diagnostic",
+      "text": "Работа с детьми",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "работа с детьми"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-18",
+      "suite": "corpus_diagnostic",
+      "text": "Умение планировать рабочий день/задачи/время",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "планирование рабочего времени"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-19",
+      "suite": "corpus_diagnostic",
+      "text": "работа с большими объемами информации",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "обработка больших объемов информации"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-20",
+      "suite": "corpus_diagnostic",
+      "text": "работа с компьютером на уровне опытного пользователя",
+      "expected_ids": [
+        "computer"
+      ],
+      "predicted_ids": [
+        "computer"
+      ],
+      "true_positive": [
+        "computer"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-21",
+      "suite": "corpus_diagnostic",
+      "text": "соблюдение трудовой дисциплины",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "трудовая дисциплина"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-22",
+      "suite": "corpus_diagnostic",
+      "text": "способность к обучению",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "обучаемость"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-23",
+      "suite": "corpus_diagnostic",
+      "text": "Дезинфицирование санузлов/туалетов/уборных",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "дезинфекция"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-24",
+      "suite": "corpus_diagnostic",
+      "text": "обслуживание и ремонт оборудования",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "ремонт оборудования общего назначения"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-25",
+      "suite": "corpus_diagnostic",
+      "text": "ремонт и обслуживание электрооборудования",
+      "expected_ids": [
+        "electrical_maintenance"
+      ],
+      "predicted_ids": [
+        "electrical_maintenance"
+      ],
+      "true_positive": [
+        "electrical_maintenance"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-26",
+      "suite": "corpus_diagnostic",
+      "text": "внимание к деталям",
+      "expected_ids": [
+        "attention"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "attention"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-27",
+      "suite": "corpus_diagnostic",
+      "text": "Знание работы с компьютером",
+      "expected_ids": [
+        "computer"
+      ],
+      "predicted_ids": [
+        "computer"
+      ],
+      "true_positive": [
+        "computer"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-28",
+      "suite": "corpus_diagnostic",
+      "text": "приготовление пищи",
+      "expected_ids": [
+        "cooking"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "cooking"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-29",
+      "suite": "corpus_diagnostic",
+      "text": "Консультирование/поддержка пользователей",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "поддержка пользователей"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-30",
+      "suite": "corpus_diagnostic",
+      "text": "Продажа товаров/услуг",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "продажа товаров и услуг"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-31",
+      "suite": "corpus_diagnostic",
+      "text": "Знание правил охраны труда",
+      "expected_ids": [
+        "occupational_safety"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "occupational_safety"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-32",
+      "suite": "corpus_diagnostic",
+      "text": "Управленческие навыки",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "управление"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-33",
+      "suite": "corpus_diagnostic",
+      "text": "знание устройства автомобиля",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "устройство автомобиля"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-34",
+      "suite": "corpus_diagnostic",
+      "text": "хорошая обучаемость",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "обучаемость"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-35",
+      "suite": "corpus_diagnostic",
+      "text": "знание компьютерных программ",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "компьютерные программы без указания вида"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-36",
+      "suite": "corpus_diagnostic",
+      "text": "Составление отчетности по страховым взносам",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "отчетность по страховым взносам"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-37",
+      "suite": "corpus_diagnostic",
+      "text": "Знание компьютерных и прочих программ",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "компьютерные программы без указания вида"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "corpus-39",
+      "suite": "corpus_diagnostic",
+      "text": "Ведение, сопровождение договоров, контрактов",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [
+        "сопровождение договоров"
+      ],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-00",
+      "suite": "authored_challenge",
+      "text": "Знание Excel и SQL.",
+      "expected_ids": [
+        "excel",
+        "sql"
+      ],
+      "predicted_ids": [
+        "excel",
+        "sql"
+      ],
+      "true_positive": [
+        "excel",
+        "sql"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-01",
+      "suite": "authored_challenge",
+      "text": "Программой 1С владею уверенно.",
+      "expected_ids": [
+        "1c"
+      ],
+      "predicted_ids": [
+        "1c"
+      ],
+      "true_positive": [
+        "1c"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-02",
+      "suite": "authored_challenge",
+      "text": "Не владею Python.",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-03",
+      "suite": "authored_challenge",
+      "text": "SQL не требуется.",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-04",
+      "suite": "authored_challenge",
+      "text": "Не требуется знание Excel.",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-05",
+      "suite": "authored_challenge",
+      "text": "SQL желательно.",
+      "expected_ids": [
+        "sql"
+      ],
+      "predicted_ids": [
+        "sql"
+      ],
+      "true_positive": [
+        "sql"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-06",
+      "suite": "authored_challenge",
+      "text": "Умение работать в команде.",
+      "expected_ids": [
+        "teamwork"
+      ],
+      "predicted_ids": [
+        "teamwork"
+      ],
+      "true_positive": [
+        "teamwork"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-07",
+      "suite": "authored_challenge",
+      "text": "Ведение бухгалтерского учёта.",
+      "expected_ids": [
+        "accounting"
+      ],
+      "predicted_ids": [
+        "accounting"
+      ],
+      "true_positive": [
+        "accounting"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-08",
+      "suite": "authored_challenge",
+      "text": "MySQL, PostgreSQL и wordsmith.",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-09",
+      "suite": "authored_challenge",
+      "text": "C++, C# и .NET.",
+      "expected_ids": [
+        "cpp",
+        "csharp",
+        "dotnet"
+      ],
+      "predicted_ids": [
+        "cpp",
+        "csharp",
+        "dotnet"
+      ],
+      "true_positive": [
+        "cpp",
+        "csharp",
+        "dotnet"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-10",
+      "suite": "authored_challenge",
+      "text": "Влажная уборка помещений.",
+      "expected_ids": [
+        "cleaning"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "cleaning"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-11",
+      "suite": "authored_challenge",
+      "text": "Организация закупок.",
+      "expected_ids": [
+        "procurement"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "procurement"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-12",
+      "suite": "authored_challenge",
+      "text": "Знание трудового законодательства.",
+      "expected_ids": [
+        "labor_law"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "labor_law"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-13",
+      "suite": "authored_challenge",
+      "text": "Деловая переписка с партнерами.",
+      "expected_ids": [
+        "business_correspondence"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "business_correspondence"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-14",
+      "suite": "authored_challenge",
+      "text": "Ведение делопроизводства, документооборота.",
+      "expected_ids": [
+        "records_management"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "records_management"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-15",
+      "suite": "authored_challenge",
+      "text": "Работа с банк-клиент.",
+      "expected_ids": [
+        "online_banking"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "online_banking"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-16",
+      "suite": "authored_challenge",
+      "text": "Ведение налогового учета.",
+      "expected_ids": [
+        "tax_accounting"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "tax_accounting"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-17",
+      "suite": "authored_challenge",
+      "text": "Составление статистической отчетности.",
+      "expected_ids": [
+        "statistical_reporting"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "statistical_reporting"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-18",
+      "suite": "authored_challenge",
+      "text": "Умение работать с офисной оргтехникой.",
+      "expected_ids": [
+        "office_equipment"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "office_equipment"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-19",
+      "suite": "authored_challenge",
+      "text": "Активные продажи.",
+      "expected_ids": [
+        "active_sales"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "active_sales"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-20",
+      "suite": "authored_challenge",
+      "text": "Работа с кассовым аппаратом.",
+      "expected_ids": [
+        "cash_register"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "cash_register"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-21",
+      "suite": "authored_challenge",
+      "text": "Оказание первой помощи.",
+      "expected_ids": [
+        "first_aid"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "first_aid"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-22",
+      "suite": "authored_challenge",
+      "text": "Приготовление пищи.",
+      "expected_ids": [
+        "cooking"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "cooking"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-23",
+      "suite": "authored_challenge",
+      "text": "Чтение чертежей.",
+      "expected_ids": [
+        "drawing_reading"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "drawing_reading"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-24",
+      "suite": "authored_challenge",
+      "text": "Сварочные работы.",
+      "expected_ids": [
+        "welding"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "welding"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-25",
+      "suite": "authored_challenge",
+      "text": "Соблюдение пожарной безопасности.",
+      "expected_ids": [
+        "fire_safety"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "fire_safety"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-26",
+      "suite": "authored_challenge",
+      "text": "Оформление медицинской документации.",
+      "expected_ids": [
+        "medical_records"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "medical_records"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-27",
+      "suite": "authored_challenge",
+      "text": "Соблюдение техники безопасности.",
+      "expected_ids": [
+        "occupational_safety"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "occupational_safety"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-28",
+      "suite": "authored_challenge",
+      "text": "Нет опыта работы с Excel.",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-29",
+      "suite": "authored_challenge",
+      "text": "Не владею SQL и Python.",
+      "expected_ids": [],
+      "predicted_ids": [
+        "python"
+      ],
+      "true_positive": [],
+      "false_positive": [
+        "python"
+      ],
+      "false_negative": [],
+      "assertion_errors": [
+        "python: expected negated, got mentioned"
+      ],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-30",
+      "suite": "authored_challenge",
+      "text": "Хочу изучить Python.",
+      "expected_ids": [],
+      "predicted_ids": [
+        "python"
+      ],
+      "true_positive": [],
+      "false_positive": [
+        "python"
+      ],
+      "false_negative": [],
+      "assertion_errors": [
+        "python: expected aspirational, got mentioned"
+      ],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-31",
+      "suite": "authored_challenge",
+      "text": "Планирую освоить SQL.",
+      "expected_ids": [],
+      "predicted_ids": [
+        "sql"
+      ],
+      "true_positive": [],
+      "false_positive": [
+        "sql"
+      ],
+      "false_negative": [],
+      "assertion_errors": [
+        "sql: expected aspirational, got mentioned"
+      ],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-32",
+      "suite": "authored_challenge",
+      "text": "Умею читать чертежи.",
+      "expected_ids": [
+        "drawing_reading"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "drawing_reading"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-33",
+      "suite": "authored_challenge",
+      "text": "Есть опыт влажной уборки помещений.",
+      "expected_ids": [
+        "cleaning"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "cleaning"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-34",
+      "suite": "authored_challenge",
+      "text": "Опыт работы не требуется. Знание Excel обязательно.",
+      "expected_ids": [
+        "excel"
+      ],
+      "predicted_ids": [
+        "excel"
+      ],
+      "true_positive": [
+        "excel"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-35",
+      "suite": "authored_challenge",
+      "text": "Без знания SQL. Excel приветствуется.",
+      "expected_ids": [
+        "excel"
+      ],
+      "predicted_ids": [
+        "excel"
+      ],
+      "true_positive": [
+        "excel"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-36",
+      "suite": "authored_challenge",
+      "text": "Требуется Microsoft\nExcel.",
+      "expected_ids": [
+        "excel"
+      ],
+      "predicted_ids": [
+        "excel"
+      ],
+      "true_positive": [
+        "excel"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-37",
+      "suite": "authored_challenge",
+      "text": "І Excel",
+      "expected_ids": [
+        "excel"
+      ],
+      "predicted_ids": [
+        "excel"
+      ],
+      "true_positive": [
+        "excel"
+      ],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-38",
+      "suite": "authored_challenge",
+      "text": "Квантовое макраме.",
+      "expected_ids": [],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    },
+    {
+      "case_id": "challenge-39",
+      "suite": "authored_challenge",
+      "text": "Необходимо знание правил охраны труда.",
+      "expected_ids": [
+        "occupational_safety"
+      ],
+      "predicted_ids": [],
+      "true_positive": [],
+      "false_positive": [],
+      "false_negative": [
+        "occupational_safety"
+      ],
+      "assertion_errors": [],
+      "unknown_skill_labels": [],
+      "human_reviewed": false
+    }
+  ]
+}

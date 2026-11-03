@@ -1,0 +1,11 @@
+{
+  "corpus_diagnostic_cases": 40,
+  "selection": "SHA256(seed+example_id+phrase), first 40 unique example IDs among top 400 vacancy candidate phrases",
+  "seed": "validation-20261028",
+  "dictionary_source_ids_excluded": true,
+  "resumes_used_for_expansion": false,
+  "annotation_type": "agent linguistic review; human approval pending",
+  "limitation": "Vocabulary-informed, frequency-enriched corpus diagnostic, not an unbiased test or recommendation evaluation",
+  "annotation_csv_sha256": "76504ab95a5db534d43cf3801caa8912dc84b66e41955349fe8c89257eba7b58",
+  "frozen_before_model_predictions": true
+}

@@ -1,0 +1,13 @@
+model,skill_weight,grouped_Recall@10
+M9 without region,0.0,0.1075
+M9 without region,0.1,0.1055
+M9 without region,0.25,0.1065
+M9 without region,0.5,0.1075
+M9 without region,1.0,0.1125
+M9 without region,2.0,0.1135
+M9 + region,0.0,0.4425
+M9 + region,0.1,0.4425
+M9 + region,0.25,0.4425
+M9 + region,0.5,0.4435
+M9 + region,1.0,0.4445
+M9 + region,2.0,0.439

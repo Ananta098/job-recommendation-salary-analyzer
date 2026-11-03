@@ -1,0 +1,21 @@
+{
+  "cv": {
+    "aligned_entities": 65714,
+    "id_order_preserved": true,
+    "dictionary_verified": true
+  },
+  "vacancy": {
+    "aligned_entities": 43756,
+    "id_order_preserved": true,
+    "dictionary_verified": true
+  },
+  "legacy_input_contract": {
+    "rows_tested": 300,
+    "original_columns_unchanged": true,
+    "resume_lexical_input_unchanged": true,
+    "vacancy_lexical_input_unchanged": true,
+    "both_sidecars_attached_without_column_collisions": true,
+    "sbert_body_columns_unchanged": true,
+    "rankings_rerun": false
+  }
+}

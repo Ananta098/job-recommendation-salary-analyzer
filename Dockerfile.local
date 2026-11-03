@@ -1,0 +1,13 @@
+FROM python:3.12-slim-bookworm
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
+    HF_HUB_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 \
+    HF_HOME=/tmp/huggingface MODEL_BUNDLE=/app/artifacts/deployment
+WORKDIR /app
+COPY requirements-app.txt requirements-app.lock.txt ./
+COPY docker/install-runtime.sh /usr/local/bin/install-runtime
+RUN sh /usr/local/bin/install-runtime
+COPY docker/entrypoint.sh /usr/local/bin/app-entrypoint
+USER 10001
+EXPOSE 8501
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=5 CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=5)"
+ENTRYPOINT ["sh", "/usr/local/bin/app-entrypoint"]

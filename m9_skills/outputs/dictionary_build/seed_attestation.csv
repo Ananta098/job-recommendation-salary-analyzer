@@ -1,0 +1,71 @@
+﻿skill_id,alias,exact_structured_vacancy_count,review_status
+computer,работа с компьютером,17,agent_curated_pending_human
+computer,работы с компьютером,0,agent_curated_pending_human
+computer,знание работы с компьютером,223,agent_curated_pending_human
+computer,уверенный пользователь пк,17,agent_curated_pending_human
+computer,пользователь пк,1,agent_curated_pending_human
+computer,владение пк,9,agent_curated_pending_human
+office,офисные программы,12,agent_curated_pending_human
+office,офисных программ,0,agent_curated_pending_human
+office,офисными программами,0,agent_curated_pending_human
+office,офисными компьютерными программами,0,agent_curated_pending_human
+excel,microsoft excel,7,agent_curated_pending_human
+excel,excel,42,agent_curated_pending_human
+excel,эксель,0,agent_curated_pending_human
+excel,экселе,0,agent_curated_pending_human
+word,microsoft word,8,agent_curated_pending_human
+word,word,7,agent_curated_pending_human
+1c,1с,58,agent_curated_pending_human
+1c,1c,1,agent_curated_pending_human
+1c,программой 1с,0,agent_curated_pending_human
+1c,программ 1с,0,agent_curated_pending_human
+accounting,бухгалтерский учет,5,agent_curated_pending_human
+accounting,бухгалтерского учета,0,agent_curated_pending_human
+accounting,бухгалтерский учёт,5,agent_curated_pending_human
+accounting,ведение бухгалтерского учета,143,agent_curated_pending_human
+tax_law,налоговое законодательство,0,agent_curated_pending_human
+tax_law,налогового законодательства,0,agent_curated_pending_human
+tax_reporting,налоговая отчетность,0,agent_curated_pending_human
+tax_reporting,налоговой отчетности,0,agent_curated_pending_human
+tax_reporting,составление налоговой отчетности,61,agent_curated_pending_human
+financial_reporting,бухгалтерская отчетность,2,agent_curated_pending_human
+financial_reporting,бухгалтерской отчетности,0,agent_curated_pending_human
+financial_reporting,бухгалтерской (финансовой) отчетности,0,agent_curated_pending_human
+hr_records,кадровая документация,0,agent_curated_pending_human
+hr_records,кадровой документации,0,agent_curated_pending_human
+hr_records,ведение кадровой документации,77,agent_curated_pending_human
+document_handling,работа с документами,22,agent_curated_pending_human
+document_handling,работать с документами,0,agent_curated_pending_human
+document_handling,работы с документами,0,agent_curated_pending_human
+teaching_plan,планирование и организация учебного процесса,65,agent_curated_pending_human
+teaching_plan,планирование учебного процесса,0,agent_curated_pending_human
+teaching,обучение обучающихся,64,agent_curated_pending_human
+teaching,обучения обучающихся,0,agent_curated_pending_human
+parents,взаимодействие с родителями,88,agent_curated_pending_human
+parents,взаимодействия с родителями,0,agent_curated_pending_human
+teaching_assessment,педагогический контроль,0,agent_curated_pending_human
+teaching_assessment,контроль успеваемости,0,agent_curated_pending_human
+sanitary,соблюдение санитарных правил,0,agent_curated_pending_human
+sanitary,соблюдение санитарных норм,0,agent_curated_pending_human
+sanitary,санпин,0,agent_curated_pending_human
+driving,вождение автомобиля,35,agent_curated_pending_human
+driving,вождения автомобиля,0,agent_curated_pending_human
+driving,управление автомобилем,0,agent_curated_pending_human
+traffic_rules,правила дорожного движения,0,agent_curated_pending_human
+traffic_rules,правил дорожного движения,0,agent_curated_pending_human
+client_needs,выявление потребностей клиента,50,agent_curated_pending_human
+client_needs,выявления потребностей клиента,0,agent_curated_pending_human
+electrical_maintenance,ремонт и обслуживание электрооборудования,26,agent_curated_pending_human
+electrical_maintenance,ремонту и обслуживанию электрооборудования,0,agent_curated_pending_human
+teamwork,работа в команде,484,agent_curated_pending_human
+teamwork,работать в команде,0,agent_curated_pending_human
+teamwork,работы в команде,0,agent_curated_pending_human
+communication,коммуникабельность,534,agent_curated_pending_human
+stress,стрессоустойчивость,305,agent_curated_pending_human
+attention,внимательность к деталям,180,agent_curated_pending_human
+python,python,5,agent_curated_pending_human
+python,питон,0,agent_curated_pending_human
+sql,sql,15,agent_curated_pending_human
+cpp,c++,0,agent_curated_pending_human
+csharp,c#,1,agent_curated_pending_human
+dotnet,.net,0,agent_curated_pending_human

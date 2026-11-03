@@ -1,0 +1,24 @@
+{
+  "cv": {
+    "clean_entities": 65714,
+    "sidecar_entities": 65714,
+    "duplicate_sidecar_ids": 0,
+    "missing_ids": 0,
+    "extra_ids": 0,
+    "same_row_order": false,
+    "normalized_title_snapshot_differences": 0,
+    "clean_order_sha256": "a3b4132beb11dbb93fb79f4e11c9ada2d9b9f0a68699f79e9f252b8a6766fa94"
+  },
+  "vacancy": {
+    "clean_entities": 43756,
+    "sidecar_entities": 43756,
+    "duplicate_sidecar_ids": 0,
+    "missing_ids": 0,
+    "extra_ids": 0,
+    "same_row_order": false,
+    "normalized_title_snapshot_differences": 0,
+    "clean_order_sha256": "2d1812a715e05ee3e0ecd7e4f71ca8df0b765239e201ed8b3899e5b2d57a03fe"
+  },
+  "decision": "Compatible for ID-based sidecar attachment; direct positional attachment is unsafe. Raw and cleaned snapshots must stay explicitly distinguished.",
+  "merge_scope": "No ranking or existing notebook modifications. Future attachment must use idCv/idVacancy, preserve existing row order, and record source snapshot."
+}

@@ -1,0 +1,56 @@
+{
+  "python": "3.12.4",
+  "versions": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.2",
+    "scipy": "1.15.3",
+    "scikit-learn": "1.7.2",
+    "xgboost": "3.4.1",
+    "sentence-transformers": "5.2.0",
+    "torch": "2.10.0",
+    "joblib": "1.4.2",
+    "streamlit": "1.45.1"
+  },
+  "encoder_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+  "input_hashes": {
+    "clean/d4_clean.csv": "a6fa34f8f48004080a412b0fc4a7c3c41f69d90fab43a6d4bfd53ad38adfade4",
+    "m9_skills/dictionary.v2.json": "16f01335255f6d901a47b35114759baee81618cc8ee51fa99711b88da1254ed6",
+    "clean/sbert_jobs_paraphrase-multilingual-MiniLM-L12-v2.npy": "1b10f2ae49dd6bbf98257ed06790c9af2e10e877fffb7c4c6b6ab29b2918e332",
+    "clean/sbert_val_paraphrase-multilingual-MiniLM-L12-v2.npy": "4770f4fbb198749b0e250fdde9cabe8d0377150f540d52d0e076992ee2619ba1",
+    "clean/sbert_test_paraphrase-multilingual-MiniLM-L12-v2.npy": "601d684e6801a04274c46c9af2c78ccdff9912a67e2aa18de3cb740364c8891a",
+    "m9_skills/outputs/v2_validation_run/cv_skills.jsonl": "6117e72618fa79abd9e8eed15043dd80ef9384b10134e8848e7da2e7ec045943",
+    "m9_skills/outputs/v2_validation_run/vacancy_skills.jsonl": "3f6e967dd78868f7686a4ad5e1e6bf38896f24e41f7b5acc490dfa5bc8cc7e72"
+  },
+  "split_hashes": {
+    "train": "1cba309fce8ab7c3180b663ad9d99761137c7ad87a5bc1a528f300a97f8af006",
+    "development": "2a73c045c2b64fb1eba34fd93bfbe3f82d04b8e72434267a9d8f53d4a90b2100",
+    "test": "8ec398545110b8563c7fdf01542a33647f1647719aaa3f0dd0e2c8abd2f027ee"
+  },
+  "source_hashes": {
+    "recommender/analysis.py": "b237336bf9d62571947b7d0d9377f3c96200237c59b9fc28c10ee886bf1344f8",
+    "recommender/serving.py": "43c57a8bf7da52cc1ed07eef1973dee495668e9fd72489396fbd083cfe13d511",
+    "recommender/__init__.py": "7880b29eb072d267d3ebb86473f4117420f37de0f94dd739c4ad4d97bba37532",
+    "recommender/core.py": "fc4075f326d8921de9d68e80974078ea93738773cf1a7df4c174329c2800526c",
+    "recommender/shared.py": "bce3615a9905bbba3ec0a0a6f468e693109ce024c5c7a2288e25ef7d52a740da",
+    "recommender/experiment.py": "f88cf990ed1a224896a978192971fc5a8efa38de859618b432c95e34a53562ca",
+    "recommender/pipeline.py": "8c95c7a92da7ef2f3411b405080ac104a70a5337e56442675a30dcc63214ec55",
+    "recommender/cleaning.py": "62f93f4beb8ce5f7e57329775aabb3b778e1d87c63abdb28aa0ffc11813a0c5a"
+  },
+  "encoder_cache_max_difference": 1.5273690223693848e-07,
+  "train_examples": 378794,
+  "train_positive_rows": 71984,
+  "train_parameters": {
+    "Logistic Regression": "Pipeline(steps=[('standardscaler', StandardScaler()),\n                ('logisticregression',\n                 LogisticRegression(class_weight='balanced', max_iter=500,\n                                    random_state=42))])",
+    "Random Forest": "RandomForestClassifier(class_weight='balanced_subsample', max_depth=10,\n                       min_samples_leaf=20, n_estimators=150, n_jobs=4,\n                       random_state=42)",
+    "XGBoost": "XGBClassifier(base_score=None, booster=None, callbacks=None,\n              colsample_bylevel=None, colsample_bynode=None,\n              colsample_bytree=0.8, device=None, early_stopping_rounds=None,\n              enable_categorical=True, eval_metric='logloss',\n              feature_types=None, feature_weights=None, gamma=None,\n              grow_policy=None, importance_type=None,\n              interaction_constraints=None, learning_rate=0.05, max_bin=None,\n              max_cat_threshold=None, max_cat_to_onehot=None,\n              max_delta_step=None, max_depth=4, max_leaves=None,\n              min_child_weight=None, missing=nan, monotone_constraints=None,\n              multi_strategy=None, n_estimators=200, n_jobs=4,\n              num_parallel_tree=None, ...)"
+  },
+  "total_seconds": 212.43298229202628,
+  "historical_M8_grouped_recall10": 0.466743882157282,
+  "current_M8_grouped_recall10": 0.4660311237823711,
+  "limitations": [
+    "Historical test applicants have been examined in earlier project iterations; this is not a newly collected untouched external test.",
+    "Invitation-group labels and sampled weak negatives do not establish true job relevance or calibrated probabilities.",
+    "M9 evidence uses first raw snapshots; baseline cleaning is outcome-dependent. No causal isolation or temporal guarantee.",
+    "Dictionary human review remains pending."
+  ]
+}

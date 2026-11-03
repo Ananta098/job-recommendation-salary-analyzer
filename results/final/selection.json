@@ -1,0 +1,44 @@
+{
+  "selected_model": "M8",
+  "criterion": "retain M8 unless a candidate has positive lower paired-development bootstrap bound after Bonferroni family correction; then maximize development grouped Recall@10, with fixed-order ties",
+  "development_max_without_promotion_gate": "M9 + region",
+  "promotion_protocol": "10,000 paired bootstrap resamples, seed 42; 95% family coverage across five candidate comparisons (99% per comparison). Added after exploratory analysis; not preregistered.",
+  "model_order": [
+    "M8",
+    "M9 without region",
+    "M9 + region",
+    "Logistic Regression",
+    "Random Forest",
+    "XGBoost"
+  ],
+  "specification": {
+    "kind": "M8",
+    "use_region": true
+  },
+  "development_scores": {
+    "M8": 0.4425,
+    "M9 without region": 0.1135,
+    "M9 + region": 0.4445,
+    "Logistic Regression": 0.4345,
+    "Random Forest": 0.44,
+    "XGBoost": 0.4395
+  },
+  "training_applicants": 10227,
+  "development_applicants": 1000,
+  "test_applicants": 2806,
+  "features": [
+    "tfidf_cosine",
+    "semantic_cosine",
+    "tfidf_z",
+    "semantic_z",
+    "hybrid_score",
+    "skill_coverage",
+    "same_region",
+    "cv_skill_evidence",
+    "job_skill_evidence",
+    "exact_title"
+  ],
+  "labels": "positive if candidate title-region group matches a recorded invitation; other retrieved groups are weak negatives",
+  "negative_sampling": "up to 30 non-invited candidate groups per training applicant; all retrieved positive groups kept; no gold injection",
+  "test_selection_used": false
+}

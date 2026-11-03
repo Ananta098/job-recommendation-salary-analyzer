@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.deploy
+    image: ${IMAGE_TAG:-job-recommender:deployment}
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${DEPLOY_PORT:-8501}:8501"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]

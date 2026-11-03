@@ -1,0 +1,6 @@
+model,mean_recall_gain,simultaneous_ci_lower,simultaneous_ci_upper,promote
+M9 without region,-0.329,-0.368,-0.2905,False
+M9 + region,0.002,-0.005,0.01,False
+Logistic Regression,-0.008,-0.022,0.006,False
+Random Forest,-0.0025,-0.0175,0.0135,False
+XGBoost,-0.003,-0.016,0.01,False

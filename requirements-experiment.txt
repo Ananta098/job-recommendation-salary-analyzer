@@ -1,0 +1,3 @@
+-r requirements-app.txt
+matplotlib==3.10.0
+jupyterlab==4.3.4

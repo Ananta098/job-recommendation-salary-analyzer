@@ -1,0 +1,10 @@
+﻿Step,Result
+1. Load,"150,493 rows, 23 of 91 columns"
+2. Remove duplicates,"150,493 -> 93,755 rows (37.7% removed)"
+3. Fix hyphens,title word overlap 20.0% -> 42.5%
+4. Skills,"37.7% of applicants, 16.6% of jobs have skills"
+5. Build texts,"cv_text and job_text, lowercased, punctuation removed"
+6. Missing values,"numbers filled with the median, text filled with Unknown"
+7. English titles,64.1% of job titles translated
+8. Evaluation set,"14,033 applicants with at least one invitation"
+Region check,82.6% of applications are in the applicant's own region

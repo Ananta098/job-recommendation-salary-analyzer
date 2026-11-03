@@ -1,0 +1,8 @@
+{
+  "source": "/Users/anantaupadhyaya/Downloads/Job-Recommendation-Salary-Analyzer/datasets/HSE_dataset(D4).csv",
+  "entities": 43756,
+  "candidate_phrases": 4113,
+  "scope": "unique vacancy catalog only; no resumes or outcomes",
+  "snapshot": "first raw occurrence, independent of outcomes; not a chronological snapshot",
+  "parse_errors": {}
+}

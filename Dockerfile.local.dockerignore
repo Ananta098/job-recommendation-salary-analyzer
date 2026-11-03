@@ -1,0 +1,16 @@
+**
+!Dockerfile.local
+!Dockerfile.deploy
+!requirements-app.txt
+!requirements-app.lock.txt
+!docker/
+!docker/*.sh
+!app.py
+!recommender/
+!recommender/*.py
+!m9_skills/
+!m9_skills/*.py
+!.streamlit/
+!.streamlit/config.toml
+**/__pycache__/
+**/*.pyc

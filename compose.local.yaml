@@ -1,0 +1,35 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    image: job-recommender:local-test
+    ports: ["127.0.0.1:${LOCAL_PORT:-8501}:8501"]
+    environment:
+      MODEL_BUNDLE: /models
+      TRANSLATION_BUNDLE: /translation
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MODEL_BUNDLE_HOST:-./artifacts/deployment}
+        target: /models
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${TRANSLATION_BUNDLE_HOST:-./artifacts/translation}
+        target: /translation
+        read_only: true
+        bind:
+          create_host_path: false
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]

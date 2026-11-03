@@ -1,0 +1,13 @@
+Check,Value
+Applications (rows),"150,493"
+Unique resumes,"65,714"
+Unique vacancies,"43,756"
+Mean applications per resume,2.29
+Median applications per resume,1
+Invitation rate,13.9%
+Resumes with >= 1 invitation,"14,033 (21.4%)"
+Professional spheres,35
+Rows with candidate skills filled,6.9%
+Rows with vacancy skills filled,6.9%
+Exact duplicate rows,"53,555"
+"Duplicate (resume, vacancy) pairs","56,738"

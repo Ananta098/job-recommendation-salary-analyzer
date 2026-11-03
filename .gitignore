@@ -1,0 +1,35 @@
+# Private source data and generated local artifacts
+datasets/*.csv
+datasets/*.zip
+clean/*.csv
+clean/*.npy
+artifacts/
+m9_skills/outputs/**/*.jsonl
+m9_skills/outputs/**/unmatched_structured.csv
+results/final/*per_applicant*.csv
+results/final/reference_rankings.npz
+
+# Local deployment credentials and configuration
+.env
+.env.*
+!.env.example
+!.env.local.example
+!.env.deploy.example
+.streamlit/secrets.toml
+*.pem
+*.key
+.aws/
+deploy/aws/deployment.local.json
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Environments and caches
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+Thumbs.db

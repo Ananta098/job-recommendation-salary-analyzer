@@ -1,0 +1,1409 @@
+{
+  "version": "0.2.0-agent-reviewed-opt-in",
+  "skills": [
+    {
+      "id": "computer",
+      "canonical": "Работа с компьютером",
+      "domain": "digital",
+      "aliases": [
+        "работа с компьютером",
+        "работы с компьютером",
+        "знание работы с компьютером",
+        "уверенный пользователь пк",
+        "пользователь пк",
+        "владение пк"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "office",
+      "canonical": "Офисные программы",
+      "domain": "digital",
+      "aliases": [
+        "офисные программы",
+        "офисных программ",
+        "офисными программами",
+        "офисными компьютерными программами"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "excel",
+      "canonical": "Microsoft Excel",
+      "domain": "digital",
+      "aliases": [
+        "microsoft excel",
+        "excel",
+        "эксель",
+        "экселе"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "word",
+      "canonical": "Microsoft Word",
+      "domain": "digital",
+      "aliases": [
+        "microsoft word",
+        "word"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "1c",
+      "canonical": "1С",
+      "domain": "digital",
+      "aliases": [
+        "1с",
+        "1c",
+        "программой 1с",
+        "программ 1с"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "accounting",
+      "canonical": "Бухгалтерский учет",
+      "domain": "accounting",
+      "aliases": [
+        "бухгалтерский учет",
+        "бухгалтерского учета",
+        "бухгалтерский учёт",
+        "ведение бухгалтерского учета"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "tax_law",
+      "canonical": "Налоговое законодательство",
+      "domain": "accounting",
+      "aliases": [
+        "налоговое законодательство",
+        "налогового законодательства"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "tax_reporting",
+      "canonical": "Налоговая отчетность",
+      "domain": "accounting",
+      "aliases": [
+        "налоговая отчетность",
+        "налоговой отчетности",
+        "составление налоговой отчетности"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "financial_reporting",
+      "canonical": "Бухгалтерская отчетность",
+      "domain": "accounting",
+      "aliases": [
+        "бухгалтерская отчетность",
+        "бухгалтерской отчетности",
+        "бухгалтерской (финансовой) отчетности"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "hr_records",
+      "canonical": "Кадровая документация",
+      "domain": "administration",
+      "aliases": [
+        "кадровая документация",
+        "кадровой документации",
+        "ведение кадровой документации"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "document_handling",
+      "canonical": "Работа с документами",
+      "domain": "administration",
+      "aliases": [
+        "работа с документами",
+        "работать с документами",
+        "работы с документами"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teaching_plan",
+      "canonical": "Планирование учебного процесса",
+      "domain": "education",
+      "aliases": [
+        "планирование и организация учебного процесса",
+        "планирование учебного процесса"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teaching",
+      "canonical": "Обучение обучающихся",
+      "domain": "education",
+      "aliases": [
+        "обучение обучающихся",
+        "обучения обучающихся"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "parents",
+      "canonical": "Взаимодействие с родителями",
+      "domain": "education",
+      "aliases": [
+        "взаимодействие с родителями",
+        "взаимодействия с родителями"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teaching_assessment",
+      "canonical": "Педагогический контроль",
+      "domain": "education",
+      "aliases": [
+        "педагогический контроль",
+        "контроль успеваемости"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "sanitary",
+      "canonical": "Соблюдение санитарных норм",
+      "domain": "health_safety",
+      "aliases": [
+        "соблюдение санитарных правил",
+        "соблюдение санитарных норм",
+        "санпин"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "driving",
+      "canonical": "Вождение автомобиля",
+      "domain": "transport",
+      "aliases": [
+        "вождение автомобиля",
+        "вождения автомобиля",
+        "управление автомобилем"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "traffic_rules",
+      "canonical": "Правила дорожного движения",
+      "domain": "transport",
+      "aliases": [
+        "правила дорожного движения",
+        "правил дорожного движения"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "client_needs",
+      "canonical": "Выявление потребностей клиента",
+      "domain": "sales",
+      "aliases": [
+        "выявление потребностей клиента",
+        "выявления потребностей клиента"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "electrical_maintenance",
+      "canonical": "Ремонт и обслуживание электрооборудования",
+      "domain": "manufacturing",
+      "aliases": [
+        "ремонт и обслуживание электрооборудования",
+        "ремонту и обслуживанию электрооборудования"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "teamwork",
+      "canonical": "Работа в команде",
+      "domain": "soft",
+      "aliases": [
+        "работа в команде",
+        "работать в команде",
+        "работы в команде"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "communication",
+      "canonical": "Коммуникабельность",
+      "domain": "soft",
+      "aliases": [
+        "коммуникабельность"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "stress",
+      "canonical": "Стрессоустойчивость",
+      "domain": "soft",
+      "aliases": [
+        "стрессоустойчивость"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "attention",
+      "canonical": "Внимательность к деталям",
+      "domain": "soft",
+      "aliases": [
+        "внимательность к деталям"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "python",
+      "canonical": "Python",
+      "domain": "technical",
+      "aliases": [
+        "python",
+        "питон"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "sql",
+      "canonical": "SQL",
+      "domain": "technical",
+      "aliases": [
+        "sql"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "cpp",
+      "canonical": "C++",
+      "domain": "technical",
+      "aliases": [
+        "c++"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "csharp",
+      "canonical": "C#",
+      "domain": "technical",
+      "aliases": [
+        "c#"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "dotnet",
+      "canonical": ".NET",
+      "domain": "technical",
+      "aliases": [
+        ".net"
+      ],
+      "source": {
+        "kind": "technical_edge_case_seed",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "fields": [
+          "skills_vacancy",
+          "hardSkills_vacancy",
+          "softSkills_vacancy"
+        ],
+        "note": "Corpus attestation and counts in seed_attestation.csv. Additional inflected aliases are agent-curated, not corpus frequency claims."
+      },
+      "review": {
+        "status": "agent_curated_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Prototype alias equivalence; approve/reject individual aliases using manual_review.csv."
+      },
+      "esco": null
+    },
+    {
+      "id": "welding",
+      "canonical": "Сварочные работы",
+      "domain": "manufacturing",
+      "aliases": [
+        "сварочные работы",
+        "сварка металлоконструкций"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "6dd6ee55-8fa9-11ec-a92f-57fc951f3846",
+            "field": "skills_vacancy",
+            "source_phrase": "Сварочные работы",
+            "title": "Электрогазосварщик"
+          },
+          {
+            "entity_id": "c5f137a5-e24a-11ec-aeb7-d768660431c4",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "сварка металлоконструкций",
+            "title": "электрогазосварщик"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "cleaning",
+      "canonical": "Уборка помещений",
+      "domain": "services",
+      "aliases": [
+        "влажная уборка помещений",
+        "проведение уборки помещения",
+        "уборка офисных помещений/кабинетов"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "fea814a0-e4f6-11ee-a3cd-cb26dff57dd7",
+            "field": "skills_vacancy",
+            "source_phrase": "Влажная уборка помещений",
+            "title": "Специалист по профессиональной уборке"
+          },
+          {
+            "entity_id": "d63f47f9-f064-11ec-aeb7-d768660431c4",
+            "field": "skills_vacancy",
+            "source_phrase": "Проведение уборки помещения",
+            "title": "Уборщица"
+          },
+          {
+            "entity_id": "fea814a0-e4f6-11ee-a3cd-cb26dff57dd7",
+            "field": "skills_vacancy",
+            "source_phrase": "Уборка офисных помещений/кабинетов",
+            "title": "Специалист по профессиональной уборке"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "procurement",
+      "canonical": "Организация закупок",
+      "domain": "administration",
+      "aliases": [
+        "организация закупок"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "8e386405-fabc-11ee-b5dd-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Организация закупок",
+            "title": "Специалист по закупкам"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "labor_law",
+      "canonical": "Трудовое законодательство",
+      "domain": "administration",
+      "aliases": [
+        "знание трудового законодательства",
+        "знание основ трудового законодательства"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "7f082d55-043a-11ed-ae4f-d768660431c4",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "знание трудового законодательства",
+            "title": "начальник отдела кадров"
+          },
+          {
+            "entity_id": "339a9a9f-f417-11ef-8e26-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Знание основ трудового законодательства",
+            "title": "Ведущий консультант 1С (1С:Бухгалтерия, 1С:Зарплата и управление персоналом)"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "business_correspondence",
+      "canonical": "Деловая переписка",
+      "domain": "administration",
+      "aliases": [
+        "деловая переписка"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "0d1cf120-48d1-11ef-9ea8-d549be31d974",
+            "field": "softSkills_vacancy",
+            "source_phrase": "Деловая переписка",
+            "title": "менеджер по продажам"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "records_management",
+      "canonical": "Делопроизводство",
+      "domain": "administration",
+      "aliases": [
+        "знание основ делопроизводства",
+        "ведение делопроизводства, документооборота"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "edb8d4bc-2d33-11ef-a96f-e7d0d2cf29b1",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "знание основ делопроизводства",
+            "title": "Заместитель генерального директора"
+          },
+          {
+            "entity_id": "57f50d01-0ef1-11f0-845e-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Ведение делопроизводства, документооборота",
+            "title": "Делопроизводитель"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "online_banking",
+      "canonical": "Банк-клиент",
+      "domain": "accounting",
+      "aliases": [
+        "работа с банк-клиент",
+        "знание банк-клиент"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "4ca7b62b-f9ae-11ef-b581-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Работа с Банк-клиент",
+            "title": "Бухгалтер"
+          },
+          {
+            "entity_id": "692f29a0-4960-11ed-8689-ed9942adf613",
+            "field": "skills_vacancy",
+            "source_phrase": "Знание Банк-клиент",
+            "title": "Бухгалтер"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "tax_accounting",
+      "canonical": "Налоговый учет",
+      "domain": "accounting",
+      "aliases": [
+        "ведение налогового учета",
+        "знание налогового учета"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "050b343f-f8c9-11ef-808b-cb26dff57dd7",
+            "field": "skills_vacancy",
+            "source_phrase": "Ведение налогового учета",
+            "title": "Бухгалтер"
+          },
+          {
+            "entity_id": "fb813d08-088c-11f0-b89c-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Знание налогового учета",
+            "title": "Заместитель главного бухгалтера"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "statistical_reporting",
+      "canonical": "Статистическая отчетность",
+      "domain": "accounting",
+      "aliases": [
+        "составление статистической отчетности",
+        "сдача статистической отчетности"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "127ed071-ede1-11ef-9c71-cb26dff57dd7",
+            "field": "skills_vacancy",
+            "source_phrase": "Составление статистической отчетности",
+            "title": "Бухгалтер"
+          },
+          {
+            "entity_id": "0d21c7f3-67d7-11ec-9db4-bf2cfe8c828d",
+            "field": "skills_vacancy",
+            "source_phrase": "Сдача статистической отчетности",
+            "title": "Медицинский статистик"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "office_equipment",
+      "canonical": "Работа с офисной оргтехникой",
+      "domain": "digital",
+      "aliases": [
+        "умение работать с офисной оргтехникой",
+        "знание офисной оргтехники"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "8faeaaa8-c43e-11ef-837b-d549be31d974",
+            "field": "skills_vacancy",
+            "source_phrase": "Умение работать с офисной оргтехникой",
+            "title": "директор учреждения культуры"
+          },
+          {
+            "entity_id": "a6934550-fee5-11ef-becc-cb26dff57dd7",
+            "field": "skills_vacancy",
+            "source_phrase": "Знание офисной оргтехники",
+            "title": "Юрист (специалист-эксперт отдела правового обеспечения)"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "active_sales",
+      "canonical": "Активные продажи",
+      "domain": "sales",
+      "aliases": [
+        "активные продажи"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "a3f5411f-0668-11f0-b438-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Активные продажи",
+            "title": "Менеджер активных продаж"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "cash_register",
+      "canonical": "Работа с кассовым аппаратом",
+      "domain": "sales",
+      "aliases": [
+        "работа с кассовым аппаратом"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "943f5530-f64c-11ee-be2d-b905f621e080",
+            "field": "skills_vacancy",
+            "source_phrase": "Работа с кассовым аппаратом",
+            "title": "Администратор-кассир"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "first_aid",
+      "canonical": "Первая помощь",
+      "domain": "health_safety",
+      "aliases": [
+        "оказание первой медицинской помощи",
+        "оказание первой помощи"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "429b98c6-a739-11eb-a9b5-ab5d2eb93a75",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "оказание первой медицинской помощи",
+            "title": "Медицинская сестра"
+          },
+          {
+            "entity_id": "3e3f82c5-7d2e-11ec-b3f6-550ed7335bbe",
+            "field": "skills_vacancy",
+            "source_phrase": "Оказание первой помощи",
+            "title": "Врач"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "cooking",
+      "canonical": "Приготовление пищи",
+      "domain": "services",
+      "aliases": [
+        "приготовление блюд",
+        "приготовление пищи"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "4f250cf0-ee4f-11ef-9656-d549be31d974",
+            "field": "skills_vacancy",
+            "source_phrase": "Приготовление блюд",
+            "title": "Повар"
+          },
+          {
+            "entity_id": "f76eae65-8cd6-11ee-979c-1f3aadc834d0",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "приготовление пищи",
+            "title": "Повар в отдел 97"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "drawing_reading",
+      "canonical": "Чтение чертежей",
+      "domain": "manufacturing",
+      "aliases": [
+        "чтение чертежей",
+        "умение читать чертежи"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "c1821495-dce2-11ec-aeac-57fc951f3846",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "чтение чертежей",
+            "title": "Токарь 5-6 разряда"
+          },
+          {
+            "entity_id": "0cf4db03-73f4-11eb-9dd6-bf2cfe8c828d",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "умение читать чертежи",
+            "title": "Контролер станочных и слесарных работ"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "fire_safety",
+      "canonical": "Пожарная безопасность",
+      "domain": "health_safety",
+      "aliases": [
+        "соблюдение пожарной безопасности",
+        "знание правил и норм пожарной безопасности"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "bd6d4105-0752-11ed-ae4f-d768660431c4",
+            "field": "skills_vacancy",
+            "source_phrase": "Соблюдение пожарной безопасности",
+            "title": "пекарь"
+          },
+          {
+            "entity_id": "3541f750-ee98-11ef-b3ec-e7d0d2cf29b1",
+            "field": "skills_vacancy",
+            "source_phrase": "Знание правил и норм пожарной безопасности",
+            "title": "Ведущий инженер (по пожарной безопасности, ГО и ЧС)"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "medical_records",
+      "canonical": "Медицинская документация",
+      "domain": "healthcare",
+      "aliases": [
+        "оформление медицинской документации",
+        "ведение медицинских (амбулаторных) карт"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "429b98c6-a739-11eb-a9b5-ab5d2eb93a75",
+            "field": "hardSkills_vacancy",
+            "source_phrase": "оформление медицинской документации",
+            "title": "Медицинская сестра"
+          },
+          {
+            "entity_id": "c52de4fe-f80c-11ef-966f-d549be31d974",
+            "field": "skills_vacancy",
+            "source_phrase": "Ведение медицинских (амбулаторных) карт",
+            "title": "Медицинская сестра"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    },
+    {
+      "id": "occupational_safety",
+      "canonical": "Охрана труда и техника безопасности",
+      "domain": "health_safety",
+      "aliases": [
+        "соблюдение техники безопасности",
+        "знание правил охраны труда"
+      ],
+      "source": {
+        "kind": "D4_structured_vacancy_exact_attestation",
+        "dataset": "datasets/HSE_dataset(D4).csv",
+        "evidence": [
+          {
+            "entity_id": "c3d6b5b8-904b-11ef-a70b-d549be31d974",
+            "field": "skills_vacancy",
+            "source_phrase": "Соблюдение техники безопасности",
+            "title": "Педагог дошкольного образования"
+          },
+          {
+            "entity_id": "648549f3-e871-11ef-8b46-d549be31d974",
+            "field": "skills_vacancy",
+            "source_phrase": "Знание правил охраны труда",
+            "title": "Специалист в области охраны труда"
+          }
+        ]
+      },
+      "review": {
+        "status": "agent_reviewed_pending_human",
+        "reviewer": "Codex",
+        "reviewed_at": "2026-10-28",
+        "human_reviewer": null,
+        "decision_note": "Exact attested activity phrases only; no merging of adjacent specialties. Human verification pending."
+      },
+      "esco": null
+    }
+  ]
+}
