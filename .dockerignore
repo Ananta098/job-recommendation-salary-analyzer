@@ -1,5 +1,4 @@
 **
-!Dockerfile.local
 !Dockerfile.deploy
 !requirements-app.txt
 !requirements-app.lock.txt

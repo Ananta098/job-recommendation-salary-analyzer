@@ -1,0 +1,6 @@
+[Unit]
+Description=Job Recommendation health check (restart after 3 failures, publish AppHealthy metric)
+
+[Service]
+Type=oneshot
+ExecStart=/opt/job-recommender/bin/health-check.sh

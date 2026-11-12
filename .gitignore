@@ -1,6 +1,9 @@
 # Private source data and generated local artifacts
 datasets/*.csv
 datasets/*.zip
+# supplementary salary datasets (small) stay tracked
+!datasets/ai_job_dataset.csv
+!datasets/ai_job_salary_dataset_10k.csv
 clean/*.csv
 clean/*.npy
 artifacts/
@@ -13,12 +16,14 @@ results/final/reference_rankings.npz
 .env
 .env.*
 !.env.example
-!.env.local.example
 !.env.deploy.example
+!.env.aws.example
 .streamlit/secrets.toml
 *.pem
 *.key
 .aws/
+# Hugging Face key saved by notebook 04
+.hf_token
 deploy/aws/deployment.local.json
 *.tfstate
 *.tfstate.*
@@ -28,7 +33,7 @@ deploy/aws/deployment.local.json
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-.venv/
+.venv*/
 venv/
 .pytest_cache/
 .DS_Store

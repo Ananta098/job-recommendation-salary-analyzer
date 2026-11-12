@@ -1,0 +1,17 @@
+[Unit]
+Description=Job Recommendation Streamlit application
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+# VERSION, COMMIT and DEPLOYED_AT are written by release.sh; the image tag is the release version.
+EnvironmentFile=/opt/job-recommender/release.env
+Restart=always
+RestartSec=10
+ExecStartPre=-/usr/bin/docker rm -f job-recommender
+ExecStart=/usr/bin/docker run --rm --name job-recommender --read-only --tmpfs /tmp:rw,size=512m --cap-drop ALL --security-opt no-new-privileges --log-opt max-size=20m --log-opt max-file=3 -e APP_VERSION=${VERSION} -e APP_COMMIT=${COMMIT} -e APP_DEPLOYED_AT=${DEPLOYED_AT} -p 8501:8501 job-recommender:${VERSION}
+ExecStop=/usr/bin/docker stop job-recommender
+
+[Install]
+WantedBy=multi-user.target

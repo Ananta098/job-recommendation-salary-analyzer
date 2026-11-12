@@ -6,4 +6,4 @@ Both variants remain in `results/final/`: M9 without region uses global retrieva
 
 Dictionary v2 has 47 canonical skills and still awaits human review. The original 29-skill dictionary remains only because it is the baseline for the retained linguistic diagnostics. These compare different dictionary versions, not a second recommendation pipeline. See `VALIDATION_GUIDE.md` for that distinct review process.
 
-The complete run command is documented in `docs/IMPLEMENTATION.md`; it handles extraction in the correct place and reuses verified completed outputs when requested. Notebook 06 displays the evidence and diagnostics; notebook 07 displays model comparisons.
+The complete run command is documented in `docs/PROJECT_HANDBOOK.md`; it handles extraction in the correct place and reuses verified completed outputs when requested. Notebook 06 displays the evidence and diagnostics; notebook 07 displays model comparisons.

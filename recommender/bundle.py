@@ -18,6 +18,18 @@ def project_path(path, root=ROOT):
     return (value if value.is_absolute() else Path(root) / value).resolve()
 
 
+def load_hf_token(root=ROOT):
+    """Make the key saved in `.hf_token` (git-ignored) visible to Hugging Face downloads.
+
+    An HF_TOKEN already set in the environment always wins. Never printed or logged."""
+    if not os.environ.get('HF_TOKEN'):
+        file = Path(root) / '.hf_token'
+        if file.is_file():
+            token = file.read_text().strip()
+            if token:
+                os.environ['HF_TOKEN'] = token
+
+
 def resolve_bundle(path=None):
     return project_path(path or os.environ.get('MODEL_BUNDLE') or 'artifacts/deployment')
 

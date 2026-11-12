@@ -8,7 +8,7 @@ import ast
 import json
 import shutil
 from pathlib import Path
-from .bundle import ROOT, project_path
+from .bundle import ROOT, project_path, load_hf_token
 from .shared import MODEL, ENCODER_REVISION, digest
 
 
@@ -100,15 +100,25 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
             def reuse_inputs():
                 previous=json.loads((root/'results/final/run_manifest.json').read_text())
                 inputs=previous['input_hashes']
-                for rel,expected in inputs.items():
-                    source=root/rel
-                    if not source.is_file() or digest(source)!=expected:
-                        raise ValueError('Prepared input changed; use a full rebuild: '+rel)
-                    copy_file(source,workspace/rel)
                 coverage_path=root/'m9_skills/outputs/v2_validation_run/coverage.json'
                 coverage=json.loads(coverage_path.read_text())
                 if digest(raw)!=coverage['source_sha256']:
                     raise ValueError('Raw D4 differs from the recorded extraction input')
+                # The two skill-evidence files are large generated outputs that Git ignores, so a
+                # fresh clone does not have them. Rebuild them from raw D4 with the same dictionary
+                # and accept them only if they match the recorded hashes.
+                absent=[rel for rel in inputs if rel.endswith('_skills.jsonl') and not (root/rel).is_file()]
+                regenerated=workspace/'m9_skills/outputs/_regenerated'
+                if absent:
+                    from m9_skills.workflow import extract
+                    print('Skill-evidence files not found; regenerating from raw D4 (a few minutes).',flush=True)
+                    extract(raw,regenerated,dictionary=workspace/'m9_skills/dictionary.v2.json')
+                for rel,expected in inputs.items():
+                    source=regenerated/Path(rel).name if rel in absent else root/rel
+                    if not source.is_file() or digest(source)!=expected:
+                        raise ValueError('Prepared input changed; do a full rebuild (omit --reuse-prepared): '+rel)
+                    copy_file(source,workspace/rel)
+                if absent:shutil.rmtree(regenerated)
                 copy_file(coverage_path,workspace/'m9_skills/outputs/v2_validation_run/coverage.json')
                 for name in ['training_embeddings.npy','training_embeddings.json']:
                     if (root/'artifacts'/name).exists():copy_file(root/'artifacts'/name,workspace/'artifacts'/name)
@@ -171,6 +181,7 @@ def main():
     check=sub.add_parser('review');check.add_argument('--root',type=Path,default=ROOT)
     check.add_argument('--results',type=Path);check.add_argument('--bundle',type=Path)
     args=parser.parse_args()
+    load_hf_token(args.root)
     if args.command=='run':run(args.root,args.run_dir,args.encoder,args.raw,args.reuse_prepared)
     else:print(json.dumps(review(args.root,args.results,args.bundle),indent=2))
 

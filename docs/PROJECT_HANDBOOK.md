@@ -48,7 +48,7 @@ Raw D4 → cleaning → pinned embeddings + canonical skills
        → Streamlit → local Docker → deployment Docker → EC2 template
 ```
 
-`recommender.pipeline` is the single computational runner. `cleaning.py` prepares inputs; `shared.py` and `core.py` own common scoring/metrics; `experiment.py` compares/exports; `analysis.py` creates statistical and regional reports; `bundle.py` resolves/checks artifacts; `serving.py` performs inference. Notebooks are explanations/report views, not another required training route. `results/final/` is authoritative; `results/baselines/` is historical.
+`recommender.pipeline` is the single computational runner for the deployable model. `cleaning.py` prepares inputs; `shared.py` and `core.py` own common scoring/metrics; `experiment.py` compares/exports; `analysis.py` creates statistical and regional reports; `bundle.py` resolves/checks artifacts; `serving.py` performs inference. Notebooks 01–04 reproduce the original Stage 1 study (validation, cleaning, M0–M8) and write only historical outputs to `clean/`, `results/baselines/` and `figures/`; notebooks 05–07 are report views. None of them is required to build or serve the model bundle. `results/final/` is authoritative; `results/baselines/` is historical.
 
 ## 2. Fixing “Model bundle missing” and running the existing app
 
@@ -131,7 +131,7 @@ In this original folder, a new comparison can reuse the prepared inputs:
 python -m recommender.pipeline run --run-dir artifacts/runs/run-03 --reuse-prepared
 ```
 
-This option verifies every recorded prepared-input hash and the raw D4 hash before copying the inputs. It skips cleaning/encoding/extraction already completed for those exact inputs. If any hash differs, it stops; use a full rebuild. It still fits/evaluates models, exports an independent bundle, computes analysis and runs the final review.
+This option verifies every recorded prepared-input hash and the raw D4 hash before copying the inputs. It needs, in this folder: `clean/d4_clean.csv`, the three `clean/sbert_*.npy` caches (the original ones are included and match the recorded hashes), `m9_skills/dictionary.v2.json`, and `m9_skills/outputs/v2_validation_run/` with `cv_skills.jsonl`, `vacancy_skills.jsonl` and `coverage.json`. The d4_clean.csv and the two skill JSONL files are generated, not tracked, so on a machine that lacks them use the full rebuild above. It skips cleaning/encoding/extraction already completed for those exact inputs. If any hash differs, it stops; use a full rebuild. It still fits/evaluates models, exports an independent bundle, computes analysis and runs the final review.
 
 ## 3. Read the notebooks
 
@@ -144,14 +144,15 @@ jupyter lab
 | Notebook | Purpose |
 |---|---|
 | 01 | Optional raw-data EDA; unique data-quality/occupation diagnostics |
-| 02 | Cleaning report; implementation lives in `recommender/cleaning.py` |
-| 03 | Original lexical baseline reference, explicitly historical |
-| 04 | Frozen semantic encoder and original hybrid-weight rationale |
+| 02 | Original step-by-step cleaning procedure with saved outputs; the same logic runs as `recommender/cleaning.py` |
+| 03 | Original M0–M5 baselines (popularity, TF-IDF, BM25, region priority), historical; writes `results/baselines/` |
+| 04 | Original Sentence-BERT M6–M7 and hybrid M8 with weight selection, historical; writes `results/baselines/` |
 | 05 | Current paired significance and regional sample/performance summaries |
 | 06 | Current skill evidence and retained linguistic diagnostics |
 | 07 | Current M9/reranker results, promotion decision and exported bundle |
+| archive/00 | Supplementary salary analysis from the proposal stage (needs `datasets/ai_job_dataset.csv` and `datasets/ai_job_salary_dataset_10k.csv`, both tracked) |
 
-Read 01–07 in order for presentation. You do not need to remember a special notebook execution order to train: the CLI handles it. Reports 05 and 07 use `results/final/` by default. To inspect a fresh run instead:
+Read 01–07 in order for presentation. Notebooks 01–04 can be re-run on the raw D4 file in that order (about 30 minutes in total on a laptop CPU; see the README table). They never touch `results/final/` or `artifacts/`. Re-running notebook 02 rewrites `clean/d4_clean.csv`; if its bytes differ from the recorded run, `--reuse-prepared` will refuse the file and you should use a full rebuild. Notebook 04 reuses the Sentence-BERT caches in `clean/` only when their row counts match the clean file. Training the deployable model needs no special notebook order: the CLI handles it. Reports 05 and 07 use `results/final/` by default. To inspect a fresh run instead:
 
 ```sh
 RESULTS_DIR="$PWD/artifacts/runs/run-01/results/final" \
@@ -160,29 +161,11 @@ MODEL_BUNDLE="$PWD/artifacts/runs/run-01/artifacts/deployment" jupyter lab
 
 Notebook 06 documents the frozen extraction/linguistic diagnostics. Per-run extraction summaries are in that run's `m9_skills/outputs/v2_validation_run/coverage.json`.
 
-## 4. Two Docker workflows
+## 4. Docker
 
-Start Docker Desktop first. Both images run as UID 10001, use CPU PyTorch, pinned serving requirements, a read-only filesystem and a writable temporary directory. `docker/install-runtime.sh` and `docker/entrypoint.sh` keep installation/startup procedures shared. The entrypoint rejects a missing bundle before starting Streamlit. The loader then verifies checksums. Use one workflow at a time if both use port 8501.
+The shortest route is `make local-docker` (see the README quick start); the commands below are what it runs. Run `sh deploy/preflight.sh` first: it verifies the bundle and translation assets (full checksums), the files the image copies, the Compose file and your AWS settings, and prints what to fix. Then start Docker Desktop. The image runs as UID 10001, use CPU PyTorch, pinned serving requirements, a read-only filesystem and a writable temporary directory. `docker/install-runtime.sh` and `docker/entrypoint.sh` keep installation/startup procedures shared. The entrypoint rejects a missing bundle before starting Streamlit. The loader then verifies checksums.
 
-### Local testing: mounted source and model
-
-`Dockerfile.local` installs dependencies. `compose.local.yaml` mounts project source at `/app` and your existing bundle at `/models`, both read-only. The local Docker ignore file excludes the large model from the build context. It does not train or download a bundle.
-
-```sh
-cp .env.local.example .env.local
-python -m recommender.bundle check --deep
-docker compose --env-file .env.local -f compose.local.yaml up --build -d
-curl --fail http://127.0.0.1:8501/_stcore/health
-docker compose --env-file .env.local -f compose.local.yaml logs --tail=100 app
-```
-
-Open the browser, submit a profile and confirm recommendations; HTTP health alone does not prove model inference works. Source edits are visible through the mount; restart the service after Python changes. Set `MODEL_BUNDLE_HOST` to an absolute folder if using an alternate run. A nonexistent host mount fails rather than creating an empty folder.
-
-```sh
-docker compose --env-file .env.local -f compose.local.yaml down
-```
-
-### Deployment rehearsal: immutable source/model image
+### Deployment rehearsal: immutable source/model image (what `make up` runs)
 
 `Dockerfile.deploy` copies source and the reference bundle into an image. Its build runs a deep checksum check. `compose.deploy.yaml` has no source/model bind mounts. This is the same Dockerfile the EC2 bootstrap uses. An alternate experiment is not promoted automatically: deliberately restore/export the selected reference bundle before building.
 
@@ -199,6 +182,57 @@ Both Compose configurations bind only to localhost by default. The EC2 service d
 
 ## 5. Final AWS deployment after credentials are available
 
+**Current procedure (updated 11 November 2026).** Use the make targets; the subsections further down describe the original JSON-config route, which still works through `--config` but is no longer needed.
+
+1. `make aws-deploy` once creates `.env.aws` from `.env.aws.example`. Paste `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and (Learner Lab) `AWS_SESSION_TOKEN`. Keep `AWS_DEFAULT_REGION=us-east-1` (Learner Lab allows us-east-1 and us-west-2 only).
+2. `make aws-plan` checks the bundle and prints the stack, version name, upload size and estimated cost ($0.0832/h for `t3.large` plus about $0.004/h for the 40 GB disk, on-demand us-east-1 prices). Nothing changes in AWS.
+3. `make aws-deploy` signs in, creates a private bucket `job-recommender-<account>-<region>` (unless `S3_BUCKET` is set), streams the allowlisted files to `<stack>/packages/<version>.tar.gz` with a metadata file in `<stack>/versions/`, creates the stack and waits for the health URL. A Learner Lab login is detected and the template uses `LabInstanceProfile` instead of creating an IAM role. If an earlier attempt left the stack in `ROLLBACK_COMPLETE`, it is deleted first; other half-finished states stop with the exact command to run.
+4. Then the helper sets up monitoring (below). Each piece is optional and is skipped with a printed reason if the account forbids it.
+
+### Updates and rollback
+
+`make aws-update` uploads a new versioned package and runs the install on the existing server through AWS Systems Manager (no CloudFormation update, no new server). On the server, `deploy/aws/release.sh`:
+
+1. reuses the image if it is already there, else loads the copy saved in `s3://<bucket>/<stack>/images/<version>.tar.gz`, else builds it (dependency layers are cached, so only the source and model layers change);
+2. runs `python -m recommender.smoke` in the new image (loads the bundle, ranks a sample profile);
+3. starts the new image next to the live app on `127.0.0.1:8502` and waits for its health URL;
+4. switches the systemd service to the new image tag (`job-recommender:<version>`); if the switched app is not healthy within three minutes, it restores the previous service and version automatically.
+
+The previous version stays stored (package, metadata and image copy), and the server keeps its last three images. `make aws-rollback` returns to the previous version through the same steps (fast, the image is already present) and then checks the health URL from your computer. `make aws-rollback VERSION=<name>` picks any stored version; `make aws-versions` lists them. Stacks created before versioning work too: their original package is registered as a version on the first update, rollback or versions call, and a failed first update restores the original service. The running version, commit and time are written to `artifacts/ec2-status.json` (with a history) and shown in the app sidebar and footer.
+
+If Systems Manager is not reachable (agent offline or not allowed), update and rollback stop with a message; the fallback is `make aws-destroy` then `make aws-deploy` (short downtime). If the server is stopped (end of a Learner Lab session), update and rollback start it first and wait for Systems Manager.
+
+### Monitoring and recovery
+
+- **Logs:** the CloudWatch agent ships container logs to `/job-recommender/<stack>/app` and the bootstrap log to `/job-recommender/<stack>/bootstrap`, kept for `LOG_RETENTION_DAYS` (default 14). `make aws-logs` reads them, or asks the server directly when CloudWatch is unavailable.
+- **Alarms** (prefix `<stack>-`): system status check (action: EC2 recover, which moves the instance to healthy hardware), instance status check (action: reboot), CPU above 85% for 15 minutes, memory above 90% and disk above 85% (agent metrics), and app health failing 3 minutes in a row (`JobRecommender/AppHealthy`, published every minute by the server's health timer). Where the recover/reboot action is not allowed, the alarm is created without it.
+- **Container self-healing:** `job-recommender-health.timer` checks the health URL every minute and restarts the container after three failures in a row; systemd also restarts it if it exits.
+- **Notifications and cost:** set `ALERT_EMAIL` for alarm e-mails (confirm the subscription e-mail) and `BUDGET_USD` for a monthly budget with an alert at 80%. Learner Lab may block Budgets; the deploy continues and says so. The Learner Lab itself caps spending at $50.
+- `make aws-status` shows the stack and server state, the current address (it changes after a stop/start), the running version, a live health check and the alarm states.
+
+### Access and the optional HTTPS route (off by default)
+
+`ALLOWED_CIDR` (empty = your current public IP `/32`) is the only address range that can open port 8501, and the app is plain HTTP. When your IP changes, set `ALLOWED_CIDR` to the new address and redeploy, or edit the security group's inbound rule in the EC2 console. To show the app to people outside your IP, do not open `0.0.0.0/0` over HTTP; use one of these, which are documented options and not part of the template:
+
+- **CloudFront in front of the instance:** create a CloudFront distribution with the instance's public DNS name as an HTTP origin on port 8501, viewer protocol "Redirect HTTP to HTTPS", caching disabled and WebSocket support (Streamlit needs it; CloudFront supports WebSockets by default). Restrict the security group to the CloudFront origin-facing managed prefix list (`com.amazonaws.global.cloudfront.origin-facing`). This gives an `https://<id>.cloudfront.net` address without owning a domain. Add authentication before sharing real profiles.
+- **Application Load Balancer with an ACM certificate:** needs a domain name you control, two subnets in different availability zones and a target group on port 8501 with health check path `/_stcore/health`. Higher fixed cost (about $16/month for the load balancer).
+
+Learner Lab may not allow CloudFront or ACM; check its "Service usage and other restrictions" page first.
+
+### Runbook: app is down
+
+1. `make aws-status`. If the server is `stopped`, start the lab and run `make aws-status` again (an update or rollback also starts it). Note the new address.
+2. If health is "NOT ANSWERING": `make aws-logs` and look for a Python error or `Model bundle missing`.
+3. If your IP changed, the page will not load even though health on the server is fine: update `ALLOWED_CIDR`.
+4. If the latest release is the cause, `make aws-rollback`. If the server itself is broken (status checks failing, no Systems Manager), wait for the recover alarm or `make aws-destroy` then `make aws-deploy`.
+
+### Runbook: bad release
+
+1. If `make aws-update` failed, nothing needs undoing: the running version was kept (candidate unhealthy or smoke test failed) or restored (switch failed). The output says which.
+2. If the release went live but behaves badly, `make aws-rollback`, then confirm in the browser and with `make aws-status`.
+3. Fix the code, `make test`, commit, then `make aws-update` again. Old versions remain listed by `make aws-versions` until `make aws-destroy`.
+
+
 No AWS resources have been created. The helper creates a **new** CloudFormation stack; it is not an in-place update system. Default execution builds a local plan only. `--apply` is the explicit cloud-changing command. Git push is independent of this deployment; EC2 receives an allowlisted private package, not a clone of your repository.
 
 ### Fill-in values
@@ -211,7 +245,6 @@ No AWS resources have been created. The helper creates a **new** CloudFormation 
 | same | `profile` | Your configured AWS CLI/SDK profile name; blank uses the standard credential chain. |
 | same | `stack_name` | Unique stack name; default `job-recommender`. Use a new name for a new deployment. |
 | same | `instance_type` | Default `t3.large` (8 GB); supported alternatives `t3.medium`, `t3.xlarge`. Allow build/runtime memory and disk headroom. |
-| `.env.local` | `MODEL_BUNDLE_HOST`, `LOCAL_PORT` | Host bundle folder and local test port. |
 | `.env.deploy` | `IMAGE_TAG`, `DEPLOY_PORT`, `BIND_ADDRESS` | Local deployment-rehearsal image name, port and bind address. Defaults are safe for localhost rehearsal. These do not modify EC2 settings. |
 | shell environment | `MODEL_BUNDLE` | Optional native app bundle override; not an AWS credential. |
 | command examples | `PROJECT_PROFILE`, `AWS_REGION`, `STACK_NAME`, `INSTANCE_ID`, `BUCKET_NAME`, `ARTIFACT_KEY` | Replace uppercase example tokens with your actual values before running those commands. |
@@ -233,6 +266,7 @@ If you already have a working profile, use it. Do not put access keys, secret ke
 
 ```sh
 python -m pip install -r requirements-deploy.txt
+sh deploy/preflight.sh
 cp deploy/aws/deployment.example.json deploy/aws/deployment.local.json
 # Edit deployment.local.json with the values above, then:
 python -m recommender.bundle check --deep
@@ -287,7 +321,7 @@ git diff --stat
 
 Review the changes, commit and push yourself. No commit/push has been made. Keep code, seven notebooks, frozen dictionaries, aggregate results and docs. `.gitignore` excludes raw/clean data, embeddings, applicant-level results, bundles/runs/packages, local environment files, AWS details and secrets. Example environment/config files remain tracked. No test source files were added; runtime checks are explicit CLI preflights and the consistency review.
 
-The local research-to-app pipeline is implemented. Remaining user steps are: run both Docker workflows with a working daemon, fill AWS details, authenticate, inspect the plan, apply, verify live inference and clean up resources when finished. Docker execution and AWS deployment are not claimed complete.
+The local research-to-app pipeline is implemented. Remaining user steps are: run the Docker rehearsal (`make up`) with a working daemon, fill AWS details, authenticate, inspect the plan, apply, verify live inference and clean up resources when finished. Docker execution and AWS deployment are not claimed complete.
 
 Research limitations remain: invitation-only positive labels; non-invited candidates are weak negatives, not confirmed bad matches; cleaning produces outcome-dependent snapshots; no temporal future-job validation; historical vacancies may be stale; the dictionary is small and pending human review; prior test inspection and post-exploration promotion policy limit confirmatory claims. Stronger strict/NDCG results from learned rerankers should remain visible even though M8 is retained on the primary criterion. This is a completed project prototype, not proof of hiring outcomes or a production readiness certification.
 
@@ -318,7 +352,7 @@ streamlit run app.py
 
 The app uses local-only model loading, so profile text is never sent to a translation API. The preparation command downloads model files only. User profiles are not cached or written to disk. Long fields are token-chunked during translation instead of being silently truncated there; M8 still retains its original 400-character semantic-input policy.
 
-`TRANSLATION_BUNDLE` optionally selects another complete translation folder. Like `MODEL_BUNDLE`, relative paths resolve from the source project. For local Docker, `TRANSLATION_BUNDLE_HOST` in `.env.local` defaults to `./artifacts/translation`; the read-only container mount is `/translation`. Deployment Docker copies the translation bundle and checks its manifest at build time. The AWS helper validates and includes it in the private deployment package. No API keys or new AWS credentials are required for translation.
+`TRANSLATION_BUNDLE` optionally selects another complete translation folder. Like `MODEL_BUNDLE`, relative paths resolve from the source project. Deployment Docker copies the translation bundle and checks its manifest at build time. The AWS helper validates and includes it in the private deployment package. No API keys or new AWS credentials are required for translation.
 
 Translation adds CPU latency, disk and memory usage; the first recommendation loads both translation models. Keep the recommended 8 GB EC2 instance and verify container memory under actual use. Translation may mistranslate names, skills and specialist terminology. English examples have smoke validation, but the published Recall/NDCG results evaluate original Russian profiles, not this new English adapter; a bilingual relevance/translation evaluation would be needed to claim equal English retrieval quality.
 

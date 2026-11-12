@@ -1,0 +1,85 @@
+# Checks every push and pull request. It never deploys and needs no AWS secrets:
+# Learner Lab keys expire, so deployment stays a manual  make aws-deploy / make aws-update.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Shell and CloudFormation lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
+      - name: shellcheck
+        run: shellcheck docker/*.sh deploy/preflight.sh deploy/pin-base-image.sh deploy/aws/*.sh
+      - name: cfn-lint
+        run: cfn-lint deploy/aws/ec2-stack.json
+      - name: Base image pinned to a digest
+        run: |
+          grep -Eq '^FROM python:3\.12-slim-bookworm@sha256:[0-9a-f]{64}' Dockerfile.deploy \
+            || echo "::warning file=Dockerfile.deploy::Base image is not pinned to a digest; run make pin-base and commit"
+
+  test:
+    name: Tests (fixture bundle, no dataset, no AWS)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            requirements-app.txt
+            requirements-app.lock.txt
+            requirements-dev.txt
+      - name: Install from the lock file (CPU PyTorch, as in the image)
+        run: |
+          pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-app.txt -r requirements-dev.txt
+      - name: pytest
+        run: python -m pytest -q -rs
+      - name: Build the fixture bundle for the image job
+        run: python -m tests.fixtures --out artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fixture-bundle
+          path: artifacts/
+          retention-days: 1
+
+  image:
+    name: Build and smoke-test Dockerfile.deploy
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: fixture-bundle
+          path: artifacts/
+      - name: docker build
+        run: docker build -f Dockerfile.deploy -t "job-recommender:ci-${GITHUB_SHA::7}" .
+      - name: Smoke test inside the image (load bundle, rank a profile)
+        run: docker run --rm --read-only --tmpfs /tmp:rw,size=512m --entrypoint python "job-recommender:ci-${GITHUB_SHA::7}" -m recommender.smoke
+      - name: Container answers its health URL
+        run: |
+          docker run -d --name app --read-only --tmpfs /tmp:rw,size=512m --cap-drop ALL \
+            --security-opt no-new-privileges -p 127.0.0.1:8501:8501 "job-recommender:ci-${GITHUB_SHA::7}"
+          for _ in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:8501/_stcore/health; then echo; exit 0; fi
+            sleep 3
+          done
+          docker logs app
+          exit 1

@@ -172,6 +172,8 @@ def main():
     parser.add_argument('command',choices=['prepare','check'])
     parser.add_argument('--path');parser.add_argument('--deep',action='store_true')
     args=parser.parse_args()
+    from .bundle import load_hf_token
+    load_hf_token()
     if args.command=='prepare':prepare(args.path)
     else:print('English translation bundle ready:',check_translation(args.path,args.deep))
 

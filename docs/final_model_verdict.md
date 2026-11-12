@@ -40,4 +40,4 @@ Invitation-group labels are incomplete. Grouped title/region matches can differ 
 
 The final rerun uses the same evaluated M8 configuration and reproduces its reference primary score. Small learned-reranker variations between numerical environments are why the latest locked-runtime results, rather than mixed historical tables, are authoritative.
 
-See `docs/IMPLEMENTATION.md` for the single execution procedure and `docs/FINAL_REVIEW.md` for verification and external deployment limits.
+See `docs/PROJECT_HANDBOOK.md` for the single execution procedure and `docs/FINAL_REVIEW.md` for verification and external deployment limits.
