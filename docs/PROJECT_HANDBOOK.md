@@ -187,28 +187,27 @@ Both Compose configurations bind only to localhost by default. The EC2 service d
 1. `make aws-deploy` once creates `.env.aws` from `.env.aws.example`. Paste `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and (Learner Lab) `AWS_SESSION_TOKEN`. Keep `AWS_DEFAULT_REGION=us-east-1` (Learner Lab allows us-east-1 and us-west-2 only).
 2. `make aws-plan` checks the bundle and prints the stack, version name, upload size and estimated cost ($0.0832/h for `t3.large` plus about $0.004/h for the 40 GB disk, on-demand us-east-1 prices). Nothing changes in AWS.
 3. `make aws-deploy` signs in, creates a private bucket `job-recommender-<account>-<region>` (unless `S3_BUCKET` is set), streams the allowlisted files to `<stack>/packages/<version>.tar.gz` with a metadata file in `<stack>/versions/`, creates the stack and waits for the health URL. A Learner Lab login is detected and the template uses `LabInstanceProfile` instead of creating an IAM role. If an earlier attempt left the stack in `ROLLBACK_COMPLETE`, it is deleted first; other half-finished states stop with the exact command to run.
-4. Then the helper sets up monitoring (below). Each piece is optional and is skipped with a printed reason if the account forbids it.
+4. Then the helper creates the CloudWatch log groups (below). If the account forbids it, this is skipped with a printed reason.
 
 ### Updates and rollback
 
 `make aws-update` uploads a new versioned package and runs the install on the existing server through AWS Systems Manager (no CloudFormation update, no new server). On the server, `deploy/aws/release.sh`:
 
-1. reuses the image if it is already there, else loads the copy saved in `s3://<bucket>/<stack>/images/<version>.tar.gz`, else builds it (dependency layers are cached, so only the source and model layers change);
+1. reuses the image if it is already on the server, else builds it (dependency layers are cached, so only the source and model layers change);
 2. runs `python -m recommender.smoke` in the new image (loads the bundle, ranks a sample profile);
 3. starts the new image next to the live app on `127.0.0.1:8502` and waits for its health URL;
 4. switches the systemd service to the new image tag (`job-recommender:<version>`); if the switched app is not healthy within three minutes, it restores the previous service and version automatically.
 
-The previous version stays stored (package, metadata and image copy), and the server keeps its last three images. `make aws-rollback` returns to the previous version through the same steps (fast, the image is already present) and then checks the health URL from your computer. `make aws-rollback VERSION=<name>` picks any stored version; `make aws-versions` lists them. Stacks created before versioning work too: their original package is registered as a version on the first update, rollback or versions call, and a failed first update restores the original service. The running version, commit and time are written to `artifacts/ec2-status.json` (with a history) and shown in the app sidebar and footer.
+The previous version stays stored in S3 (package and metadata), and the server keeps its last three images. `make aws-rollback` returns to the previous version through the same steps (fast, the image is already present) and then checks the health URL from your computer. `make aws-rollback VERSION=<name>` picks any stored version; `make aws-versions` lists them. Stacks created before versioning work too: their original package is registered as a version on the first update, rollback or versions call, and a failed first update restores the original service. The running version, commit and time are written to `artifacts/ec2-status.json` (with a history) and shown in the app sidebar and footer.
 
 If Systems Manager is not reachable (agent offline or not allowed), update and rollback stop with a message; the fallback is `make aws-destroy` then `make aws-deploy` (short downtime). If the server is stopped (end of a Learner Lab session), update and rollback start it first and wait for Systems Manager.
 
-### Monitoring and recovery
+### Logs and self-healing
 
 - **Logs:** the CloudWatch agent ships container logs to `/job-recommender/<stack>/app` and the bootstrap log to `/job-recommender/<stack>/bootstrap`, kept for `LOG_RETENTION_DAYS` (default 14). `make aws-logs` reads them, or asks the server directly when CloudWatch is unavailable.
-- **Alarms** (prefix `<stack>-`): system status check (action: EC2 recover, which moves the instance to healthy hardware), instance status check (action: reboot), CPU above 85% for 15 minutes, memory above 90% and disk above 85% (agent metrics), and app health failing 3 minutes in a row (`JobRecommender/AppHealthy`, published every minute by the server's health timer). Where the recover/reboot action is not allowed, the alarm is created without it.
 - **Container self-healing:** `job-recommender-health.timer` checks the health URL every minute and restarts the container after three failures in a row; systemd also restarts it if it exits.
-- **Notifications and cost:** set `ALERT_EMAIL` for alarm e-mails (confirm the subscription e-mail) and `BUDGET_USD` for a monthly budget with an alert at 80%. Learner Lab may block Budgets; the deploy continues and says so. The Learner Lab itself caps spending at $50.
-- `make aws-status` shows the stack and server state, the current address (it changes after a stop/start), the running version, a live health check and the alarm states.
+- **Cost:** the Learner Lab caps spending at $50; check "Used $X of $50" on the lab page. `make aws-plan` prints the estimated hourly cost.
+- `make aws-status` shows the stack and server state, the current address (it changes after a stop/start), the running version and a live health check.
 
 ### Access and the optional HTTPS route (off by default)
 
@@ -224,7 +223,7 @@ Learner Lab may not allow CloudFront or ACM; check its "Service usage and other 
 1. `make aws-status`. If the server is `stopped`, start the lab and run `make aws-status` again (an update or rollback also starts it). Note the new address.
 2. If health is "NOT ANSWERING": `make aws-logs` and look for a Python error or `Model bundle missing`.
 3. If your IP changed, the page will not load even though health on the server is fine: update `ALLOWED_CIDR`.
-4. If the latest release is the cause, `make aws-rollback`. If the server itself is broken (status checks failing, no Systems Manager), wait for the recover alarm or `make aws-destroy` then `make aws-deploy`.
+4. If the latest release is the cause, `make aws-rollback`. If the server itself is broken (no Systems Manager, status checks failing in the EC2 console), reboot it from the EC2 console or run `make aws-destroy` then `make aws-deploy`.
 
 ### Runbook: bad release
 

@@ -7,9 +7,9 @@ Fill in `.env.aws` (copy of `.env.aws.example`), then use the make targets:
     make aws-update      new version on the running server; switched only if it is healthy
     make aws-rollback    back to the previous version (VERSION=<name> for a specific one)
     make aws-versions    versions stored in S3, current and previous marked
-    make aws-status      server state, version, health and alarm states
+    make aws-status      server state, version and health
     make aws-logs        recent application log lines
-    make aws-destroy     delete the stack, alarms and uploaded files
+    make aws-destroy     delete the stack and uploaded files
 
 Credentials come only from `.env.aws` or the normal AWS credential chain and are never printed.
 """
@@ -186,7 +186,7 @@ def check_health(url):
 
 
 class Deployment:
-    """All AWS calls for one stack. Every optional piece degrades to a printed message."""
+    """All AWS calls for one stack."""
     def __init__(self,args,env,root):
         self.a,self.env,self.root=args,env,root
         self.status_path=root/'artifacts/ec2-status.json'
@@ -365,72 +365,26 @@ bash "$DIR/deploy/aws/install-host.sh" '{v}' '{c}'
                               'Fallback: make aws-destroy  then  make aws-deploy  (short downtime).')
         return instance_id,instance
 
-    # ---------- monitoring (every piece optional) ----------
-    def monitoring(self,instance_id):
+    # ---------- log groups (optional: skipped with a message if the account forbids it) ----------
+    def monitoring(self,instance_id=None):
+        """Create the two CloudWatch log groups with a retention period. Never blocks a deploy."""
         from botocore.exceptions import ClientError
-        env=self.env;region=self.a.region;stack=self.stack;report=[]
-        def attempt(name,fn):
-            try:
-                result=fn();report.append((name,'ok' if result is None else result));return True
-            except ClientError as error:
-                code=error.response['Error'].get('Code','Error')
-                report.append((name,f'skipped ({code}: not allowed in this account)' if 'Denied' in code or 'Unauthorized' in code or code=='AccessDenied' else f'skipped ({code})'))
-            except Exception as error:
-                report.append((name,f'skipped ({type(error).__name__})'))
-            return False
-        retention=int(env.get('LOG_RETENTION_DAYS','14'))
-        def logs():
+        retention=int(self.env.get('LOG_RETENTION_DAYS','14'))
+        try:
             client=self.client('logs')
             for suffix in ['app','bootstrap']:
-                group=f'/job-recommender/{stack}/{suffix}'
+                group=f'/job-recommender/{self.stack}/{suffix}'
                 try:client.create_log_group(logGroupName=group)
                 except ClientError as error:
                     if error.response['Error']['Code']!='ResourceAlreadyExistsException':raise
                 client.put_retention_policy(logGroupName=group,retentionInDays=retention)
-            return f'ok ({retention}-day retention)'
-        attempt('CloudWatch log groups',logs)
-        topic=[]
-        if env.get('ALERT_EMAIL'):
-            def sns():
-                client=self.client('sns');arn=client.create_topic(Name=f'{stack}-alerts')['TopicArn']
-                client.subscribe(TopicArn=arn,Protocol='email',Endpoint=env['ALERT_EMAIL']);topic.append(arn)
-                return 'ok (confirm the subscription e-mail AWS sends you)'
-            attempt('E-mail alerts (SNS)',sns)
-        cloudwatch=self.client('cloudwatch')
-        def alarm(name,namespace,metric,dimensions,statistic,threshold,comparison,periods,period=60,actions=(),missing='missing',description=''):
-            spec=dict(AlarmName=f'{stack}-{name}',AlarmDescription=description,Namespace=namespace,MetricName=metric,
-                      Dimensions=[{'Name':k,'Value':v} for k,v in dimensions.items()],Statistic=statistic,Period=period,
-                      EvaluationPeriods=periods,Threshold=threshold,ComparisonOperator=comparison,TreatMissingData=missing,
-                      AlarmActions=list(actions)+topic,OKActions=list(topic))
-            try:
-                cloudwatch.put_metric_alarm(**spec)
-            except ClientError:
-                if not actions:raise
-                spec['AlarmActions']=list(topic);cloudwatch.put_metric_alarm(**spec)  # retry without the EC2 action
-                return 'ok (alarm only; EC2 recover/reboot action not allowed here)'
-        ec2=f'arn:aws:automate:{region}:ec2'
-        dims={'InstanceId':instance_id}
-        attempt('Auto-recovery alarm (system check)',lambda:alarm('instance-recover','AWS/EC2','StatusCheckFailed_System',dims,'Maximum',1,'GreaterThanOrEqualToThreshold',2,actions=[ec2+':recover'],description='Recover the instance on host failure'))
-        attempt('Instance check alarm (reboot)',lambda:alarm('instance-status','AWS/EC2','StatusCheckFailed_Instance',dims,'Maximum',1,'GreaterThanOrEqualToThreshold',3,actions=[ec2+':reboot'],description='Reboot when the instance status check fails'))
-        attempt('CPU alarm (>85% for 15 min)',lambda:alarm('cpu-high','AWS/EC2','CPUUtilization',dims,'Average',85,'GreaterThanThreshold',3,period=300))
-        attempt('Memory alarm (>90%, agent)',lambda:alarm('memory-high','CWAgent','mem_used_percent',dims,'Average',90,'GreaterThanThreshold',2,period=300))
-        attempt('Disk alarm (>85%, agent)',lambda:alarm('disk-high','CWAgent','disk_used_percent',dims,'Maximum',85,'GreaterThanThreshold',2,period=300))
-        attempt('App health alarm',lambda:alarm('app-unhealthy','JobRecommender','AppHealthy',{'Stack':stack},'Minimum',1,'LessThanThreshold',3,description='Health URL failed 3 minutes in a row'))
-        if env.get('BUDGET_USD'):
-            def budget():
-                client=self.session.client('budgets',region_name='us-east-1')
-                notify=[{'Notification':{'NotificationType':'ACTUAL','ComparisonOperator':'GREATER_THAN','Threshold':80,'ThresholdType':'PERCENTAGE'},
-                         'Subscribers':[{'SubscriptionType':'EMAIL','Address':env['ALERT_EMAIL']}]}] if env.get('ALERT_EMAIL') else []
-                try:
-                    client.create_budget(AccountId=self.account,Budget={'BudgetName':f'{stack}-monthly','BudgetType':'COST','TimeUnit':'MONTHLY',
-                                         'BudgetLimit':{'Amount':str(float(env['BUDGET_USD'])),'Unit':'USD'}},NotificationsWithSubscribers=notify)
-                except ClientError as error:
-                    if error.response['Error']['Code']!='DuplicateRecordException':raise
-                return 'ok'+('' if notify else ' (no ALERT_EMAIL, so no e-mail when 80% is reached)')
-            attempt('Monthly budget',budget)
-        print('\nMonitoring:')
-        for name,state in report:print(f'  {name:38s} {state}')
-        return report
+            print(f'CloudWatch logs: ok ({retention}-day retention; read them with  make aws-logs)')
+            return True
+        except ClientError as error:
+            print(f'CloudWatch logs: skipped ({error.response["Error"].get("Code","Error")}); make aws-logs reads the server directly instead')
+        except Exception as error:
+            print(f'CloudWatch logs: skipped ({type(error).__name__})')
+        return False
 
     # ---------- commands ----------
     def deploy(self,allowed,cidr,commit):
@@ -567,14 +521,6 @@ bash "$DIR/deploy/aws/install-host.sh" '{v}' '{c}'
                 print('  (the address changed since the last deploy: the server was stopped and started)')
                 saved.update({'AppUrl':app,'HealthUrl':health});self.write_status(saved)
         else:print('App: no public address (server not running)')
-        try:
-            alarms=self.client('cloudwatch').describe_alarms(AlarmNamePrefix=self.stack+'-')['MetricAlarms']
-            if alarms:
-                print('Alarms:')
-                for alarm in alarms:print(f'  {alarm["AlarmName"]:40s} {alarm["StateValue"]}')
-            else:print('Alarms: none set up')
-        except Exception as error:
-            print('Alarms: not readable ('+type(error).__name__+')')
         print(f'Estimated cost while running: ${HOURLY_USD.get(instance.get("InstanceType",""),0):.4f}/hour for the server')
 
     def logs(self,minutes):
@@ -605,10 +551,7 @@ bash "$DIR/deploy/aws/install-host.sh" '{v}' '{c}'
             cfn.delete_stack(StackName=self.stack)
             print('Deleting stack '+self.stack+' (a few minutes) ...',flush=True)
             cfn.get_waiter('stack_delete_complete').wait(StackName=self.stack,WaiterConfig={'Delay':15,'MaxAttempts':120})
-        else:print(f'Stack {self.stack} does not exist; cleaning up its files and alarms only.')
-        for name,fn in [('alarms',lambda:self._delete_alarms()),('alert topic',lambda:self._delete_topic()),('budget',lambda:self._delete_budget())]:
-            try:fn()
-            except Exception as error:print(f'Could not remove {name}: {type(error).__name__}')
+        else:print(f'Stack {self.stack} does not exist; cleaning up its stored files only.')
         s3=self.client('s3');removed=0
         try:
             for page in s3.get_paginator('list_objects_v2').paginate(Bucket=self.bucket,Prefix=self.stack+'/'):
@@ -616,24 +559,8 @@ bash "$DIR/deploy/aws/install-host.sh" '{v}' '{c}'
                     s3.delete_object(Bucket=self.bucket,Key=item['Key']);removed+=1
         except ClientError as error:print('Could not clean the bucket: '+error.response['Error']['Code'])
         self.status_path.unlink(missing_ok=True)
-        print(f'Removed: stack, alarms, {removed} stored file(s) (packages, versions, image copies). '
+        print(f'Removed: stack and {removed} stored file(s) (packages and version records). '
               f'Kept: the empty bucket and the CloudWatch log groups (they expire after their retention period).')
-
-    def _delete_alarms(self):
-        cw=self.client('cloudwatch');names=[a['AlarmName'] for a in cw.describe_alarms(AlarmNamePrefix=self.stack+'-')['MetricAlarms']]
-        if names:cw.delete_alarms(AlarmNames=names)
-
-    def _delete_topic(self):
-        sns=self.client('sns')
-        for topic in sns.list_topics().get('Topics',[]):
-            if topic['TopicArn'].endswith(':'+self.stack+'-alerts'):sns.delete_topic(TopicArn=topic['TopicArn'])
-
-    def _delete_budget(self):
-        if self.env.get('BUDGET_USD'):
-            from botocore.exceptions import ClientError
-            try:self.session.client('budgets',region_name='us-east-1').delete_budget(AccountId=self.account,BudgetName=self.stack+'-monthly')
-            except ClientError as error:
-                if error.response['Error']['Code']!='NotFoundException':raise
 
 
 def main(argv=None):
@@ -648,9 +575,9 @@ def main(argv=None):
     action.add_argument('--update',action='store_true',help='Install a new version on the running server')
     action.add_argument('--rollback',nargs='?',const='previous',metavar='VERSION',help='Return to the previous (or named) version')
     action.add_argument('--versions',action='store_true',help='List stored versions')
-    action.add_argument('--status',action='store_true',help='Server state, version, health and alarms')
+    action.add_argument('--status',action='store_true',help='Server state, version and health')
     action.add_argument('--logs',action='store_true',help='Recent application logs');p.add_argument('--minutes',type=int,default=30)
-    action.add_argument('--destroy',action='store_true',help='Delete the stack, alarms and stored files')
+    action.add_argument('--destroy',action='store_true',help='Delete the stack and stored files')
     a=p.parse_args(argv)
     root=a.root.expanduser()
     if not root.is_absolute():root=ROOT/root
@@ -701,8 +628,7 @@ def main(argv=None):
           'instance_type':a.instance_type,'files':len(allowed),'upload_size_gb':round(d.size/1e9,2),
           'estimated_cost_usd':{'per_hour':round(hourly+storage,4),'per_8h_day':round((hourly+storage)*8,2),
                                 'note':f'{a.instance_type} ${hourly}/h + {EBS_GB} GB gp3 disk; on-demand us-east-1 prices, excludes data transfer'},
-          'optional':{'alert_email':'set' if env.get('ALERT_EMAIL') else 'not set','budget_usd':env.get('BUDGET_USD','not set'),
-                      'log_retention_days':int(env.get('LOG_RETENTION_DAYS','14'))},'apply':a.apply}
+          'log_retention_days':int(env.get('LOG_RETENTION_DAYS','14')),'apply':a.apply}
     (root/'artifacts').mkdir(exist_ok=True)
     (root/'artifacts/ec2-plan.json').write_text(json.dumps(plan,indent=2)+'\n')
     print(json.dumps(plan,indent=2))

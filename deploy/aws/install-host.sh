@@ -14,13 +14,13 @@ install -m 0755 "$HERE/release.sh" "$HERE/health-check.sh" "$BASE/bin/"
 install -m 0644 "$HERE/job-recommender-health.service" "$HERE/job-recommender-health.timer" /etc/systemd/system/
 systemctl daemon-reload
 
-# CloudWatch agent: ships logs and memory/disk metrics. Optional: the app runs without it.
+# CloudWatch agent: ships the app and bootstrap logs. Optional: the app runs without it.
 CTL=/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl
 [ -x "$CTL" ] || dnf install -y -q amazon-cloudwatch-agent >/dev/null 2>&1 || true
 if [ -x "$CTL" ]; then
   sed "s/__STACK__/$STACK/g" "$HERE/cloudwatch-agent.json" > "$BASE/cloudwatch-agent.json"
   if "$CTL" -a fetch-config -m ec2 -s -c "file:$BASE/cloudwatch-agent.json" >/dev/null 2>&1; then
-    echo "CloudWatch agent running (logs and memory/disk metrics)"
+    echo "CloudWatch agent running (log shipping)"
   else
     echo "CloudWatch agent could not start; continuing without log shipping"
   fi

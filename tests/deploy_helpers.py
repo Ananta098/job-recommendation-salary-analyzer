@@ -26,7 +26,7 @@ class BotoCoreError(Exception):
 
 
 class FakeAWS:
-    """In-memory S3 / CloudFormation / EC2 / SSM / CloudWatch / Logs / SNS / Budgets."""
+    """In-memory S3 / CloudFormation / EC2 / SSM / CloudWatch Logs."""
 
     def __init__(self, arn='arn:aws:sts::123456789012:assumed-role/voclabs/user1', stack_status=None):
         self.arn = arn
@@ -185,16 +185,6 @@ class Client:
             return {'Status': 'Success', 'StandardOutputContent': out, 'StandardErrorContent': ''}
         return {'Status': 'Success', 'StandardOutputContent': 'log line', 'StandardErrorContent': ''}
 
-    # CloudWatch / Logs / SNS
-    def _create_topic(self, Name):
-        return {'TopicArn': f'arn:aws:sns:us-east-1:123456789012:{Name}'}
-
-    def _describe_alarms(self, AlarmNamePrefix):
-        names = [c[1]['AlarmName'] for c in self.fake.called('put_metric_alarm')]
-        return {'MetricAlarms': [{'AlarmName': n, 'StateValue': 'OK'} for n in dict.fromkeys(names)]}
-
-    def _list_topics(self):
-        return {'Topics': [{'TopicArn': 'arn:aws:sns:us-east-1:123456789012:job-recommender-alerts'}]}
-
+    # CloudWatch Logs
     def _filter_log_events(self, **kwargs):
         return {'events': [{'timestamp': 0, 'message': json.dumps({'log': 'Streamlit started\n'})}]}

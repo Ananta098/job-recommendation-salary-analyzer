@@ -72,7 +72,7 @@ def test_first_deploy_versions_package_and_uses_lab_profile(project, capsys, mon
     saved = status(root)
     assert saved['Version'] == version and saved['History'][-1]['action'] == 'deploy'
     assert saved['AppUrl'] == 'http://3.80.6.254:8501'
-    assert len(fake.called('put_metric_alarm')) >= 6
+    assert fake.called('create_log_group') and not fake.called('put_metric_alarm')
     out = capsys.readouterr().out
     assert 'fake-secret' not in out and 'fake-session' not in out and 'ASIAFAKE' not in json.dumps(saved)
 
@@ -162,15 +162,13 @@ def test_stopped_learner_lab_server_is_started_before_update(project, monkeypatc
     assert fake.called('start_instances')
 
 
-def test_monitoring_degrades_without_blocking_deploy(project, monkeypatch, capsys):
+def test_log_groups_degrade_without_blocking_deploy(project, monkeypatch, capsys):
     deploy, root = project
     fake = FakeAWS().install(monkeypatch)
-    fake.denied = {'put_metric_alarm', 'create_log_group', 'create_budget'}
-    (root / '.env.aws').write_text(ENV + 'BUDGET_USD=20\nALERT_EMAIL=me@example.com\n')
+    fake.denied = {'create_log_group'}
     run(deploy, root, '--apply')
     out = capsys.readouterr().out
-    assert 'Deployed version' in out and 'not allowed in this account' in out
-    assert 'me@example.com' not in out
+    assert 'Deployed version' in out and 'CloudWatch logs: skipped (AccessDenied)' in out
 
 
 def test_status_logs_versions_and_destroy(project, monkeypatch, capsys):
@@ -182,7 +180,7 @@ def test_status_logs_versions_and_destroy(project, monkeypatch, capsys):
     assert 'Health: OK' in out and 'Streamlit started' in out and '* ' in out
     run(deploy, root, '--destroy')
     assert fake.stack is None and not [k for (_, k) in fake.objects if k.startswith('job-recommender/')]
-    assert fake.called('delete_alarms') and not (root / 'artifacts' / 'ec2-status.json').exists()
+    assert not (root / 'artifacts' / 'ec2-status.json').exists()
 
 
 def test_shell_values_are_validated(project):

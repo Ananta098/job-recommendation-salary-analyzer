@@ -137,11 +137,11 @@ make aws-deploy     # creates the server and prints the app address when it answ
 | `make aws-update` | Uploads a new version and installs it on the running server. The new image is built (or reused), smoke-tested and health-checked next to the live app; the switch only happens if it is healthy, and a failed switch restores the previous version. |
 | `make aws-rollback` | Returns to the previous version and confirms the health URL answers. `make aws-rollback VERSION=<name>` picks a specific one. |
 | `make aws-versions` | Versions stored in S3 (`*` running, `<` previous). |
-| `make aws-status` | Server state, current address, running version, health result and alarm states. |
+| `make aws-status` | Server state, current address, running version and a live health check. |
 | `make aws-logs` | Recent app log lines (CloudWatch, or straight from the server). `MINUTES=60` for more. |
-| `make aws-destroy` | Deletes the server, alarms and stored packages. |
+| `make aws-destroy` | Deletes the server and stored packages. |
 
-Versions are named `<UTC time>-<git commit>`, images are tagged with that name, and the running version shows in the app footer and sidebar. Optional keys in `.env.aws`: `ALERT_EMAIL` (alarm e-mails), `BUDGET_USD` (monthly budget alert), `LOG_RETENTION_DAYS`. Monitoring pieces the account does not allow are skipped with a message; the deploy still completes. The app is plain HTTP and only admits your current IP (`ALLOWED_CIDR`); handbook section 5 describes the optional HTTPS route for showing it to others. Learner Lab stops the server at the end of a session: `make aws-update`/`aws-rollback` start it again, and `make aws-status` shows the new address.
+Versions are named `<UTC time>-<git commit>`, images are tagged with that name, and the running version shows in the app footer and sidebar. App and startup logs go to CloudWatch (`LOG_RETENTION_DAYS`, default 14); if the account does not allow it, this is skipped with a message and `make aws-logs` reads the server directly. A timer on the server restarts the app after three failed health checks in a row. The app is plain HTTP and only admits your current IP (`ALLOWED_CIDR`); handbook section 5 describes the optional HTTPS route for showing it to others. Learner Lab stops the server at the end of a session: `make aws-update`/`aws-rollback` start it again, and `make aws-status` shows the new address.
 
 **App is down:** `make aws-status`, then `make aws-logs`. If the server is stopped, start the lab and run `make aws-status` again (or any update/rollback, which starts it). If health stays "NOT ANSWERING", run `make aws-rollback` to the last version that worked.
 **Bad release:** `make aws-rollback` (previous version) or `make aws-versions` and `make aws-rollback VERSION=<name>`.

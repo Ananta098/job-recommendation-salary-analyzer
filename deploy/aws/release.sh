@@ -1,7 +1,6 @@
 #!/bin/bash
-# shellcheck disable=SC2154  # BUCKET, STACK and REGION are set by /opt/job-recommender/instance.env
 # Install one release on the EC2 instance without risking the running app.
-#   1. reuse the image if present, else load the copy saved in S3, else build it (dependency layers are cached)
+#   1. reuse the image if it is already on the server, else build it (dependency layers are cached)
 #   2. smoke-test the image: load the bundle and rank a sample profile
 #   3. start it next to the live app on 127.0.0.1:8502 and wait for its health URL
 #   4. switch the service to it; if the switched app is unhealthy, restore the previous version
@@ -14,9 +13,6 @@ SRC=$BASE/releases/$VERSION
 IMAGE=job-recommender:$VERSION
 UNIT=/etc/systemd/system/job-recommender.service
 CANDIDATE=job-recommender-candidate
-# shellcheck source=/dev/null
-. "$BASE/instance.env"
-CACHE=s3://$BUCKET/$STACK/images/$VERSION.tar.gz
 
 log() { echo "[release $(date -u +%H:%M:%S)] $*"; }
 healthy() {  # healthy PORT ATTEMPTS  (5 seconds apart)
@@ -46,15 +42,9 @@ trap 'docker rm -f "$CANDIDATE" >/dev/null 2>&1 || true' EXIT
 # 1. image
 if docker image inspect "$IMAGE" >/dev/null 2>&1; then
   log "image $IMAGE is already on this server"
-elif aws s3 ls "$CACHE" --region "$REGION" >/dev/null 2>&1 \
-     && aws s3 cp "$CACHE" - --region "$REGION" --only-show-errors | gunzip | docker load >/dev/null; then
-  log "loaded the saved copy of $IMAGE from S3"
 else
   log "building $IMAGE"
   docker build --quiet -f "$SRC/Dockerfile.deploy" -t "$IMAGE" "$SRC" >/dev/null
-  nohup setsid bash -c "docker save '$IMAGE' | gzip -1 | aws s3 cp - '$CACHE' --region '$REGION' --only-show-errors" \
-    >>/var/log/job-recommender-image-cache.log 2>&1 &
-  log "saving a copy of the image to S3 in the background (faster rollback and recovery)"
 fi
 
 # 2. smoke test

@@ -1,5 +1,5 @@
 [Unit]
-Description=Job Recommendation health check (restart after 3 failures, publish AppHealthy metric)
+Description=Job Recommendation health check (restart the app after 3 failures in a row)
 
 [Service]
 Type=oneshot
