@@ -48,7 +48,9 @@ jobs:
       - name: Install from the lock file (CPU PyTorch, as in the image)
         run: |
           pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements-app.txt -r requirements-dev.txt
+          # Only pytest is needed here (the tests fake boto3). cfn-lint and shellcheck are installed in the lint job:
+          # installing them next to the pinned app lock makes pip's resolver backtrack for hours.
+          pip install -r requirements-app.txt pytest==8.3.4
       - name: pytest
         run: python -m pytest -q -rs
       - name: Build the fixture bundle for the image job
