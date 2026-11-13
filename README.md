@@ -34,6 +34,24 @@ Stage 2  final system (one command + notebooks 05-07 + app)
 
 Stage 1 is the study that chose the approach and is fully reproducible from the notebooks. Stage 2 repeats the same cleaning and evaluation protocol in code (`recommender/`, with an added development split), adds the skill-aware experiments, and is the only route that produces the deployable model bundle.
 
+## Run it after cloning
+
+Needs macOS or Linux with Python 3.12, `git` and `make`, an internet connection, and about 15 GB of free disk. The raw dataset and the trained model are not in Git (too large), so the first run rebuilds the model.
+
+```sh
+git clone https://github.com/Ananta098/job-recommendation-salary-analyzer.git
+cd job-recommendation-salary-analyzer
+# 1. Download HSE_dataset(D4).csv (see datasets/README.md) and put it in datasets/
+make venv          # 2. Python environment with every pinned package + Jupyter kernel "Python (jobrec)"
+make hf-key        # 3. optional: Hugging Face key, saved in .hf_token (ignored by Git)
+make bundle        # 4. trains, compares and exports the final model to artifacts/deployment (an hour or more the first time)
+make translation   # 5. downloads the English-interface models to artifacts/translation
+make test          # 6. checks: bundle integrity, a sample recommendation, deploy safety
+source .venv/bin/activate && streamlit run app.py   # 7. the app at http://localhost:8501
+```
+
+To follow the study itself, run `jupyter lab`, pick the **Python (jobrec)** kernel and open `notebooks/01` to `07` in order (01-04 need the dataset; 05-07 read `results/final/`). Optional: `make up` runs the app in Docker, and `make aws-deploy` puts it on AWS (see "Deploy to AWS" below).
+
 ## Quick start: run it in Docker on your computer
 
 Needs: Docker Desktop (running), Python 3.12 (`brew install python@3.12`), about 15 GB free disk, and the raw file `HSE_dataset(D4).csv` in `datasets/` (see `datasets/README.md`). Run these from the project folder:
@@ -41,7 +59,7 @@ Needs: Docker Desktop (running), Python 3.12 (`brew install python@3.12`), about
 ```sh
 make hf-key        # optional: paste your Hugging Face key; saved in .hf_token (ignored by Git)
 make venv          # creates .venv with Python 3.12 and installs the pinned packages
-make bundle        # builds artifacts/deployment (reuses the saved cleaning and embeddings; skipped if it exists)
+make bundle        # builds artifacts/deployment (full rebuild on a fresh clone; reuses clean/ when present; skipped if it exists)
 make translation   # one-time download of the English-UI models
 make check         # read-only readiness check; fix any FAIL line
 make up            # builds the image, starts it, waits until healthy

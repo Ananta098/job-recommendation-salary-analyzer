@@ -47,7 +47,10 @@ bundle:
 	@if [ -f artifacts/deployment/manifest.json ]; then echo "artifacts/deployment already exists: skipping (delete it to rebuild)."; exit 0; fi; \
 	 test -x $(PY) || { echo "Run  make venv  first."; exit 1; }; \
 	 test -f "$(RAW)" || { echo "Raw dataset missing: $(RAW)"; echo "Put HSE_dataset(D4).csv into datasets/ (see datasets/README.md), then run make bundle again."; exit 1; }; \
-	 $(PY) -m recommender.pipeline run --run-dir "$(RUN)" --raw "$(RAW)" --reuse-prepared && \
+	 if [ -f clean/d4_clean.csv ] && ls clean/sbert_test_*.npy >/dev/null 2>&1; then REUSE=--reuse-prepared; \
+	   echo "Reusing the prepared data in clean/ (fast)."; else REUSE=; \
+	   echo "No prepared data in clean/ (fresh clone): full rebuild from the raw dataset. This can take an hour or more."; fi; \
+	 $(PY) -m recommender.pipeline run --run-dir "$(RUN)" --raw "$(RAW)" $$REUSE && \
 	 mkdir -p artifacts && cp -R "$(RUN)/artifacts/deployment" artifacts/deployment && \
 	 $(PY) -m recommender.bundle check --deep
 
