@@ -638,4 +638,26 @@ def main(argv=None):
     d.connect().deploy(allowed,cidr,commit)
 
 
-if __name__=='__main__':main()
+def run_cli(argv=None):
+    """Turn AWS permission errors into one clear sentence instead of a traceback."""
+    try:
+        return main(argv)
+    except Exception as error:
+        response=getattr(error,'response',None)
+        if not isinstance(response,dict):raise
+        code=response.get('Error',{}).get('Code','')
+        text=str(error)
+        if 'voc-cancel-cred' in text:
+            raise DeployError('AWS refused the request: these Learner Lab keys were cancelled (the lab session ended or was restarted).\n'
+                              'Fix: in AWS Academy press Start Lab, wait for the green dot, open AWS Details > AWS CLI: Show,\n'
+                              'paste all three new lines into .env.aws, then run the same make command again.')
+        if code in ('ExpiredToken','ExpiredTokenException','InvalidClientTokenId','UnrecognizedClientException','RequestExpired'):
+            raise DeployError('AWS says the keys in .env.aws have expired. Start the lab again and paste the three new key lines into .env.aws.')
+        if 'AccessDenied' in code or 'UnauthorizedOperation' in code or 'not authorized' in text:
+            operation=getattr(error,'operation_name','an AWS action')
+            raise DeployError(f'AWS denied {operation} for this account ({code}). If you use Learner Lab, refresh the keys first; '
+                              'if it still fails, this action is not allowed in the account.')
+        raise
+
+
+if __name__=='__main__':run_cli()

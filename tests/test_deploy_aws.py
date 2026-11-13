@@ -189,3 +189,18 @@ def test_shell_values_are_validated(project):
         with pytest.raises(SystemExit, match='Unsafe'):
             deploy.safe(kind, bad)
     assert deploy.new_version('abc1234-dirty', now=0) == '19700101-000000-abc1234-dirty'
+
+
+def test_cancelled_learner_lab_keys_give_clear_message(project, monkeypatch):
+    from tests.deploy_helpers import ClientError
+    deploy, root = project
+    fake = FakeAWS(stack_status='CREATE_COMPLETE').install(monkeypatch)
+
+    def denied(*args, **kwargs):
+        error = ClientError('AccessDenied', 'DescribeStacks')
+        error.args = ('User is not authorized ... with an explicit deny in an identity-based policy: '
+                      'arn:aws:iam::123456789012:policy/voc-cancel-cred',)
+        raise error
+    monkeypatch.setattr(deploy.Deployment, 'stack_info', denied)
+    with pytest.raises(SystemExit, match='Learner Lab keys were cancelled'):
+        deploy.run_cli(['--root', str(root), '--apply'])

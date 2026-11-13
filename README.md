@@ -8,6 +8,18 @@ Given an applicant's profile, rank the historical Russian vacancies that suit th
 
 ## End-to-end flow
 
+| Step | What happens | Where |
+|---|---|---|
+| 1. Data validation | Structure, IDs, label balance, missing values, duplicates, label limitations | `notebooks/01_check_data.ipynb` |
+| 2. Cleaning | Deduplication, text fields, skills, English titles, evaluation set | `notebooks/02_clean_data.ipynb`, `recommender/cleaning.py` |
+| 3. Baselines | Random, popularity, TF-IDF, BM25 (M0-M5) | `notebooks/03_models.ipynb` |
+| 4. Semantic models | Sentence-BERT and the hybrid M8 | `notebooks/04_sentence_bert.ipynb` |
+| 5. Skill-aware models | Skill extraction, M9 reranking, learned rerankers | `notebooks/06-07`, `m9_skills/` |
+| 6. Evaluation and selection | Recall@K / NDCG@K, paired significance, regions; M8 selected on the development set | `notebooks/05`, `results/final/` |
+| 7. Model export | Checked model bundle for serving | `python -m recommender.pipeline run` |
+| 8. Application | English Streamlit app on the selected model | `app.py` |
+| 9. Deployment | Docker image on one AWS EC2 server | `make aws-deploy` |
+
 ```text
 Stage 1  original study (notebooks 01-04)
   Raw D4 -> validate (01) -> clean (02) -> baselines M0-M5 (03) -> Sentence-BERT M6-M8 (04)
@@ -16,7 +28,7 @@ Stage 1  original study (notebooks 01-04)
 Stage 2  final system (one command + notebooks 05-07 + app)
   Raw D4 -> clean -> embeddings + canonical skills -> model comparison (M8, M9, learned rerankers)
          -> selection/export -> significance + regional analysis -> review
-         -> Streamlit app -> local Docker -> deployment Docker -> EC2 template
+         -> Streamlit app -> Docker image -> live on AWS EC2 (make aws-deploy)
   writes: artifacts/, results/final/
 ```
 

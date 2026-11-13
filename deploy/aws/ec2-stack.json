@@ -91,7 +91,15 @@
                     "Ref": "Vpc"
                 },
                 "CidrBlock": "10.48.1.0/24",
-                "MapPublicIpOnLaunch": true
+                "MapPublicIpOnLaunch": true,
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                }
             }
         },
         "Routes": {
