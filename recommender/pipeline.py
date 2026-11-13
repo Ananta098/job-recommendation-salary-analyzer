@@ -14,7 +14,7 @@ from .shared import MODEL, ENCODER_REVISION, digest
 
 def write(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2) + '\n')
+    path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
 
 
 def copy_file(source, target):
@@ -29,11 +29,11 @@ def review(root, results=None, bundle=None):
     bundle=project_path(bundle,root) if bundle else root/'artifacts/deployment'
     source_root=Path(__file__).resolve().parent.parent
     for file in list((source_root/'recommender').glob('*.py'))+[source_root/'app.py',source_root/'deploy/aws/deploy.py']:
-        ast.parse(file.read_text())
-    selection=json.loads((results/'selection.json').read_text())
+        ast.parse(file.read_text(encoding='utf-8'))
+    selection=json.loads((results/'selection.json').read_text(encoding='utf-8'))
     grouped=pd.read_csv(results/'metrics_grouped.csv',index_col=0)
     strict=pd.read_csv(results/'metrics_strict.csv',index_col=0)
-    required={'M8','M9 without region','M9 + region','Logistic Regression','Random Forest','XGBoost','M5'}
+    required={'M8','M8 without region','M9 without region','M9 + region','Logistic Regression','Random Forest','XGBoost','M5'}
     if not required.issubset(grouped.index) or not required.issubset(strict.index):
         raise ValueError('Model comparison is incomplete')
     if selection['selected_model'] not in grouped.index or selection.get('test_selection_used') is not False:
@@ -56,11 +56,11 @@ def review(root, results=None, bundle=None):
     manifest_path=bundle/'manifest.json'
     bundle_verified=False
     if manifest_path.exists():
-        for rel,expected in json.loads(manifest_path.read_text()).items():
+        for rel,expected in json.loads(manifest_path.read_text(encoding='utf-8')).items():
             path=(bundle/rel).resolve()
             if not path.is_relative_to(bundle) or not path.is_file() or digest(path)!=expected:
                 raise ValueError('Bundle integrity failure: '+rel)
-        metadata=json.loads((bundle/'metadata.json').read_text())
+        metadata=json.loads((bundle/'metadata.json').read_text(encoding='utf-8'))
         if metadata['selected_model']!=selection['selected_model']:
             raise ValueError('Serving model does not match selected model')
         bundle_verified=True
@@ -98,10 +98,10 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
         except OSError:copy_file(raw,target)
         if reuse:
             def reuse_inputs():
-                previous=json.loads((root/'results/final/run_manifest.json').read_text())
+                previous=json.loads((root/'results/final/run_manifest.json').read_text(encoding='utf-8'))
                 inputs=previous['input_hashes']
                 coverage_path=root/'m9_skills/outputs/v2_validation_run/coverage.json'
-                coverage=json.loads(coverage_path.read_text())
+                coverage=json.loads(coverage_path.read_text(encoding='utf-8'))
                 if digest(raw)!=coverage['source_sha256']:
                     raise ValueError('Raw D4 differs from the recorded extraction input')
                 # The two skill-evidence files are large generated outputs that Git ignores, so a

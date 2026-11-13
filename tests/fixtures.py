@@ -36,9 +36,9 @@ def digest(path):
 
 def write_manifest(folder, exclude=('manifest.json',)):
     folder = Path(folder)
-    manifest = {str(p.relative_to(folder)): digest(p) for p in sorted(folder.rglob('*'))
+    manifest = {p.relative_to(folder).as_posix(): digest(p) for p in sorted(folder.rglob('*'))
                 if p.is_file() and p.name not in exclude}
-    (folder / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (folder / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     return manifest
 
 
@@ -105,7 +105,7 @@ def build_bundle(out, with_encoder=True):
     else:
         (out / 'encoder').mkdir()
         for name in ['model.safetensors', 'config.json', 'modules.json', 'tokenizer.json']:
-            (out / 'encoder' / name).write_text('{}' if name.endswith('.json') else 'placeholder')
+            (out / 'encoder' / name).write_text('{}' if name.endswith('.json') else 'placeholder', encoding='utf-8')
         rng = np.random.default_rng(0)
         embeddings = rng.normal(size=(len(jobs), 384)).astype(np.float32)
         embeddings /= np.linalg.norm(embeddings, axis=1, keepdims=True)
@@ -116,7 +116,7 @@ def build_bundle(out, with_encoder=True):
                 'encoder_revision': 'fixture',
                 'catalog_ids_sha256': hashlib.sha256('\n'.join(jobs.idVacancy).encode()).hexdigest(),
                 'dictionary_sha256': extractor.fingerprint, 'fixture': True}
-    (out / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
+    (out / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n', encoding='utf-8')
     write_manifest(out)
     return out
 
@@ -130,8 +130,8 @@ def build_translation(out):
         folder = out / direction
         folder.mkdir(parents=True)
         for name in ['model.safetensors', 'config.json', 'source.spm', 'target.spm', 'vocab.json', 'tokenizer_config.json']:
-            (folder / name).write_text('fixture ' + direction + ' ' + name)
-    (out / 'regions.json').write_text(json.dumps({r: r for r in REGIONS}, ensure_ascii=False) + '\n')
+            (folder / name).write_text('fixture ' + direction + ' ' + name, encoding='utf-8')
+    (out / 'regions.json').write_text(json.dumps({r: r for r in REGIONS}, ensure_ascii=False) + '\n', encoding='utf-8')
     write_manifest(out)
     return out
 
@@ -142,7 +142,7 @@ def is_real(folder):
     if not (folder / 'manifest.json').exists():
         return False
     if (folder / 'metadata.json').exists():
-        return not json.loads((folder / 'metadata.json').read_text()).get('fixture')
+        return not json.loads((folder / 'metadata.json').read_text(encoding='utf-8')).get('fixture')
     return (folder / 'provenance.json').exists()
 
 

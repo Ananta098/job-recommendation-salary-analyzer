@@ -48,15 +48,15 @@ def skill_options(dictionary):
     return {s['id']:s for s in dictionary['skills'] if s['domain']!='soft'}
 
 
-def build_profile(role, custom_role, experience, education, responsibilities, selected, notes):
+def build_profile(role, custom_role, experience, education, responsibilities, notes):
+    """Title, work-history text and qualification. Skills are NOT added here: they reach the model
+    once, as the separate cv_skills field, exactly as in the evaluated data."""
     title = custom_role.strip() if role=='Other' else role
     if not title or role=='Choose a job title':
         raise ValueError('Choose a job title, or choose Other and enter a custom title.')
     history = []
     if experience!='Not specified':history.append('Work experience: '+experience+'.')
     if responsibilities:history.append('Responsibilities: '+ '; '.join(responsibilities)+'.')
-    # M8 consumes work-history text; structured skills must reach that text too.
-    if selected:history.append('Skills: '+', '.join(SKILL_LABELS[s] for s in selected)+'.')
     if notes.strip():history.append(notes.strip())
     qualification = '' if education=='Not specified' else education
     return title, ' '.join(history), qualification

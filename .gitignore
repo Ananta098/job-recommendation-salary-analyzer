@@ -1,9 +1,6 @@
 # Private source data and generated local artifacts
 datasets/*.csv
 datasets/*.zip
-# supplementary salary datasets (small) stay tracked
-!datasets/ai_job_dataset.csv
-!datasets/ai_job_salary_dataset_10k.csv
 clean/*.csv
 clean/*.npy
 artifacts/

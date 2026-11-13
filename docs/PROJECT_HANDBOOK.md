@@ -150,7 +150,7 @@ jupyter lab
 | 05 | Current paired significance and regional sample/performance summaries |
 | 06 | Current skill evidence and retained linguistic diagnostics |
 | 07 | Current M9/reranker results, promotion decision and exported bundle |
-| archive/00 | Supplementary salary analysis from the proposal stage (needs `datasets/ai_job_dataset.csv` and `datasets/ai_job_salary_dataset_10k.csv`, both tracked) |
+| archive/00 | Supplementary salary analysis from the proposal stage (needs `datasets/ai_job_dataset.csv` and `datasets/ai_job_salary_dataset_10k.csv`, not in Git; see `datasets/README.md` for the source). Saved outputs are readable without them. |
 
 Read 01–07 in order for presentation. Notebooks 01–04 can be re-run on the raw D4 file in that order (about 30 minutes in total on a laptop CPU; see the README table). They never touch `results/final/` or `artifacts/`. Re-running notebook 02 rewrites `clean/d4_clean.csv`; if its bytes differ from the recorded run, `--reuse-prepared` will refuse the file and you should use a full rebuild. Notebook 04 reuses the Sentence-BERT caches in `clean/` only when their row counts match the clean file. Training the deployable model needs no special notebook order: the CLI handles it. Reports 05 and 07 use `results/final/` by default. To inspect a fresh run instead:
 
@@ -211,7 +211,7 @@ If Systems Manager is not reachable (agent offline or not allowed), update and r
 
 ### Access and the optional HTTPS route (off by default)
 
-`ALLOWED_CIDR` (empty = your current public IP `/32`) is the only address range that can open port 8501, and the app is plain HTTP. When your IP changes, set `ALLOWED_CIDR` to the new address and redeploy, or edit the security group's inbound rule in the EC2 console. To show the app to people outside your IP, do not open `0.0.0.0/0` over HTTP; use one of these, which are documented options and not part of the template:
+`ALLOWED_CIDR` (empty = your current public IP `/32`) is the address range allowed at deploy time on port 8501, and the app is plain HTTP. To add another network without redeploying, run `make aws-allow CIDR=<address>/32` (`CIDR=me` adds your current IP, for example after your IP changes); `make aws-revoke CIDR=<address>/32` removes it. For a presentation, connect to the room's network, open <https://checkip.amazonaws.com> to see its public address, run `make aws-allow CIDR=<that address>/32`, and revoke it afterwards. `CIDR=0.0.0.0/0` opens the app to everyone; use it only for the demo window. To show the app to people outside your IP, do not open `0.0.0.0/0` over HTTP; use one of these, which are documented options and not part of the template:
 
 - **CloudFront in front of the instance:** create a CloudFront distribution with the instance's public DNS name as an HTTP origin on port 8501, viewer protocol "Redirect HTTP to HTTPS", caching disabled and WebSocket support (Streamlit needs it; CloudFront supports WebSockets by default). Restrict the security group to the CloudFront origin-facing managed prefix list (`com.amazonaws.global.cloudfront.origin-facing`). This gives an `https://<id>.cloudfront.net` address without owning a domain. Add authentication before sharing real profiles.
 - **Application Load Balancer with an ACM certificate:** needs a domain name you control, two subnets in different availability zones and a target group on port 8501 with health check path `/_stcore/health`. Higher fixed cost (about $16/month for the load balancer).

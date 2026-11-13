@@ -87,13 +87,13 @@ def run(root,output,encoder_path,bundle_dir):
     if encoder_max_difference>.001:raise ValueError('Encoder does not match cached test inputs; rebuild all caches consistently')
     cache=root/'artifacts/training_embeddings.npy';cache_meta=cache.with_suffix('.json')
     signature=hashlib.sha256(('\n'.join(train_ids)+'\n'+'\n'.join(profiles.iloc[:ntrain].cv_text.str[:400])+'\n'+str(encoder_path)).encode()).hexdigest()
-    if cache.exists() and cache_meta.exists() and json.loads(cache_meta.read_text()).get('signature')==signature:
+    if cache.exists() and cache_meta.exists() and json.loads(cache_meta.read_text(encoding='utf-8')).get('signature')==signature:
         trainemb=np.load(cache)
     else:
         print('Encoding training applicants',flush=True)
         trainemb=encoder.encode(profiles.iloc[:ntrain].cv_text.str[:400].tolist(),batch_size=64,normalize_embeddings=True,show_progress_bar=True,convert_to_numpy=True)
         cache.parent.mkdir(exist_ok=True);np.save(cache,trainemb)
-        cache_meta.write_text(json.dumps({'signature':signature,'shape':list(trainemb.shape)}))
+        cache_meta.write_text(json.dumps({'signature':signature,'shape':list(trainemb.shape)}), encoding='utf-8')
     all_embeddings=np.vstack([trainemb,devemb,testemb])
     portions={'train':slice(0,ntrain),'development':slice(ntrain,ntrain+ndev),'test':slice(ntrain+ndev,None)}
     pools={};golds={}
@@ -162,12 +162,17 @@ def run(root,output,encoder_path,bundle_dir):
                'features':FEATURE_NAMES,'labels':'positive if candidate title-region group matches a recorded invitation; other retrieved groups are weak negatives',
                'negative_sampling':'up to 30 non-invited candidate groups per training applicant; all retrieved positive groups kept; no gold injection',
                'test_selection_used':False}
-    (output/'selection.json').write_text(json.dumps(selection,indent=2)+'\n')
+    (output/'selection.json').write_text(json.dumps(selection,indent=2)+'\n', encoding='utf-8')
     dev_table.to_csv(output/'development_metrics_grouped.csv')
     print('Selected on development:',selected,flush=True)
     for name in model_specs:
         ranked=ranking_for(name,'test');ranking[name]=ranked
         metrics[name]=evaluate(ranked,*golds['test'],groups)
+    # Region control: M8 scoring without regional priority, on the same global candidates as
+    # "M9 without region". Diagnostic only, not a selection candidate, so the development-only
+    # promotion family above is unchanged.
+    ranking['M8 without region']=rerank(*global_pools['test'],'M8',use_region=False)
+    metrics['M8 without region']=evaluate(ranking['M8 without region'],*golds['test'],groups)
     # A true full-catalog M5 comparator (not a top-300 M8 approximation).
     pp=profiles.iloc[portions['test']];q=tfidf.transform(text(pp,'cv'));m5=[]
     jr=region_key(jobs.regionName).to_numpy();cr=region_key(pp.localityName).to_numpy()
@@ -191,7 +196,7 @@ def run(root,output,encoder_path,bundle_dir):
     np.save(bundle_dir/'job_embeddings.npy',jobemb);np.save(bundle_dir/'job_skills.npy',jobskills)
     catalog_columns=[c for c in ['idVacancy','vacancyName','vacancyName_en','regionName','job_text','job_skills','salaryMin_vacancy','experienceRequirements','datePublished','professionalSphereName'] if c in jobs]
     jobs[catalog_columns].to_csv(bundle_dir/'catalog.csv',index=False)
-    (bundle_dir/'dictionary.json').write_text(dictionary.read_text())
+    (bundle_dir/'dictionary.json').write_text(dictionary.read_text(encoding='utf-8'), encoding='utf-8')
     if selected in estimators:joblib.dump(estimators[selected],bundle_dir/'reranker.joblib')
     encoder.save(str(bundle_dir/'encoder'))
     # No training profiles, applicant IDs or application outcomes enter the bundle.
@@ -201,11 +206,11 @@ def run(root,output,encoder_path,bundle_dir):
               'catalog_ids_sha256':hashlib.sha256('\n'.join(jobs.idVacancy).encode()).hexdigest(),
               'dictionary_sha256':extractor.fingerprint,'encoder_cache_max_difference':encoder_max_difference,
               'versions':{p:version(p) for p in ['numpy','pandas','scipy','scikit-learn','xgboost','sentence-transformers','torch','joblib','streamlit']}}
-    (bundle_dir/'metadata.json').write_text(json.dumps(metadata,indent=2)+'\n')
-    bundle_manifest={str(p.relative_to(bundle_dir)):digest(p) for p in bundle_dir.rglob('*') if p.is_file()}
-    (bundle_dir/'manifest.json').write_text(json.dumps(bundle_manifest,indent=2)+'\n')
+    (bundle_dir/'metadata.json').write_text(json.dumps(metadata,indent=2)+'\n', encoding='utf-8')
+    bundle_manifest={p.relative_to(bundle_dir).as_posix():digest(p) for p in bundle_dir.rglob('*') if p.is_file()}
+    (bundle_dir/'manifest.json').write_text(json.dumps(bundle_manifest,indent=2)+'\n', encoding='utf-8')
     manifest={'python':platform.python_version(),'versions':metadata['versions'],'encoder_revision':encoder_path.name,
-              'input_hashes':{str(p.relative_to(root)):digest(p) for p in [root/'clean/d4_clean.csv',dictionary,*[(root/f'clean/sbert_{x}_{MODEL}.npy') for x in ['jobs','val','test']],sidecars/'cv_skills.jsonl',sidecars/'vacancy_skills.jsonl']},
+              'input_hashes':{p.relative_to(root).as_posix():digest(p) for p in [root/'clean/d4_clean.csv',dictionary,*[(root/f'clean/sbert_{x}_{MODEL}.npy') for x in ['jobs','val','test']],sidecars/'cv_skills.jsonl',sidecars/'vacancy_skills.jsonl']},
               'split_hashes':{name:hashlib.sha256('\n'.join(ids[sl]).encode()).hexdigest() for name,sl in portions.items()},
               'source_hashes':{'recommender/'+p.name:digest(p) for p in Path(__file__).resolve().parent.glob('*.py')},
               'encoder_cache_max_difference':encoder_max_difference,'train_examples':len(y),'train_positive_rows':int(y.sum()),
@@ -216,7 +221,7 @@ def run(root,output,encoder_path,bundle_dir):
                              'Invitation-group labels and sampled weak negatives do not establish true job relevance or calibrated probabilities.',
                              'M9 evidence uses first raw snapshots; baseline cleaning is outcome-dependent. No causal isolation or temporal guarantee.',
                              'Dictionary human review remains pending.']}
-    (output/'run_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    (output/'run_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n', encoding='utf-8')
     print(json.dumps(selection,indent=2),flush=True)
     print(pd.read_csv(output/'metrics_grouped.csv').to_string(index=False),flush=True)
 

@@ -25,7 +25,7 @@ def load_hf_token(root=ROOT):
     if not os.environ.get('HF_TOKEN'):
         file = Path(root) / '.hf_token'
         if file.is_file():
-            token = file.read_text().strip()
+            token = file.read_text(encoding='utf-8').strip()
             if token:
                 os.environ['HF_TOKEN'] = token
 
@@ -44,7 +44,7 @@ def check_bundle(path=None, deep=False):
             '`python -m recommender.pipeline run --run-dir artifacts/runs/run-01`. '
             'See docs/PROJECT_HANDBOOK.md. Starting Streamlit does not train a model.')
     try:
-        manifest = json.loads(manifest_path.read_text())
+        manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
         if not isinstance(manifest, dict) or not REQUIRED.issubset(manifest):
             raise ValueError('Manifest is missing required model files')
         for relative, expected in manifest.items():
@@ -56,7 +56,7 @@ def check_bundle(path=None, deep=False):
                     actual = hashlib.file_digest(stream, 'sha256').hexdigest()
                 if actual != expected:
                     raise ValueError(f'Model artifact integrity check failed: {relative}')
-        metadata = json.loads((bundle / 'metadata.json').read_text())
+        metadata = json.loads((bundle / 'metadata.json').read_text(encoding='utf-8'))
         if metadata.get('kind') == 'learned' and 'reranker.joblib' not in manifest:
             raise ValueError('Learned model bundle lacks reranker.joblib')
     except (json.JSONDecodeError, TypeError) as error:

@@ -16,7 +16,7 @@ from .core import candidates,rerank,profile,online_skill_vector,FEATURE_NAMES
 class Recommender:
     def __init__(self,bundle):
         self.bundle=check_bundle(bundle, deep=True)
-        self.meta=json.loads((self.bundle/'metadata.json').read_text())
+        self.meta=json.loads((self.bundle/'metadata.json').read_text(encoding='utf-8'))
         if self.meta['format_version']!=1 or self.meta['features']!=FEATURE_NAMES:raise ValueError('Unsupported bundle contract')
         self.catalog=pd.read_csv(self.bundle/'catalog.csv',keep_default_na=False)
         ordered_hash=hashlib.sha256('\n'.join(self.catalog.idVacancy).encode()).hexdigest()

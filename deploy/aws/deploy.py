@@ -9,6 +9,8 @@ Fill in `.env.aws` (copy of `.env.aws.example`), then use the make targets:
     make aws-versions    versions stored in S3, current and previous marked
     make aws-status      server state, version and health
     make aws-logs        recent application log lines
+    make aws-allow CIDR=203.0.113.7/32   let another network open the app (CIDR=me for your current IP)
+    make aws-revoke CIDR=203.0.113.7/32  remove that access again
     make aws-destroy     delete the stack and uploaded files
 
 Credentials come only from `.env.aws` or the normal AWS credential chain and are never printed.
@@ -44,7 +46,7 @@ def load_env(path):
     """Read KEY=VALUE lines; empty values are skipped so they never mask real settings."""
     values={}
     if path.is_file():
-        for line in path.read_text().splitlines():
+        for line in path.read_text(encoding='utf-8').splitlines():
             line=line.strip()
             if not line or line.startswith('#') or '=' not in line:continue
             key,value=line.split('=',1);value=value.strip().strip('"').strip("'")
@@ -93,11 +95,11 @@ def allowlist(root):
     from recommender.translation import check_translation
     check_translation(root/'artifacts/translation',deep=True)
     allowed=['Dockerfile.deploy','.dockerignore','requirements-app.txt','requirements-app.lock.txt','app.py','.streamlit/config.toml']+HOST_FILES
-    allowed.extend(str(p.relative_to(root)) for p in (root/'docker').glob('*.sh'))
+    allowed.extend(p.relative_to(root).as_posix() for p in (root/'docker').glob('*.sh'))
     for directory in ['recommender','m9_skills']:
-        allowed.extend(str(p.relative_to(root)) for p in (root/directory).glob('*.py'))
-    allowed.extend(str(p.relative_to(root)) for p in (root/'artifacts/deployment').rglob('*') if p.is_file())
-    allowed.extend(str(p.relative_to(root)) for p in (root/'artifacts/translation').rglob('*') if p.is_file() and '.cache' not in p.parts)
+        allowed.extend(p.relative_to(root).as_posix() for p in (root/directory).glob('*.py'))
+    allowed.extend(p.relative_to(root).as_posix() for p in (root/'artifacts/deployment').rglob('*') if p.is_file())
+    allowed.extend(p.relative_to(root).as_posix() for p in (root/'artifacts/translation').rglob('*') if p.is_file() and '.cache' not in p.parts)
     missing=[rel for rel in allowed if not (root/rel).is_file()]
     if missing:raise DeployError('Files needed for the server are missing: '+', '.join(missing[:5]))
     blocked=[rel for rel in allowed if forbidden(rel)]
@@ -144,7 +146,7 @@ class S3Stream:
 def stream_package(root,allowed,s3,bucket,key):
     stream=S3Stream(s3,bucket,key)
     try:
-        with tarfile.open(fileobj=stream,mode='w|gz',compresslevel=1) as archive:
+        with tarfile.open(fileobj=stream,mode='w|gz',compresslevel=1, encoding='utf-8') as archive:
             for rel in allowed:archive.add(root/rel,arcname=rel,recursive=False)
         return stream.finish()
     except BaseException:
@@ -242,12 +244,12 @@ class Deployment:
         return (f'http://{ip}:8501',f'http://{ip}:8501/_stcore/health') if ip else (None,None)
 
     def read_status(self):
-        try:return json.loads(self.status_path.read_text())
+        try:return json.loads(self.status_path.read_text(encoding='utf-8'))
         except (OSError,ValueError):return {}
 
     def write_status(self,status):
         self.status_path.parent.mkdir(exist_ok=True)
-        self.status_path.write_text(json.dumps(status,indent=2)+'\n')
+        self.status_path.write_text(json.dumps(status,indent=2)+'\n', encoding='utf-8')
 
     def record(self,status,version,commit,action,instance=None):
         now=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
@@ -410,7 +412,7 @@ bash "$DIR/deploy/aws/install-host.sh" '{v}' '{c}'
         meta=self.put_version(version,commit,key,sha,self.size)
         params={'ArtifactBucket':self.bucket,'ArtifactKey':key,'ArtifactSha256':sha,'ClientCidr':cidr,'InstanceType':self.a.instance_type,
                 'ExistingInstanceProfile':self.a.instance_profile,'ReleaseVersion':version,'GitCommit':safe('commit',commit)}
-        cfn.create_stack(StackName=self.stack,TemplateBody=(Path(__file__).parent/'ec2-stack.json').read_text(),
+        cfn.create_stack(StackName=self.stack,TemplateBody=(Path(__file__).parent/'ec2-stack.json').read_text(encoding='utf-8'),
                          Parameters=[{'ParameterKey':k,'ParameterValue':v} for k,v in params.items()],
                          Capabilities=['CAPABILITY_IAM'],Tags=[{'Key':'Project','Value':'JobRecommendation'}],OnFailure='ROLLBACK')
         print('Stack submitted. Creating the server (about 3 minutes) ...',flush=True)
@@ -523,6 +525,29 @@ bash "$DIR/deploy/aws/install-host.sh" '{v}' '{c}'
         else:print('App: no public address (server not running)')
         print(f'Estimated cost while running: ${HOURLY_USD.get(instance.get("InstanceType",""),0):.4f}/hour for the server')
 
+    def access(self,cidr,allow):
+        """Add or remove one address range on the app port of the running stack (no redeploy)."""
+        from botocore.exceptions import ClientError
+        status,_,_=self.stack_info()
+        if status is None:raise DeployError(f'Stack {self.stack} does not exist. Run  make aws-deploy  first.')
+        group=self.client('cloudformation').describe_stack_resource(StackName=self.stack,LogicalResourceId='SecurityGroup')['StackResourceDetail']['PhysicalResourceId']
+        ec2=self.client('ec2')
+        rule=[{'IpProtocol':'tcp','FromPort':8501,'ToPort':8501,'IpRanges':[{'CidrIp':cidr,**({'Description':'added with make aws-allow'} if allow else {})}]}]
+        try:
+            if allow:ec2.authorize_security_group_ingress(GroupId=group,IpPermissions=rule)
+            else:ec2.revoke_security_group_ingress(GroupId=group,IpPermissions=rule)
+            print(('Allowed ' if allow else 'Removed ')+cidr+' on port 8501.')
+        except ClientError as error:
+            code=error.response['Error']['Code']
+            if code=='InvalidPermission.Duplicate':print(cidr+' was already allowed.')
+            elif code=='InvalidPermission.NotFound':print(cidr+' was not in the allowed list.')
+            else:raise
+        ranges=[r['CidrIp'] for p in ec2.describe_security_groups(GroupIds=[group])['SecurityGroups'][0].get('IpPermissions',[])
+                if p.get('FromPort')==8501 for r in p.get('IpRanges',[])]
+        print('Allowed to open the app now: '+(', '.join(ranges) or 'nobody'))
+        if '0.0.0.0/0' in ranges:
+            print('WARNING: the app is open to the whole internet over plain HTTP. Remove it after the presentation:  make aws-revoke CIDR=0.0.0.0/0')
+
     def logs(self,minutes):
         from botocore.exceptions import ClientError
         group=f'/job-recommender/{self.stack}/app'
@@ -577,6 +602,8 @@ def main(argv=None):
     action.add_argument('--versions',action='store_true',help='List stored versions')
     action.add_argument('--status',action='store_true',help='Server state, version and health')
     action.add_argument('--logs',action='store_true',help='Recent application logs');p.add_argument('--minutes',type=int,default=30)
+    action.add_argument('--allow',metavar='CIDR',help='Let this address range open the app ("me" = your current IP)')
+    action.add_argument('--revoke',metavar='CIDR',help='Remove that address range again')
     action.add_argument('--destroy',action='store_true',help='Delete the stack and stored files')
     a=p.parse_args(argv)
     root=a.root.expanduser()
@@ -584,7 +611,7 @@ def main(argv=None):
     root=root.resolve();out=root/'artifacts/ec2-deployment.tar.gz'
     env_path=(a.env_file.expanduser() if a.env_file else root/'.env.aws')
     env=load_env(env_path)
-    touches_aws=any([a.apply,a.update,a.rollback,a.versions,a.status,a.logs,a.destroy])
+    touches_aws=any([a.apply,a.update,a.rollback,a.versions,a.status,a.logs,a.destroy,a.allow,a.revoke])
     unfilled=[k for k,v in env.items() if v.startswith('PASTE_')]
     if unfilled and touches_aws:
         raise DeployError(f'{env_path.name} still has placeholder values: '+', '.join(unfilled)+'. Replace them with your own values.')
@@ -593,7 +620,7 @@ def main(argv=None):
     if a.config:
         config_path=a.config.expanduser()
         if not config_path.is_absolute():config_path=ROOT/config_path
-        config=json.loads(config_path.read_text())
+        config=json.loads(config_path.read_text(encoding='utf-8'))
         for key in ['region','bucket','allowed_cidr','stack_name','instance_type','profile']:
             if getattr(a,key) is None:setattr(a,key,config.get(key) or None)
     a.region=a.region or env.get('AWS_DEFAULT_REGION') or os.environ.get('AWS_DEFAULT_REGION') or os.environ.get('AWS_REGION')
@@ -614,6 +641,12 @@ def main(argv=None):
     if a.status:return d.connect().status()
     if a.logs:return d.connect().logs(a.minutes)
     if a.destroy:return d.connect().destroy()
+    if a.allow or a.revoke:
+        value=a.allow or a.revoke
+        try:cidr=my_cidr() if value=='me' else str(ipaddress.ip_network(value,strict=False))
+        except ValueError:p.error(f'Not an IPv4 address range: {value} (example: 203.0.113.7/32, or 0.0.0.0/0 for everyone)')
+        if ':' in cidr:p.error('Use an IPv4 address range')
+        return d.connect().access(cidr,allow=bool(a.allow))
     if a.rollback:return d.connect().rollback(None if a.rollback=='previous' else safe('version',a.rollback))
     commit=git_info(root)
     if a.update:
@@ -630,7 +663,7 @@ def main(argv=None):
                                 'note':f'{a.instance_type} ${hourly}/h + {EBS_GB} GB gp3 disk; on-demand us-east-1 prices, excludes data transfer'},
           'log_retention_days':int(env.get('LOG_RETENTION_DAYS','14')),'apply':a.apply}
     (root/'artifacts').mkdir(exist_ok=True)
-    (root/'artifacts/ec2-plan.json').write_text(json.dumps(plan,indent=2)+'\n')
+    (root/'artifacts/ec2-plan.json').write_text(json.dumps(plan,indent=2)+'\n', encoding='utf-8')
     print(json.dumps(plan,indent=2))
     if '0.0.0.0/0' in cidr:print('WARNING: ALLOWED_CIDR opens the app to the whole internet over plain HTTP. See the HTTPS option in the handbook.')
     if not a.apply:

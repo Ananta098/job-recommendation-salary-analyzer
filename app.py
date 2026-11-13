@@ -216,19 +216,17 @@ if search:
         responsibilities = list(s['responsibilities']) + split_list(s['resp_other'])
         extra_skills = split_list(s['skills_other'])
         notes = s['notes'].strip()
-        if extra_skills:
-            notes = (notes + ' ' if notes else '') + 'Other skills: ' + ', '.join(extra_skills) + '.'
         region, region_note = (resolve_region(s['region_other']) if s['region'] == OTHER else (s['region'], None))
         with right:
             with st.spinner('Translating your profile and finding matching vacancies…'):
                 title, history, qualification = build_profile(
-                    s['role'], s['custom_role'], experience, education,
-                    responsibilities, s['skills'], notes)
-                ru_title, ru_history, ru_education, _ = english.profile(title, history, qualification, '')
-                # Preserve dictionary aliases instead of translating skill names approximately.
-                ru_skills = '; '.join(available_skills[sid]['canonical'] for sid in s['skills'])
-                if ru_skills:
-                    ru_history += ' ' + ru_skills
+                    s['role'], s['custom_role'], experience, education, responsibilities, notes)
+                ru_title, ru_history, ru_education, ru_typed = english.profile(
+                    title, history, qualification, ', '.join(extra_skills))
+                # Skills enter the model once, as cv_skills, exactly as in the evaluated data.
+                # Listed skills keep their Russian dictionary names; typed skills are translated.
+                ru_skills = '; '.join([available_skills[sid]['canonical'] for sid in s['skills']]
+                                      + ([ru_typed] if ru_typed.strip() else []))
                 result, info = model.recommend(ru_title, ru_history, ru_education, ru_skills,
                                                region, limit, s['group_titles'])
             with st.spinner('Preparing your results in English…'):

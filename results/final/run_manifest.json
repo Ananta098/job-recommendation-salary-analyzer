@@ -27,14 +27,19 @@
     "test": "8ec398545110b8563c7fdf01542a33647f1647719aaa3f0dd0e2c8abd2f027ee"
   },
   "source_hashes": {
-    "recommender/analysis.py": "b237336bf9d62571947b7d0d9377f3c96200237c59b9fc28c10ee886bf1344f8",
-    "recommender/serving.py": "43c57a8bf7da52cc1ed07eef1973dee495668e9fd72489396fbd083cfe13d511",
+    "recommender/bundle.py": "529370f9a1039b23970ac126885ce283db81603c3b55433aaed09b3b8b7063af",
+    "recommender/analysis.py": "f534f1cf63623facfeedbade04242ba627956186e08e588e6a7811f5914f858d",
+    "recommender/serving.py": "15158e7d00ffb34b3e062c34bd2e3c5cadab0246522a29ce0e271db0828fc0e7",
     "recommender/__init__.py": "7880b29eb072d267d3ebb86473f4117420f37de0f94dd739c4ad4d97bba37532",
     "recommender/core.py": "fc4075f326d8921de9d68e80974078ea93738773cf1a7df4c174329c2800526c",
     "recommender/shared.py": "bce3615a9905bbba3ec0a0a6f468e693109ce024c5c7a2288e25ef7d52a740da",
-    "recommender/experiment.py": "f88cf990ed1a224896a978192971fc5a8efa38de859618b432c95e34a53562ca",
-    "recommender/pipeline.py": "8c95c7a92da7ef2f3411b405080ac104a70a5337e56442675a30dcc63214ec55",
-    "recommender/cleaning.py": "62f93f4beb8ce5f7e57329775aabb3b778e1d87c63abdb28aa0ffc11813a0c5a"
+    "recommender/experiment.py": "b7694735e3be8c703b2705f6ad715f241abbbf2292999bab04a60e8587b7e7bf",
+    "recommender/pipeline.py": "5ebcf76c69290d7dc8133835e8b17ddc6f700e8f00edcc4a37167a13a3eebd39",
+    "recommender/translation.py": "d0bef40d9773ec77413874cb960b3fb6a96ef3d5ff7749ea997aa27c1126710d",
+    "recommender/profile_form.py": "1b6cbc188f55ddedac1d96558427ff76cd93bf86d5a675017f38b7824755a844",
+    "recommender/terminology.py": "badd874dce17626f84798fb4c937e22c2a92e7a2cbce6db7f49ed906f18e791b",
+    "recommender/cleaning.py": "95f23b1cf26883599745ab9fdf6e26098fa757e597227bc2850947d85a9c12a0",
+    "recommender/smoke.py": "f3548d97272abb2ec063c0b3088189b282b19f44612037a7b58df614c5c41a05"
   },
   "encoder_cache_max_difference": 1.5273690223693848e-07,
   "train_examples": 378794,
@@ -44,8 +49,8 @@
     "Random Forest": "RandomForestClassifier(class_weight='balanced_subsample', max_depth=10,\n                       min_samples_leaf=20, n_estimators=150, n_jobs=4,\n                       random_state=42)",
     "XGBoost": "XGBClassifier(base_score=None, booster=None, callbacks=None,\n              colsample_bylevel=None, colsample_bynode=None,\n              colsample_bytree=0.8, device=None, early_stopping_rounds=None,\n              enable_categorical=True, eval_metric='logloss',\n              feature_types=None, feature_weights=None, gamma=None,\n              grow_policy=None, importance_type=None,\n              interaction_constraints=None, learning_rate=0.05, max_bin=None,\n              max_cat_threshold=None, max_cat_to_onehot=None,\n              max_delta_step=None, max_depth=4, max_leaves=None,\n              min_child_weight=None, missing=nan, monotone_constraints=None,\n              multi_strategy=None, n_estimators=200, n_jobs=4,\n              num_parallel_tree=None, ...)"
   },
-  "total_seconds": 212.43298229202628,
-  "historical_M8_grouped_recall10": 0.466743882157282,
+  "total_seconds": 272.85135875000014,
+  "historical_M8_grouped_recall10": 0.4660311237823711,
   "current_M8_grouped_recall10": 0.4660311237823711,
   "limitations": [
     "Historical test applicants have been examined in earlier project iterations; this is not a newly collected untouched external test.",

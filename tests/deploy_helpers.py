@@ -40,6 +40,7 @@ class FakeAWS:
         self.release_ok = True
         self.denied = set()          # operation names that raise AccessDenied
         self.scripts = []
+        self.allowed = ['203.0.113.10/32']
 
     def _stack(self, status, params):
         return {'StackStatus': status, 'Parameters': [{'ParameterKey': k, 'ParameterValue': v} for k, v in params.items()],
@@ -184,6 +185,25 @@ class Client:
             out = f"{server['current'] or 'none'}\n{server['previous'] or 'none'}\n"
             return {'Status': 'Success', 'StandardOutputContent': out, 'StandardErrorContent': ''}
         return {'Status': 'Success', 'StandardOutputContent': 'log line', 'StandardErrorContent': ''}
+
+    # Security group (presentation access)
+    def _describe_stack_resource(self, StackName, LogicalResourceId):
+        return {'StackResourceDetail': {'PhysicalResourceId': 'sg-0123'}}
+
+    def _authorize_security_group_ingress(self, GroupId, IpPermissions):
+        cidr = IpPermissions[0]['IpRanges'][0]['CidrIp']
+        if cidr in self.fake.allowed:
+            raise ClientError('InvalidPermission.Duplicate')
+        self.fake.allowed.append(cidr)
+
+    def _revoke_security_group_ingress(self, GroupId, IpPermissions):
+        cidr = IpPermissions[0]['IpRanges'][0]['CidrIp']
+        if cidr not in self.fake.allowed:
+            raise ClientError('InvalidPermission.NotFound')
+        self.fake.allowed.remove(cidr)
+
+    def _describe_security_groups(self, GroupIds):
+        return {'SecurityGroups': [{'IpPermissions': [{'FromPort': 8501, 'IpRanges': [{'CidrIp': c} for c in self.fake.allowed]}]}]}
 
     # CloudWatch Logs
     def _filter_log_events(self, **kwargs):

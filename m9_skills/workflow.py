@@ -44,7 +44,7 @@ def mine(raw, output):
     (output/'mining_manifest.json').write_text(json.dumps({'source':str(Path(raw).resolve()),'entities':n,
         'candidate_phrases':len(counts),'scope':'unique vacancy catalog only; no resumes or outcomes',
         'snapshot':'first raw occurrence, independent of outcomes; not a chronological snapshot',
-        'parse_errors':dict(errors)},ensure_ascii=False,indent=2))
+        'parse_errors':dict(errors)},ensure_ascii=False,indent=2), encoding='utf-8')
     return {'vacancies':n,'candidate_phrases':len(counts)}
 
 def extract(raw, output, limit=None, dictionary=None):
@@ -83,7 +83,7 @@ def extract(raw, output, limit=None, dictionary=None):
               'snapshot_policy':'first raw occurrence per entity, independent of labels; no chronological claim',
               'coverage_is_accuracy':False,'esco_verified_skills':sum(s['esco'] is not None for s in engine.dictionary['skills']),
               'human_review_complete':False,'diagnostics':diagnostics}
-    (out/'coverage.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+    (out/'coverage.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2), encoding='utf-8')
     return manifest
 
 def file_hash(path):

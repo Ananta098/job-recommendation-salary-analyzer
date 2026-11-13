@@ -30,7 +30,7 @@ def holm(pvalues):
 
 def run(root, results=None):
     out=project_path(results,root) if results is not None else root/'results/final';per=pd.read_csv(out/'per_applicant.csv',keep_default_na=False)
-    selected=json.loads((out/'selection.json').read_text())['selected_model']
+    selected=json.loads((out/'selection.json').read_text(encoding='utf-8'))['selected_model']
     models=[c.split('|')[0] for c in per if c.endswith('|grouped|Recall@10')]
     rows=[]
     for name in models:
@@ -41,11 +41,22 @@ def run(root, results=None):
             rows.append({'model':name,'reference':'M8','mode':mode,'metric':'Recall@10','applicants':len(per),
                          'mean_difference':float(delta.mean()),'ci95_lower':low,'ci95_upper':high,
                          'paired_permutation_p':p,'improved':int((delta>0).sum()),'worse':int((delta<0).sum())})
+    # Controls get their own Holm families so the published model-versus-M8 family is unchanged.
+    for row in rows:row['family']='region effect (control)' if row['model']=='M8 without region' else 'versus M8'
+    # Region-matched control: "M9 without region" against "M8 without region" (same global retrieval,
+    # no regional priority), so the skill term is not confounded with the region effect.
+    if 'M8 without region' in models and 'M9 without region' in models:
+        for mode in ['grouped','strict']:
+            delta=per[f'M9 without region|{mode}|Recall@10'].to_numpy()-per[f'M8 without region|{mode}|Recall@10'].to_numpy()
+            low,high,p=paired(delta)
+            rows.append({'model':'M9 without region','reference':'M8 without region','mode':mode,'metric':'Recall@10','applicants':len(per),
+                         'mean_difference':float(delta.mean()),'ci95_lower':low,'ci95_upper':high,'paired_permutation_p':p,
+                         'improved':int((delta>0).sum()),'worse':int((delta<0).sum()),'family':'region-matched control'})
     result=pd.DataFrame(rows)
-    # Primary family: grouped Recall@10 comparisons versus M8; strict is a separate family.
-    for mode in ['grouped','strict']:
-        mask=result['mode']==mode
-        result.loc[mask,'holm_adjusted_permutation_p']=holm(result.loc[mask,'paired_permutation_p'])
+    # Primary family: grouped Recall@10 comparisons versus M8; strict is a separate family; the
+    # region-matched control is its own family.
+    for (mode,family),index in result.groupby(['mode','family']).groups.items():
+        result.loc[index,'holm_adjusted_permutation_p']=holm(result.loc[index,'paired_permutation_p'])
     result.to_csv(out/'significance.csv',index=False)
     df=pd.read_csv(root/'clean/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
     df['region']=region_key(df.localityName);cv=df.drop_duplicates('idCv');jobs=df.drop_duplicates('idVacancy').copy();jobs['region']=region_key(jobs.regionName)
@@ -66,10 +77,10 @@ def run(root, results=None):
                              'small_sample':len(part)<20})
     pd.DataFrame(regional).to_csv(out/'metrics_by_region.csv',index=False)
     summary={'primary':'paired permutation test on applicant-level grouped Recall@10 differences versus same-run M8',
-             'paired_bootstrap_resamples':10000,'seed':42,'multiple_comparisons':'Holm adjustment across models within each strict/grouped family',
+             'paired_bootstrap_resamples':10000,'seed':42,'multiple_comparisons':'Holm adjustment within each strict/grouped family of models versus M8; the two controls (M8 without region versus M8, and M9 without region versus M8 without region) are separate families',
              'regional_analysis':'Descriptive; fewer than 20 test applicants flagged. Counts use applicant region for applications and vacancy region for job counts.',
              'selected_model':selected,'limitations':'Observed invitation groups are incomplete relevance labels; historical test set has been inspected previously. No temporal or causal guarantee.'}
-    (out/'analysis_protocol.json').write_text(json.dumps(summary,indent=2)+'\n')
+    (out/'analysis_protocol.json').write_text(json.dumps(summary,indent=2)+'\n', encoding='utf-8')
     print(result.to_string(index=False))
 
 if __name__=='__main__':

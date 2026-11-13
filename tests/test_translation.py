@@ -12,16 +12,16 @@ def test_fixture_translation_passes(translation_dir):
 
 
 def test_tampered_translation_file_fails(translation_dir):
-    (translation_dir / 'ru-en' / 'vocab.json').write_text('changed')
+    (translation_dir / 'ru-en' / 'vocab.json').write_text('changed', encoding='utf-8')
     check_translation(translation_dir, deep=False)
     with pytest.raises(ValueError, match='checksum mismatch: ru-en/vocab.json'):
         check_translation(translation_dir, deep=True)
 
 
 def test_missing_required_translation_file_fails(translation_dir):
-    manifest = json.loads((translation_dir / 'manifest.json').read_text())
+    manifest = json.loads((translation_dir / 'manifest.json').read_text(encoding='utf-8'))
     del manifest['en-ru/model.safetensors']
-    (translation_dir / 'manifest.json').write_text(json.dumps(manifest))
+    (translation_dir / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
     with pytest.raises(ValueError, match='lacks required files'):
         check_translation(translation_dir)
 

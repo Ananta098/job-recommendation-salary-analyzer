@@ -9,8 +9,8 @@ def plot(results, baseline_coverage, expanded_coverage, output):
     import matplotlib.pyplot as plt
     import numpy as np
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
-    reports={name:json.loads((Path(results)/(name+'.json')).read_text()) for name in ('baseline','expanded')}
-    before=json.loads(Path(baseline_coverage).read_text());after=json.loads(Path(expanded_coverage).read_text())
+    reports={name:json.loads((Path(results)/(name+'.json')).read_text(encoding='utf-8')) for name in ('baseline','expanded')}
+    before=json.loads(Path(baseline_coverage).read_text(encoding='utf-8'));after=json.loads(Path(expanded_coverage).read_text(encoding='utf-8'))
     colors=['#7893a9','#008a7e'];names=[f"Original ({reports['baseline']['canonical_skills']} skills)",f"Expanded ({reports['expanded']['canonical_skills']} skills)"]
     plt.rcParams.update({'font.family':'DejaVu Sans','font.size':11,'axes.spines.top':False,'axes.spines.right':False})
     fig,axes=plt.subplots(2,2,figsize=(14,10));fig.subplots_adjust(top=.87,bottom=.14,hspace=.52,wspace=.30)

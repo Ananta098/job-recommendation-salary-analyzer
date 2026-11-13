@@ -26,7 +26,7 @@ def check_translation(path=None, deep=False):
         raise FileNotFoundError(f'English translation assets missing at {root}. Run '
                                 '`python -m recommender.translation prepare` once with Internet access, '
                                 'or restore the complete artifacts/translation folder.')
-    manifest = json.loads((root/'manifest.json').read_text())
+    manifest = json.loads((root/'manifest.json').read_text(encoding='utf-8'))
     required = {'regions.json'}
     for direction in MODELS:
         required.update(f'{direction}/{name}' for name in
@@ -49,7 +49,7 @@ class EnglishAdapter:
         self.root = check_translation(path, deep=True) if verify else translation_path(path)
         self.lock = threading.Lock()
         self.models = {}
-        self.regions = json.loads((self.root/'regions.json').read_text()) if (self.root/'regions.json').exists() else {}
+        self.regions = json.loads((self.root/'regions.json').read_text(encoding='utf-8')) if (self.root/'regions.json').exists() else {}
 
     def _load(self, direction):
         if direction not in self.models:
@@ -156,13 +156,13 @@ def prepare(path=None):
     adapter=EnglishAdapter(root,verify=False)
     catalog=resolve_bundle()/'catalog.csv'
     regions=sorted(pd.read_csv(catalog,usecols=['regionName']).regionName.dropna().unique()) if catalog.exists() else []
-    (root/'regions.json').write_text(json.dumps(adapter.region_labels(regions),ensure_ascii=False,indent=2)+'\n')
-    (root/'provenance.json').write_text(json.dumps({'models':MODELS,'purpose':'English UI adapter; M8 scoring and evaluation unchanged'},indent=2)+'\n')
+    (root/'regions.json').write_text(json.dumps(adapter.region_labels(regions),ensure_ascii=False,indent=2)+'\n', encoding='utf-8')
+    (root/'provenance.json').write_text(json.dumps({'models':MODELS,'purpose':'English UI adapter; M8 scoring and evaluation unchanged'},indent=2)+'\n', encoding='utf-8')
     manifest={}
     for file in sorted(root.rglob('*')):
         if not file.is_file() or '.cache' in file.parts or file.name=='manifest.json':continue
-        with file.open('rb') as stream:manifest[str(file.relative_to(root))]=hashlib.file_digest(stream,'sha256').hexdigest()
-    (root/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+        with file.open('rb') as stream:manifest[file.relative_to(root).as_posix()]=hashlib.file_digest(stream,'sha256').hexdigest()
+    (root/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n', encoding='utf-8')
     check_translation(root,deep=True)
     print('English translation bundle ready:',root,flush=True)
 

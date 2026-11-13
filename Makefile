@@ -9,7 +9,7 @@ RUN := artifacts/runs/run-$(shell date +%Y%m%d-%H%M%S)
 endif
 COMPOSE := docker compose --env-file .env.deploy -f compose.deploy.yaml
 
-.PHONY: dev-tools test lint image-test ci pin-base aws-update aws-rollback aws-versions aws-status aws-logs aws-tools help hf-key venv bundle translation check env perms up down logs local-docker aws-plan aws-deploy aws-destroy
+.PHONY: aws-allow aws-revoke dev-tools test lint image-test ci pin-base aws-update aws-rollback aws-versions aws-status aws-logs aws-tools help hf-key venv bundle translation check env perms up down logs local-docker aws-plan aws-deploy aws-destroy
 
 help:
 	@echo "make hf-key       save your Hugging Face key to .hf_token (git-ignored, optional)"
@@ -27,6 +27,7 @@ help:
 	@echo "make aws-deploy   first deployment to AWS EC2 using the keys in .env.aws"
 	@echo "make aws-update   install a new version on the running server (switched only if healthy)"
 	@echo "make aws-rollback back to the previous version (VERSION=<name> for a specific one)"
+	@echo "make aws-allow CIDR=x.x.x.x/32  let another network open the app (aws-revoke undoes it)"
 	@echo "make aws-versions | aws-status | aws-logs | aws-destroy"
 
 hf-key:
@@ -103,6 +104,15 @@ aws-deploy: .env.aws aws-tools
 
 aws-destroy: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py --destroy
+
+# Presentation access: make aws-allow CIDR=203.0.113.7/32 (or CIDR=me); undo with make aws-revoke CIDR=...
+aws-allow: .env.aws aws-tools
+	@test -n "$(CIDR)" || { echo "Usage: make aws-allow CIDR=203.0.113.7/32   (CIDR=me for your current IP, 0.0.0.0/0 for everyone)"; exit 1; }
+	$(PY) deploy/aws/deploy.py --allow $(CIDR)
+
+aws-revoke: .env.aws aws-tools
+	@test -n "$(CIDR)" || { echo "Usage: make aws-revoke CIDR=203.0.113.7/32"; exit 1; }
+	$(PY) deploy/aws/deploy.py --revoke $(CIDR)
 
 aws-update: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py --update

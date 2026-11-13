@@ -18,8 +18,8 @@ ALLOWED_CIDR=203.0.113.10/32
 def project(tmp_path, monkeypatch):
     root = tmp_path / 'project'
     (root / 'artifacts').mkdir(parents=True)
-    (root / 'app.py').write_text('print("app")\n')
-    (root / '.env.aws').write_text(ENV)
+    (root / 'app.py').write_text('print("app")\n', encoding='utf-8')
+    (root / '.env.aws').write_text(ENV, encoding='utf-8')
     deploy = load_deploy()
     monkeypatch.setattr(deploy, 'allowlist', lambda r: ['app.py'])
     monkeypatch.setattr(deploy, 'wait_for_app', lambda *a, **k: True)
@@ -36,12 +36,12 @@ def run(deploy, root, *args):
 
 
 def status(root):
-    return json.loads((root / 'artifacts' / 'ec2-status.json').read_text())
+    return json.loads((root / 'artifacts' / 'ec2-status.json').read_text(encoding='utf-8'))
 
 
 def test_placeholders_block_every_aws_command(project):
     deploy, root = project
-    (root / '.env.aws').write_text('AWS_ACCESS_KEY_ID=PASTE_YOUR_ACCESS_KEY_ID\nAWS_SECRET_ACCESS_KEY=PASTE_X\n')
+    (root / '.env.aws').write_text('AWS_ACCESS_KEY_ID=PASTE_YOUR_ACCESS_KEY_ID\nAWS_SECRET_ACCESS_KEY=PASTE_X\n', encoding='utf-8')
     for flag in ['--apply', '--update', '--rollback', '--status', '--versions', '--logs', '--destroy']:
         with pytest.raises(SystemExit, match='placeholder'):
             run(deploy, root, flag)
@@ -53,7 +53,7 @@ def test_plan_changes_nothing_and_shows_cost(project, capsys, monkeypatch):
     run(deploy, root)
     out = capsys.readouterr().out
     assert fake.calls == []
-    plan = json.loads((root / 'artifacts' / 'ec2-plan.json').read_text())
+    plan = json.loads((root / 'artifacts' / 'ec2-plan.json').read_text(encoding='utf-8'))
     assert plan['estimated_cost_usd']['per_hour'] > 0.08 and plan['git_commit'] == 'abc1234'
     assert 'fake-secret' not in out and 'ASIAFAKE' not in out and 'fake-session' not in out
 
@@ -204,3 +204,17 @@ def test_cancelled_learner_lab_keys_give_clear_message(project, monkeypatch):
     monkeypatch.setattr(deploy.Deployment, 'stack_info', denied)
     with pytest.raises(SystemExit, match='Learner Lab keys were cancelled'):
         deploy.run_cli(['--root', str(root), '--apply'])
+
+
+def test_presentation_access_can_be_added_and_removed(project, monkeypatch, capsys):
+    deploy, root, fake = deployed(project, monkeypatch)
+    run(deploy, root, '--allow', '198.51.100.0/24')
+    assert '198.51.100.0/24' in fake.allowed
+    run(deploy, root, '--allow', '198.51.100.0/24')
+    run(deploy, root, '--allow', '0.0.0.0/0')
+    run(deploy, root, '--revoke', '0.0.0.0/0')
+    out = capsys.readouterr().out
+    assert 'already allowed' in out and 'whole internet' in out
+    assert fake.allowed == ['203.0.113.10/32', '198.51.100.0/24']
+    with pytest.raises(SystemExit):
+        run(deploy, root, '--allow', 'not-an-ip')

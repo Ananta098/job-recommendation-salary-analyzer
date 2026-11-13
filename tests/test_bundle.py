@@ -19,7 +19,7 @@ def test_fixture_bundle_passes_deep_check(light_bundle):
 
 def test_tampered_file_fails_deep_check(light_bundle, tmp_path):
     bundle = copy(light_bundle, tmp_path)
-    with (bundle / 'catalog.csv').open('a') as stream:
+    with (bundle / 'catalog.csv').open('a', encoding='utf-8') as stream:
         stream.write('tampered,row\n')
     check_bundle(bundle, deep=False)  # shallow check only looks at presence
     with pytest.raises(ValueError, match='integrity check failed: catalog.csv'):
@@ -35,19 +35,19 @@ def test_missing_file_fails(light_bundle, tmp_path):
 
 def test_manifest_cannot_point_outside_bundle(light_bundle, tmp_path):
     bundle = copy(light_bundle, tmp_path)
-    (tmp_path / 'outside.txt').write_text('x')
-    manifest = json.loads((bundle / 'manifest.json').read_text())
+    (tmp_path / 'outside.txt').write_text('x', encoding='utf-8')
+    manifest = json.loads((bundle / 'manifest.json').read_text(encoding='utf-8'))
     manifest['../outside.txt'] = '0' * 64
-    (bundle / 'manifest.json').write_text(json.dumps(manifest))
+    (bundle / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
     with pytest.raises(ValueError, match='unsafe'):
         check_bundle(bundle)
 
 
 def test_manifest_missing_required_entry(light_bundle, tmp_path):
     bundle = copy(light_bundle, tmp_path)
-    manifest = json.loads((bundle / 'manifest.json').read_text())
+    manifest = json.loads((bundle / 'manifest.json').read_text(encoding='utf-8'))
     del manifest['tfidf.joblib']
-    (bundle / 'manifest.json').write_text(json.dumps(manifest))
+    (bundle / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
     with pytest.raises(ValueError, match='missing required'):
         check_bundle(bundle)
 

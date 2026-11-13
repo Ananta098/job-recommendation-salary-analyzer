@@ -134,23 +134,29 @@ Each model ranks all 43,756 vacancies for each of 2,806 test applicants. **Stric
 
 ## Results
 
-| Model | Stage 1 grouped Recall@10 (`results/baselines/`) | Final run grouped Recall@10 (`results/final/`) |
-|---|---|---|
-| Random | 0.003 | - |
-| M0 Popularity | 0.045 | - |
-| M5 TF-IDF text + region | 0.455 | 0.456 |
-| M8 Hybrid + region | **0.467** | **0.466** |
+| Model | Grouped Recall@10 (`results/baselines/`) | Grouped NDCG@10 | Final pipeline run (`results/final/`) |
+|---|---|---|---|
+| Random | 0.0032 | 0.0014 | - |
+| M0 Popularity | 0.0449 | 0.0251 | - |
+| M1 TF-IDF title | 0.1334 | 0.0680 | - |
+| M2 TF-IDF text | 0.1339 | 0.0679 | - |
+| M3 BM25 text | 0.1328 | 0.0712 | - |
+| M4 Popularity + region | 0.1908 | 0.1162 | - |
+| M5 TF-IDF text + region | 0.4558 | 0.3408 | 0.4558 |
+| M6 Sentence-BERT | 0.0709 | 0.0361 | - |
+| M7 Sentence-BERT + region | 0.3652 | 0.2340 | - |
+| M8 Hybrid + region | **0.4660** | 0.3457 | **0.4660** |
 
-The two columns come from different runs (Stage 1 trained on 11,227 applicants; the final run uses 10,227 train, 1,000 development and 2,806 test applicants), so compare each column within itself. The full comparison with the M9 variants and rerankers, paired significance tests and regional counts is in `results/final/`, `docs/final_model_verdict.md` and notebooks 05-07.
+All numbers are on the same 2,806 test applicants. The Stage 1 notebooks and the final pipeline give identical M5 and M8 scores, so the two stages agree. Region priority is the largest single gain (TF-IDF text 0.1339 → 0.4558; Sentence-BERT 0.0709 → 0.3652), and the hybrid M8 adds a further small step over M5 (+0.010, Holm-adjusted p = 0.048 in `results/final/significance.csv`). Strict Recall@10 (exact posting) for M8 is 0.2749. The skill-aware variants, the learned rerankers, the region control (M8 without region), paired significance tests and regional counts are in `results/final/`, `docs/final_model_verdict.md` and notebooks 05-07.
 
 ## Professor feedback: where each point is done
 
 | Feedback | Where |
 |---|---|
-| Focus on job recommendation; salary supplementary only | Recommender and app only; salary kept in `notebooks/archive/` with `datasets/ai_*.csv` |
+| Focus on job recommendation; salary supplementary only | Recommender and app only; salary analysis kept in `notebooks/archive/` with its saved outputs (its data files are not used by the model; source in `datasets/README.md`) |
 | Validate D4 (structure, IDs, labels, balance, categories, missing values, duplicates, label limitations) | Notebook 01, cleaning in notebook 02 |
 | Baseline TF-IDF/BM25, Sentence-BERT, skill-aware improvement, Recall@K and NDCG@K on a train/test split | Notebooks 03-04 (M0-M8); `m9_skills/` and notebooks 06-07 (M9, learned rerankers); metrics at K = 5, 10, 20 |
-| Research question: does skill-aware semantic matching help when terminology differs | `results/final/development_promotion.csv`, `significance.csv`, `docs/final_model_verdict.md`; no challenger beat M8 under the retention rule |
+| Research question: does skill-aware semantic matching help when terminology differs | Overall: `results/final/significance.csv`, `docs/final_model_verdict.md` (no challenger beat M8). Terminology subgroups: notebook 05, last section, and `results/final/terminology_subgroups.csv`: no gain for applicants whose CV shares few words with their invited vacancies, because few of them have recognisable skills |
 
 ## Deploy to AWS
 
@@ -169,6 +175,7 @@ make aws-deploy     # creates the server and prints the app address when it answ
 | `make aws-versions` | Versions stored in S3 (`*` running, `<` previous). |
 | `make aws-status` | Server state, current address, running version and a live health check. |
 | `make aws-logs` | Recent app log lines (CloudWatch, or straight from the server). `MINUTES=60` for more. |
+| `make aws-allow CIDR=…` | Lets another network open the app without redeploying (for example the presentation room's address `/32`, `CIDR=me` for your current IP, `0.0.0.0/0` for everyone). `make aws-revoke CIDR=…` removes it. |
 | `make aws-destroy` | Deletes the server and stored packages. |
 
 Versions are named `<UTC time>-<git commit>`, images are tagged with that name, and the running version shows in the app footer and sidebar. App and startup logs go to CloudWatch (`LOG_RETENTION_DAYS`, default 14); if the account does not allow it, this is skipped with a message and `make aws-logs` reads the server directly. A timer on the server restarts the app after three failed health checks in a row. The app is plain HTTP and only admits your current IP (`ALLOWED_CIDR`); handbook section 5 describes the optional HTTPS route for showing it to others. Learner Lab stops the server at the end of a session: `make aws-update`/`aws-rollback` start it again, and `make aws-status` shows the new address.

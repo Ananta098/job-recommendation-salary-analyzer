@@ -20,13 +20,13 @@ def fake_project(tmp_path, light_bundle):
                 '.streamlit/config.toml', 'docker/entrypoint.sh', 'docker/install-runtime.sh',
                 'recommender/__init__.py', 'recommender/bundle.py', 'm9_skills/extraction.py'] + deploy.HOST_FILES:
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
-        (root / rel).write_text('x')
+        (root / rel).write_text('x', encoding='utf-8')
     for rel, text in SECRETS.items():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
-        (root / rel).write_text(text)
+        (root / rel).write_text(text, encoding='utf-8')
     shutil.copytree(light_bundle, root / 'artifacts' / 'deployment')
     fixtures.build_translation(root / 'artifacts' / 'translation')
-    (root / 'artifacts' / 'ec2-status.json').write_text('{}')
+    (root / 'artifacts' / 'ec2-status.json').write_text('{}', encoding='utf-8')
     return deploy, root
 
 
@@ -63,7 +63,7 @@ def test_forbidden_paths_are_refused_even_if_listed():
 
 def test_tampered_bundle_blocks_packaging(tmp_path, light_bundle):
     deploy, root = fake_project(tmp_path, light_bundle)
-    with (root / 'artifacts' / 'deployment' / 'catalog.csv').open('a') as stream:
+    with (root / 'artifacts' / 'deployment' / 'catalog.csv').open('a', encoding='utf-8') as stream:
         stream.write('x\n')
     with pytest.raises(ValueError, match='integrity'):
         deploy.allowlist(root)
@@ -76,4 +76,4 @@ def test_real_project_allowlist(real_bundle):
     deploy = load_deploy()
     allowed = deploy.allowlist(ROOT)
     assert not [rel for rel in allowed if deploy.forbidden(rel)]
-    assert json.loads((ROOT / 'artifacts' / 'deployment' / 'manifest.json').read_text())
+    assert json.loads((ROOT / 'artifacts' / 'deployment' / 'manifest.json').read_text(encoding='utf-8'))
