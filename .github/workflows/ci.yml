@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - run: pip install -r requirements-dev.txt
       - name: shellcheck
-        run: shellcheck docker/*.sh deploy/preflight.sh deploy/pin-base-image.sh deploy/aws/*.sh
+        run: shellcheck docker/*.sh deploy/pin-base-image.sh deploy/aws/*.sh
       - name: cfn-lint
         run: cfn-lint deploy/aws/ec2-stack.json
       - name: Base image pinned to a digest

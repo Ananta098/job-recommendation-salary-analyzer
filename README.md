@@ -1,232 +1,238 @@
 # Job Recommendation System
 
-HSE D4 resume-to-vacancy recommendation for AT82.01, DSAI, Asian Institute of Technology. Authors: Nawee Pornsiriphanna (st127031) and Ananta Upadhyaya (st127094).
+Course project for AT82.01, Asian Institute of Technology (AIT).
+Authors: Nawee Pornsiriphanna (st127031) and Ananta Upadhyaya (st127094).
 
-Given an applicant's profile, rank the historical Russian vacancies that suit them best. Salary analysis from the proposal stage is kept as supplementary work only (professor feedback); the system does not predict salary.
+Given an applicant's profile (desired job title, CV text, skills, region), the system ranks the vacancies of the HSE D4 dataset and returns the ones that suit the applicant best. We built it from the raw data to a live website: data checks, cleaning, a series of ranking models, a statistical comparison, a Streamlit app, and a deployment on one AWS EC2 server.
 
-**Final model: M8 Hybrid + region** (TF-IDF plus multilingual Sentence-BERT, local region first). Both M9 skill-aware variants and Logistic Regression, Random Forest and XGBoost were evaluated; none passed the conservative development-only promotion check, so M8 is deployed. Start with **[the project handbook](docs/PROJECT_HANDBOOK.md)**, the single run procedure from setup to deployment.
+**Final model: M8 Hybrid + region.** It mixes a TF-IDF text score with a multilingual Sentence-BERT score and puts vacancies in the applicant's own region first. On 2,806 test applicants it reaches a grouped Recall@10 of 0.4660 (`results/final/metrics_grouped.csv`). Skill-aware reranking (M9) and three learned rerankers were also tried; none of them beat M8, so M8 is the model in the app.
 
-## End-to-end flow
+## 1. Problem and dataset
 
-| Step | What happens | Where |
-|---|---|---|
-| 1. Data validation | Structure, IDs, label balance, missing values, duplicates, label limitations | `notebooks/01_check_data.ipynb` |
-| 2. Cleaning | Deduplication, text fields, skills, English titles, evaluation set | `notebooks/02_clean_data.ipynb`, `recommender/cleaning.py` |
-| 3. Baselines | Random, popularity, TF-IDF, BM25 (M0-M5) | `notebooks/03_models.ipynb` |
-| 4. Semantic models | Sentence-BERT and the hybrid M8 | `notebooks/04_sentence_bert.ipynb` |
-| 5. Skill-aware models | Skill extraction, M9 reranking, learned rerankers | `notebooks/06-07`, `m9_skills/` |
-| 6. Evaluation and selection | Recall@K / NDCG@K, paired significance, regions; M8 selected on the development set | `notebooks/05`, `results/final/` |
-| 7. Model export | Checked model bundle for serving | `python -m recommender.pipeline run` |
-| 8. Application | English Streamlit app on the selected model | `app.py` |
-| 9. Deployment | Docker image on one AWS EC2 server | `make aws-deploy` |
+**Dataset.** HSE D4, a Russian resume and vacancy dataset from an HSE hackathon: <https://www.kaggle.com/datasets/darysha/hse-hackathon>. It is not in this repository (about 1 GB); see `datasets/README.md` for where to put it.
 
-```text
-Stage 1  original study (notebooks 01-04)
-  Raw D4 -> validate (01) -> clean (02) -> baselines M0-M5 (03) -> Sentence-BERT M6-M8 (04)
-  writes: clean/, results/baselines/, figures/
+- **What a row is:** one application, that is one resume paired with one vacancy, with the texts of both and whether the employer invited the applicant.
+- **Size** (`figures/D4_summary.csv`): 150,493 rows, 65,714 resumes, 43,756 vacancies. After removing duplicates 93,755 rows remain (`results/cleaning_report.csv`).
+- **Labels:** an invitation is our only sign that a vacancy was relevant. The invitation rate is 13.9%, and 14,033 applicants have at least one invitation; these are the applicants we can evaluate on.
+- **Why we rank the whole catalog:** an applicant has only 2.29 applications on average and a median of 1 (`figures/D4_summary.csv`). Re-ordering one or two applied jobs says nothing, so each model ranks all 43,756 vacancies for each applicant and we check whether the invited ones come out near the top.
+- **Privacy:** gender, age and birthday are never loaded.
 
-Stage 2  final system (one command + notebooks 05-07 + app)
-  Raw D4 -> clean -> embeddings + canonical skills -> model comparison (M8, M9, learned rerankers)
-         -> selection/export -> significance + regional analysis -> review
-         -> Streamlit app -> Docker image -> live on AWS EC2 (make aws-deploy)
-  writes: artifacts/, results/final/
-```
+**Scope change.** The proposal also included salary analysis. Following the professor's feedback the project focuses on job recommendation only. The salary work is kept as supplementary material in `notebooks/archive/` and is not used by the model or the app.
 
-Stage 1 is the study that chose the approach and is fully reproducible from the notebooks. Stage 2 repeats the same cleaning and evaluation protocol in code (`recommender/`, with an added development split), adds the skill-aware experiments, and is the only route that produces the deployable model bundle.
+## 2. End-to-end pipeline
 
-## Run it after cloning
-
-Needs macOS or Linux with Python 3.12, `git` and `make`, an internet connection, and about 15 GB of free disk. The raw dataset and the trained model are not in Git (too large), so the first run rebuilds the model.
-
-```sh
-git clone https://github.com/Ananta098/job-recommendation-salary-analyzer.git
-cd job-recommendation-salary-analyzer
-# 1. Download HSE_dataset(D4).csv (see datasets/README.md) and put it in datasets/
-make venv          # 2. Python environment with every pinned package + Jupyter kernel "Python (jobrec)"
-make hf-key        # 3. optional: Hugging Face key, saved in .hf_token (ignored by Git)
-make bundle        # 4. trains, compares and exports the final model to artifacts/deployment (an hour or more the first time)
-make translation   # 5. downloads the English-interface models to artifacts/translation
-make test          # 6. checks: bundle integrity, a sample recommendation, deploy safety
-source .venv/bin/activate && streamlit run app.py   # 7. the app at http://localhost:8501
-```
-
-To follow the study itself, run `jupyter lab`, pick the **Python (jobrec)** kernel and open `notebooks/01` to `07` in order (01-04 need the dataset; 05-07 read `results/final/`). Optional: `make up` runs the app in Docker, and `make aws-deploy` puts it on AWS (see "Deploy to AWS" below).
-
-## Quick start: run it in Docker on your computer
-
-Needs: Docker Desktop (running), Python 3.12 (`brew install python@3.12`), about 15 GB free disk, and the raw file `HSE_dataset(D4).csv` in `datasets/` (see `datasets/README.md`). Run these from the project folder:
-
-```sh
-make hf-key        # optional: paste your Hugging Face key; saved in .hf_token (ignored by Git)
-make venv          # creates .venv with Python 3.12 and installs the pinned packages
-make bundle        # builds artifacts/deployment (full rebuild on a fresh clone; reuses clean/ when present; skipped if it exists)
-make translation   # one-time download of the English-UI models
-make check         # read-only readiness check; fix any FAIL line
-make up            # builds the image, starts it, waits until healthy
-```
-
-Then open http://127.0.0.1:8501, submit a profile and confirm that recommendations appear. `make down` stops it, `make logs` shows its log, and `make local-docker` runs all the steps above in order. Re-running a step is safe.
-
-If something fails:
-
-| Message | Fix |
-|---|---|
-| `Python 3.12 not found` | `brew install python@3.12` |
-| pip cannot build numpy or pandas | the venv is Python 3.13 or 3.14; `rm -rf .venv .venv-1`, then `make venv` |
-| `Raw dataset missing` | copy `HSE_dataset(D4).csv` into `datasets/` |
-| `Prepared input changed; do a full rebuild` | the saved inputs no longer match: `.venv/bin/python -m recommender.pipeline run --run-dir artifacts/runs/full-01` (hours on CPU), then `cp -R artifacts/runs/full-01/artifacts/deployment artifacts/deployment` |
-| `No space left on device` | free about 15 GB; `pip cache purge`; in Docker Desktop run `docker system prune` |
-| `Docker Desktop is not running` | open Docker Desktop and wait until it reports running |
-
-## Run it step by step
-
-Use the existing model bundle (app only):
-
-```sh
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements-app.txt
-python -m recommender.bundle check --deep
-python -m recommender.translation check --deep
-streamlit run app.py
-```
-
-Rebuild everything from raw D4 (see `datasets/README.md` for the file):
-
-```sh
-python -m pip install -r requirements.txt
-python -m recommender.pipeline run --run-dir artifacts/runs/run-01
-```
-
-Re-run the Stage 1 study (needs `requirements.txt` and the raw D4 file):
-
-| Step | Notebook | Reads | Writes | Time |
+| # | Step | Notebook | Code | Output |
 |---|---|---|---|---|
-| 1 | `01_check_data.ipynb` | `datasets/` | `figures/` | 2 min |
-| 2 | `02_clean_data.ipynb` | `datasets/`, `lookup/` | `clean/d4_clean.csv`, `results/cleaning_report.csv` | 3 min |
-| 3 | `03_models.ipynb` | `clean/d4_clean.csv` | `results/baselines/metrics_*.csv`, `figures/*.png` | 5 min |
-| 4 | `04_sentence_bert.ipynb` | `clean/d4_clean.csv`, `results/baselines/` | `results/baselines/*_all.csv`, `hybrid_weight.csv`, `figures/*.png` | about 16 min on a laptop CPU |
-| 5-7 | `05`, `06`, `07` | `results/final/`, skill outputs, bundle | nothing by default (report views) | seconds |
-| - | `archive/00_salary_analysis_supplementary.ipynb` | `datasets/ai_*.csv` | `figures/E*.png` | - |
+| 1 | Check the raw data: structure, IDs, label balance, missing values, duplicates | `01_check_data.ipynb` | - | `figures/D4_*.png`, `figures/D4_summary.csv` |
+| 2 | Clean: remove duplicates, build CV and vacancy texts, skills, English titles, evaluation set | `02_clean_data.ipynb` | `recommender/cleaning.py` | `clean/d4_clean.csv`, `results/cleaning_report.csv` |
+| 3 | Baseline models M0-M5: popularity, TF-IDF, BM25, region | `03_models.ipynb` | `recommender/core.py`, `shared.py` | `results/baselines/` |
+| 4 | Sentence-BERT models M6-M7 and the hybrid M8 | `04_sentence_bert.ipynb` | `recommender/core.py` | `clean/sbert_*.npy`, `results/baselines/*_all.csv` |
+| 5 | Skill extraction and normalisation for M9 | `06_pull_and_normalize_skills.ipynb` | `m9_skills/` | `m9_skills/outputs/`, `m9_skills/validation/` |
+| 6 | Compare M8, M9 and the learned rerankers; select on the development set; export the model | `07_rerankers_and_final_model.ipynb` | `recommender/experiment.py` | `results/final/metrics_*.csv`, `selection.json`, `artifacts/deployment/` |
+| 7 | Significance tests, regions, research question | `05_significance_and_regions.ipynb` | `recommender/analysis.py`, `terminology.py` | `results/final/significance.csv`, `terminology_subgroups.csv` |
+| 8 | Web app with an English interface | - | `app.py`, `recommender/serving.py`, `translation.py`, `profile_form.py` | the app on port 8501 |
+| 9 | Deployment on AWS EC2 | - | `Dockerfile.deploy`, `deploy/aws/`, `Makefile` | a public address |
 
-Notebook 04 asks once for a Hugging Face key and can save it in `.hf_token` (ignored by Git). It uses an NVIDIA GPU or an Apple GPU automatically when one is available.
+Steps 2 and 4 to 7 are also run in order by one command, `python -m recommender.pipeline run` (this is what `make bundle` calls). The notebooks show the same work with explanations and saved outputs.
 
-Notebook 01 only documents that the data is usable. Notebook 04 saves the Sentence-BERT embeddings in `clean/` (the original three caches are included), so a second run is fast, and also runs on Google Colab (steps at the top of the notebook).
+## 3. Methodology
 
-## Models compared
+**Split.** Applicants, not rows, are split, so no applicant appears in two parts: 10,227 for fitting, 1,000 for development and 2,806 for testing, seed 42 (`results/final/selection.json`).
+
+**Models.**
 
 | Model | Idea |
 |---|---|
 | Random | lower bound |
-| M0 Popularity | most invited jobs, same for everyone |
-| M1 TF-IDF title | desired title vs job title |
-| M2 TF-IDF text | title + resume text vs title + job text |
-| M3 BM25 text | M2 text with BM25 weighting |
-| M4 Popularity + region | most invited jobs in the applicant's region, no resume |
+| M0 Popularity | the most invited jobs, the same for everyone |
+| M1 TF-IDF title | desired title against job title |
+| M2 TF-IDF text | title + CV text against title + job text |
+| M3 BM25 text | the M2 texts with BM25 weighting |
+| M4 Popularity + region | the most invited jobs in the applicant's region |
 | M5 TF-IDF text + region | M2 with jobs in the applicant's region first |
-| M6 Sentence-BERT | multilingual embeddings, matches on meaning instead of words |
+| M6 Sentence-BERT | multilingual sentence embeddings, matches on meaning |
 | M7 Sentence-BERT + region | M6 with jobs in the applicant's region first |
-| M8 Hybrid + region | mix of M5 and M7 scores, weight chosen on training applicants |
-| M9 (two variants) | M8 plus explicit canonical-skill evidence, with and without region |
-| Logistic Regression, Random Forest, XGBoost | learned rerankers over the same candidate features |
+| **M8 Hybrid + region** | equal mix of the M5 and M7 scores (weight 0.5, `results/baselines/hybrid_weight.csv`) |
+| M9 without region / M9 + region | M8's scores plus a bonus for skills that the CV and the vacancy share |
+| Logistic Regression, Random Forest, XGBoost | learned rerankers over the same candidates, using ten features such as the TF-IDF and semantic scores, skill coverage and same region |
+| M8 without region | control: M8 with the region rule switched off |
 
-Each model ranks all 43,756 vacancies for each of 2,806 test applicants. **Strict** scoring needs the exact posting; **grouped** accepts any posting with the same title in the same region, because many postings are identical copies.
+**Metrics.** Recall@K, Precision@K and NDCG@K at K = 5, 10 and 20. The main metric is grouped Recall@10.
 
-## Results
+- **Strict:** the exact invited posting must be in the top K.
+- **Grouped:** any posting with the same title in the same region counts, because many postings are copies of each other.
 
-| Model | Grouped Recall@10 (`results/baselines/`) | Grouped NDCG@10 | Final pipeline run (`results/final/`) |
-|---|---|---|---|
-| Random | 0.0032 | 0.0014 | - |
-| M0 Popularity | 0.0449 | 0.0251 | - |
-| M1 TF-IDF title | 0.1334 | 0.0680 | - |
-| M2 TF-IDF text | 0.1339 | 0.0679 | - |
-| M3 BM25 text | 0.1328 | 0.0712 | - |
-| M4 Popularity + region | 0.1908 | 0.1162 | - |
-| M5 TF-IDF text + region | 0.4558 | 0.3408 | 0.4558 |
-| M6 Sentence-BERT | 0.0709 | 0.0361 | - |
-| M7 Sentence-BERT + region | 0.3652 | 0.2340 | - |
-| M8 Hybrid + region | **0.4660** | 0.3457 | **0.4660** |
+**Model selection.** The choice is made on the development set only. A challenger replaces M8 only if the lower bound of its paired bootstrap interval for the gain in grouped Recall@10 is above zero after correcting for the five comparisons (10,000 resamples, `results/final/selection.json`). This rule is conservative on purpose: we keep the simpler model unless there is clear evidence. No challenger passed (`results/final/development_promotion.csv`).
 
-All numbers are on the same 2,806 test applicants. The Stage 1 notebooks and the final pipeline give identical M5 and M8 scores, so the two stages agree. Region priority is the largest single gain (TF-IDF text 0.1339 → 0.4558; Sentence-BERT 0.0709 → 0.3652), and the hybrid M8 adds a further small step over M5 (+0.010, Holm-adjusted p = 0.048 in `results/final/significance.csv`). Strict Recall@10 (exact posting) for M8 is 0.2749. The skill-aware variants, the learned rerankers, the region control (M8 without region), paired significance tests and regional counts are in `results/final/`, `docs/final_model_verdict.md` and notebooks 05-07.
+**Significance on the test set.** One paired permutation test per comparison with Holm correction, plus paired bootstrap 95% intervals (`results/final/analysis_protocol.json`).
 
-## Professor feedback: where each point is done
+## 4. Results
 
-| Feedback | Where |
-|---|---|
-| Focus on job recommendation; salary supplementary only | Recommender and app only; salary analysis kept in `notebooks/archive/` with its saved outputs (its data files are not used by the model; source in `datasets/README.md`) |
-| Validate D4 (structure, IDs, labels, balance, categories, missing values, duplicates, label limitations) | Notebook 01, cleaning in notebook 02 |
-| Baseline TF-IDF/BM25, Sentence-BERT, skill-aware improvement, Recall@K and NDCG@K on a train/test split | Notebooks 03-04 (M0-M8); `m9_skills/` and notebooks 06-07 (M9, learned rerankers); metrics at K = 5, 10, 20 |
-| Research question: does skill-aware semantic matching help when terminology differs | Overall: `results/final/significance.csv`, `docs/final_model_verdict.md` (no challenger beat M8). Terminology subgroups: notebook 05, last section, and `results/final/terminology_subgroups.csv`: no gain for applicants whose CV shares few words with their invited vacancies, because few of them have recognisable skills |
+All numbers are for the same 2,806 test applicants and 43,756 vacancies.
 
-## Deploy to AWS
+| Model | Grouped Recall@10 | Grouped NDCG@10 | Source |
+|---|---:|---:|---|
+| Random | 0.0032 | 0.0014 | baselines |
+| M0 Popularity | 0.0449 | 0.0251 | baselines |
+| M1 TF-IDF title | 0.1334 | 0.0680 | baselines |
+| M2 TF-IDF text | 0.1339 | 0.0679 | baselines |
+| M3 BM25 text | 0.1328 | 0.0712 | baselines |
+| M4 Popularity + region | 0.1908 | 0.1162 | baselines |
+| M5 TF-IDF text + region | 0.4558 | 0.3408 | baselines and final |
+| M6 Sentence-BERT | 0.0709 | 0.0361 | baselines |
+| M7 Sentence-BERT + region | 0.3652 | 0.2340 | baselines |
+| **M8 Hybrid + region** | **0.4660** | 0.3457 | baselines and final |
+| M8 without region (control) | 0.1334 | 0.0674 | final |
+| M9 without region | 0.1312 | 0.0668 | final |
+| M9 + region | 0.4641 | 0.3441 | final |
+| Logistic Regression | 0.4656 | 0.3512 | final |
+| Random Forest | 0.4650 | 0.3506 | final |
+| XGBoost | 0.4660 | 0.3494 | final |
 
-The only file you fill in is `.env.aws` (ignored by Git, never copied into the image or the package):
+Sources: "baselines" is `results/baselines/metrics_grouped_all.csv` (notebooks 03 and 04) and "final" is `results/final/metrics_grouped.csv` (the pipeline). M5 and M8 appear in both files with identical scores. XGBoost is 0.46597 and M8 is 0.46603; they round to the same value.
 
-```sh
-make aws-deploy     # first run creates .env.aws and stops: paste the three Learner Lab key lines into it
-make aws-deploy     # creates the server and prints the app address when it answers (15-20 minutes)
-```
+Strict Recall@10 for M8 is 0.2749 (`results/final/metrics_strict.csv`).
+
+## 5. Findings
+
+1. **Region priority is the largest single gain.** Putting the applicant's region first lifts TF-IDF text from 0.1339 to 0.4558 and Sentence-BERT from 0.0709 to 0.3652. The control confirms it: M8 without region drops to 0.1334, a difference of −0.333 (`results/final/significance.csv`, family "region effect (control)"). 82.6% of applications are in the applicant's own region (`results/cleaning_report.csv`).
+2. **The hybrid adds a small but significant gain.** M8 is 0.010 above M5 in grouped Recall@10, with a 95% interval of 0.003 to 0.018 and a Holm-adjusted p of 0.047 (`results/final/significance.csv`).
+3. **Skill-aware reranking and learned rerankers do not beat M8.** M9 + region is 0.002 below M8 and the interval includes zero. The three learned rerankers are within 0.001 of M8 on grouped Recall@10. Logistic Regression is better on strict Recall@10 (+0.009, Holm-adjusted p 0.040), but it did not pass the development rule on the main metric, so it was not selected.
+4. **Research question: does skill-aware matching help when the CV and the vacancy use different words? No.** For the third of applicants with the lowest vocabulary overlap, M8 scores 0.1686 and M9 + region 0.1676 (`results/final/terminology_subgroups.csv`). The reason is coverage: only 12.3% of these applicants have a skill that our dictionary recognises, so the skill score rarely changes the ranking. Overlap itself matters a lot: M8 scores 0.1686 in the low-overlap third and 0.7062 in the high-overlap third.
+5. **The skill term adds nothing with or without region.** Compared with its matching control (M8 without region), M9 without region differs by −0.002, with an interval of −0.006 to 0.002 (`results/final/significance.csv`, family "region-matched control").
+
+More detail on each model is in `docs/final_model_verdict.md`.
+
+## 6. Limitations
+
+- **Labels are invitations.** A vacancy without an invitation is not proven irrelevant, and we can only evaluate applicants who received at least one invitation.
+- **The test set was looked at more than once.** The same test applicants were used across project iterations, so the results are exploratory. There is no leakage between training and test applicants.
+- **Small skill dictionary.** Dictionary v2 has 47 skills and has not been reviewed by a human expert. Missing skill evidence means "unknown", not "no skill".
+- **No temporal split.** The data is not split by date, so we do not claim the model works on future vacancies.
+- **The English interface is not evaluated.** The published scores use the original Russian profiles. English profiles are machine-translated before ranking, and translation errors can change the results.
+- **Demo-grade deployment.** Plain HTTP, one server, and AWS Academy Learner Lab sessions that stop the server when the lab ends.
+
+## 7. How to run
+
+**Prerequisites:** macOS or Linux, Python 3.12, `git`, `make`, an internet connection and about 15 GB of free disk.
+
+1. Clone the repository.
+   ```sh
+   git clone https://github.com/Ananta098/job-recommendation-salary-analyzer.git
+   cd job-recommendation-salary-analyzer
+   ```
+2. Download the dataset from the Kaggle link above and save it as `datasets/HSE_dataset(D4).csv`.
+3. Create the environment.
+   ```sh
+   make venv
+   ```
+4. Build the model. This cleans the data, encodes all vacancies, compares the models and exports the final one to `artifacts/deployment/`. On a fresh clone it takes an hour or more on a laptop CPU; later runs are skipped if the bundle exists.
+   ```sh
+   make bundle
+   ```
+5. Download the two translation models for the English interface.
+   ```sh
+   make translation
+   ```
+6. Start the app and open <http://localhost:8501>.
+   ```sh
+   make run
+   ```
+
+The model files and the dataset are too large for Git, which is why steps 2 to 5 are needed once.
+
+**Reading the notebooks.** Start Jupyter from the environment, choose the kernel "Python (jobrec)" and open them in this order: 01 (data check), 02 (cleaning), 03 (baselines), 04 (Sentence-BERT and hybrid), 06 (skills), 07 (rerankers and final model), 05 (significance, regions and the research question). All notebooks keep their saved outputs, so they can also be read on GitHub without running anything. Notebooks 01 to 04 need the raw dataset to re-run; 05 to 07 read the files in `results/final/`. Notebook 04 can use a Hugging Face key (`make hf-key`, optional).
+
+## 8. Deploy to AWS
+
+The app runs as a Docker container on one EC2 server (t3.large), created with CloudFormation. Build the bundle first (section 7, steps 2 to 5), because the model files are not in Git and are uploaded from your computer.
+
+1. Start the AWS Academy Learner Lab and wait for the green dot.
+2. Run the deploy command once. It creates `.env.aws` and stops.
+   ```sh
+   make aws-deploy
+   ```
+3. Open `.env.aws` and paste the three key lines from the lab page (AWS Details > AWS CLI): `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`. This file is ignored by Git and is never uploaded.
+4. Run the command again. It uploads the app, creates the server and prints the address after 15 to 20 minutes.
+   ```sh
+   make aws-deploy
+   ```
+5. Open the printed address (`http://<address>:8501`) and run a search.
+
+Useful commands afterwards:
 
 | Command | What it does |
 |---|---|
-| `make aws-plan` | Dry run: verifies the bundle, prints the plan, version and estimated hourly cost. Changes nothing. |
-| `make aws-update` | Uploads a new version and installs it on the running server. The new image is built (or reused), smoke-tested and health-checked next to the live app; the switch only happens if it is healthy, and a failed switch restores the previous version. |
-| `make aws-rollback` | Returns to the previous version and confirms the health URL answers. `make aws-rollback VERSION=<name>` picks a specific one. |
-| `make aws-versions` | Versions stored in S3 (`*` running, `<` previous). |
-| `make aws-status` | Server state, current address, running version and a live health check. |
-| `make aws-logs` | Recent app log lines (CloudWatch, or straight from the server). `MINUTES=60` for more. |
-| `make aws-allow CIDR=…` | Lets another network open the app without redeploying (for example the presentation room's address `/32`, `CIDR=me` for your current IP, `0.0.0.0/0` for everyone). `make aws-revoke CIDR=…` removes it. |
-| `make aws-destroy` | Deletes the server and stored packages. |
+| `make aws-status` | Stack state, app address, running version and a health check |
+| `make aws-allow CIDR=x.x.x.x/32` | Lets another network open the app, for example the presentation room. `make aws-revoke CIDR=...` removes it |
+| `make aws-destroy` | Deletes the server and everything stored for it |
+| `make aws-plan` | Dry run: checks the bundle and prints the plan and cost estimate. Changes nothing |
 
-Versions are named `<UTC time>-<git commit>`, images are tagged with that name, and the running version shows in the app footer and sidebar. App and startup logs go to CloudWatch (`LOG_RETENTION_DAYS`, default 14); if the account does not allow it, this is skipped with a message and `make aws-logs` reads the server directly. A timer on the server restarts the app after three failed health checks in a row. The app is plain HTTP and only admits your current IP (`ALLOWED_CIDR`); handbook section 5 describes the optional HTTPS route for showing it to others. Learner Lab stops the server at the end of a session: `make aws-update`/`aws-rollback` start it again, and `make aws-status` shows the new address.
+Notes:
 
-**App is down:** `make aws-status`, then `make aws-logs`. If the server is stopped, start the lab and run `make aws-status` again (or any update/rollback, which starts it). If health stays "NOT ANSWERING", run `make aws-rollback` to the last version that worked.
-**Bad release:** `make aws-rollback` (previous version) or `make aws-versions` and `make aws-rollback VERSION=<name>`.
+- **Access.** By default only your current IP address can open the app.
+- **Keys expire.** Learner Lab keys last for one lab session. For a new session, paste the three new lines into `.env.aws`.
+- **Cost.** About $0.09 per hour while the server runs. Run `make aws-destroy` when you are finished.
+- **Address changes.** The lab stops the server at the end of a session. `make aws-status` shows the new address after a restart.
 
-Local checks before deploying (optional): `make check`, then `make up`. The Docker image and the EC2 server need the complete private bundle in `artifacts/deployment/` and the translation assets in `artifacts/translation/`; these are excluded from Git.
+## 9. Updating and rolling back
 
-## Tests and CI
+`make aws-update` uploads the current code and model as a new version and installs it on the running server. The new version is built and health-checked next to the live app, and the switch happens only if it is healthy. `make aws-rollback` returns to the previous version (`VERSION=<name>` picks a specific one), `make aws-versions` lists the stored versions, and `make aws-logs` shows recent app log lines.
+
+## 10. Tests and CI
 
 ```sh
-make test      # pytest: bundle and translation integrity (incl. tampered files), serving smoke test, deploy allowlist and AWS command flows
-make ci        # make test + shellcheck + cfn-lint + Docker image build and smoke test (skipped when Docker is not running)
-make pin-base  # pin Dockerfile.deploy to the current digest of python:3.12-slim-bookworm (commit the change)
+make test   # pytest
+make ci     # tests + shellcheck + cfn-lint + Docker image build
 ```
 
-The tests need neither the raw dataset nor AWS: they build a tiny fixture bundle and use an in-memory stand-in for AWS. Tests that use the real bundle run only on a computer that has `artifacts/`. GitHub Actions (`.github/workflows/ci.yml`) runs the same checks on every push and pull request and builds `Dockerfile.deploy` with the fixture bundle. CI never deploys and holds no AWS secrets, because Learner Lab keys expire; deployment stays a manual `make aws-deploy` / `make aws-update`.
+- `make test` checks the model bundle and translation files (including tampered files), the serving code on a sample profile, the profile form, the list of files that may be uploaded to AWS (no secrets, no data), and the deploy, update and rollback flows against a fake AWS.
+- `make ci` adds shell-script and CloudFormation linting and builds the Docker image with a smoke test (skipped when Docker is not running).
+- The tests need neither the dataset nor AWS: they build a tiny fixture bundle.
+- GitHub Actions (`.github/workflows/ci.yml`) runs the same checks on every push and pull request. CI never deploys and holds no AWS keys; deployment is always a manual `make aws-deploy` or `make aws-update`.
 
-## Layout
+## 11. Project structure
 
-| Location | Responsibility |
-|---|---|
-| `notebooks/01-04` | Stage 1 study: validation, cleaning, baselines, Sentence-BERT and hybrid (with saved outputs) |
-| `notebooks/05-07` | Stage 2 report views: significance and regions, skills, rerankers and final model |
-| `notebooks/archive/` | Supplementary salary analysis from the proposal stage |
-| `recommender/pipeline.py` | One ordered execution and review command |
-| `recommender/cleaning.py` | D4 cleaning as a callable (same logic as notebook 02) |
-| `recommender/shared.py`, `core.py` | Shared split, evidence, metrics and scoring |
-| `recommender/experiment.py`, `analysis.py` | Comparison/export and paired/regional analysis |
-| `recommender/serving.py`, `app.py` | Bundle validation and Streamlit app |
-| `m9_skills/` | Skill extraction, dictionaries and linguistic diagnostics |
-| `datasets/` | Raw D4 goes here (not in Git); small salary files tracked; see `datasets/README.md` |
-| `lookup/` | `job_titles_ru_en.csv`, 550 job titles translated to English |
-| `clean/` | Prepared data and Sentence-BERT embedding caches (ignored by Git) |
-| `results/final/` | Authoritative current aggregate results |
-| `results/baselines/` | Stage 1 results, kept as the historical reference |
-| `figures/` | Charts from notebooks 01, 03, 04 |
-| `artifacts/` | Ignored local bundles, runs and deployment packages |
-| `deploy/` | `preflight.sh`, `pin-base-image.sh`; `aws/`: EC2 template, `deploy.py`, on-server release, health-check and CloudWatch agent files |
-| `tests/` | pytest suite and fixture bundle builder (`python -m tests.fixtures --out DIR`) |
-| `.github/workflows/ci.yml` | CI: lint, tests, image build; never deploys |
+```text
+.
+├── README.md
+├── Makefile                 all commands (make help)
+├── app.py                   Streamlit app
+├── notebooks/               01-07: the study step by step, with saved outputs
+│   └── archive/             supplementary salary analysis (not used by the model)
+├── recommender/             pipeline code
+│   ├── cleaning.py          data cleaning (same logic as notebook 02)
+│   ├── shared.py, core.py   split, metrics, scoring, M5-M8
+│   ├── experiment.py        model comparison, selection and export
+│   ├── analysis.py          significance tests and regional analysis
+│   ├── terminology.py       research-question subgroup analysis
+│   ├── pipeline.py          runs every step in order
+│   ├── bundle.py            checks the exported model bundle
+│   ├── serving.py           loads the bundle and ranks vacancies
+│   ├── translation.py       English <-> Russian adapter for the app
+│   ├── profile_form.py      structured profile form
+│   └── smoke.py             quick "does it rank" test used in the image
+├── m9_skills/               skill dictionaries, extraction and validation for M9
+├── datasets/                raw data goes here (not in Git); see its README
+├── lookup/                  job titles translated to English
+├── clean/                   cleaned data and embeddings (generated, not in Git)
+├── results/
+│   ├── baselines/           results of notebooks 03-04 (M0-M8)
+│   └── final/               results of the final pipeline run
+├── figures/                 charts from notebooks 01, 03 and 04
+├── docs/final_model_verdict.md   model decision in detail
+├── artifacts/               model bundle and translation models (generated, not in Git)
+├── Dockerfile.deploy, docker/    container image
+├── deploy/
+│   ├── pin-base-image.sh    pins the Docker base image
+│   └── aws/                 CloudFormation template, deploy.py, on-server scripts
+├── tests/                   pytest suite and fixture bundle
+├── .github/workflows/ci.yml GitHub Actions
+└── requirements*.txt        pinned packages (app, experiment, deploy, dev)
+```
 
-[Final review](docs/FINAL_REVIEW.md) · [Model verdict](docs/final_model_verdict.md)
+## 12. References
 
-## Limits
-
-This is a complete local project/prototype pipeline. Docker image builds and AWS provisioning have not been run: the Docker daemon was unavailable during the handoff, and AWS is intentionally a template. Invitation-only labels, outcome-dependent cleaned snapshots, unreviewed skill aliases and prior inspection of the test set limit scientific claims. No production validation or future-job guarantee is claimed.
-
-The raw file is separated by `|`, not commas. Gender, age and birthday are never loaded. The models read the Russian text; English titles are only for reading examples.
-
-The app accepts English profiles and displays English vacancies/CSV through local OPUS-MT translation. On a fresh clone, run `python -m recommender.translation prepare` after installing dependencies and restoring/rebuilding the recommendation bundle. Translation artifacts are ignored by Git and packaged separately for Docker/EC2.
-
-Docker: `make up` (or `docker compose --env-file .env.deploy -f compose.deploy.yaml up --build -d`). It needs the complete local model bundle. See the handbook before AWS deployment.
+- **Dataset:** HSE hackathon resume and vacancy data (D4), <https://www.kaggle.com/datasets/darysha/hse-hackathon>.
+- **Sentence-BERT model:** `paraphrase-multilingual-MiniLM-L12-v2`, <https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2>. Reimers and Gurevych, "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks", EMNLP 2019.
+- **Translation models:** Helsinki-NLP OPUS-MT, <https://huggingface.co/Helsinki-NLP/opus-mt-en-ru> and <https://huggingface.co/Helsinki-NLP/opus-mt-ru-en>. Tiedemann and Thottingal, "OPUS-MT: Building open translation services for the World", EAMT 2020.

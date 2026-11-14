@@ -1,4 +1,4 @@
-# Helpers for the local Docker run. Type `make help`.
+# Commands for building, running, deploying and checking the project. Type `make help`.
 SHELL := /bin/bash
 PY312 ?= $(shell command -v python3.12 2>/dev/null || echo /opt/homebrew/opt/python@3.12/bin/python3.12)
 VENV  ?= .venv
@@ -7,34 +7,37 @@ RAW   ?= datasets/HSE_dataset(D4).csv
 ifndef RUN
 RUN := artifacts/runs/run-$(shell date +%Y%m%d-%H%M%S)
 endif
-COMPOSE := docker compose --env-file .env.deploy -f compose.deploy.yaml
 
-.PHONY: aws-allow aws-revoke dev-tools test lint image-test ci pin-base aws-update aws-rollback aws-versions aws-status aws-logs aws-tools help hf-key venv bundle translation check env perms up down logs local-docker aws-plan aws-deploy aws-destroy
+.PHONY: help venv hf-key bundle translation run \
+        aws-tools aws-plan aws-deploy aws-status aws-update aws-rollback aws-versions aws-logs aws-allow aws-revoke aws-destroy \
+        dev-tools test lint image-test ci pin-base
 
 help:
-	@echo "make hf-key       save your Hugging Face key to .hf_token (git-ignored, optional)"
-	@echo "make venv         create .venv (Python 3.12) and install every requirement"
-	@echo "make bundle       build artifacts/deployment from the raw dataset (skipped if it exists)"
-	@echo "make translation  download the English-UI models into artifacts/translation"
-	@echo "make check        read-only readiness check (deploy/preflight.sh)"
-	@echo "make up           build the deployment image and start it on http://127.0.0.1:8501"
-	@echo "make down|logs    stop it | show its log"
-	@echo "make local-docker everything above in order: venv, bundle, translation, check, up"
-	@echo "make test         unit and smoke tests (no dataset, no AWS)"
-	@echo "make ci           test + shellcheck + cfn-lint + image build (same checks as GitHub Actions)"
-	@echo "make pin-base     pin the Docker base image to its current digest"
-	@echo "make aws-plan     dry run: bundle check, plan and cost estimate; changes nothing"
-	@echo "make aws-deploy   first deployment to AWS EC2 using the keys in .env.aws"
-	@echo "make aws-update   install a new version on the running server (switched only if healthy)"
-	@echo "make aws-rollback back to the previous version (VERSION=<name> for a specific one)"
-	@echo "make aws-allow CIDR=x.x.x.x/32  let another network open the app (aws-revoke undoes it)"
-	@echo "make aws-versions | aws-status | aws-logs | aws-destroy"
+	@echo "Build and run"
+	@echo "  make venv          create .venv (Python 3.12) and install every requirement"
+	@echo "  make hf-key        optional: save your Hugging Face key to .hf_token (git-ignored)"
+	@echo "  make bundle        train, compare and export the final model to artifacts/deployment (skipped if it exists)"
+	@echo "  make translation   download the English-interface models into artifacts/translation"
+	@echo "  make run           start the app on http://localhost:8501"
+	@echo ""
+	@echo "Deploy to AWS"
+	@echo "  make aws-deploy    first run creates .env.aws and stops; second run creates the server"
+	@echo "  make aws-status    stack state, app address, running version and a health check"
+	@echo "  make aws-update    install a new version on the running server (switched only if healthy)"
+	@echo "  make aws-rollback  back to the previous version (VERSION=<name> for a specific one)"
+	@echo "  make aws-versions  list the stored versions"
+	@echo "  make aws-logs      recent app log lines (MINUTES=60 for more)"
+	@echo "  make aws-allow CIDR=x.x.x.x/32   let another network open the app (presentation room)"
+	@echo "  make aws-revoke CIDR=x.x.x.x/32  remove that access again"
+	@echo "  make aws-destroy   delete the server and everything stored for it"
+	@echo "  make aws-plan      dry run: bundle check, plan and cost estimate; changes nothing"
+	@echo ""
+	@echo "Checks"
+	@echo "  make test          unit and smoke tests (no dataset, no AWS)"
+	@echo "  make ci            test + lint (shellcheck, cfn-lint) + image-test (Docker build), as in GitHub Actions"
+	@echo "  make pin-base      pin the Docker base image to its current digest"
 
-hf-key:
-	@read -r -s -p "Paste your Hugging Face token (hidden): " t; echo; \
-	 [ -n "$$t" ] || { echo "Nothing entered."; exit 1; }; \
-	 printf '%s\n' "$$t" > .hf_token; chmod 600 .hf_token; echo "Saved to .hf_token (git-ignored)."
-
+# ---- Build and run ----
 venv:
 	@test -x "$(PY312)" || { echo "Python 3.12 not found. Install it with:  brew install python@3.12"; exit 1; }
 	@test -x $(PY) || "$(PY312)" -m venv $(VENV)
@@ -44,6 +47,13 @@ venv:
 	$(PY) -m ipykernel install --user --name jobrec --display-name "Python (jobrec)"
 	$(PY) -m pip check
 
+hf-key:
+	@read -r -s -p "Paste your Hugging Face token (hidden): " t; echo; \
+	 [ -n "$$t" ] || { echo "Nothing entered."; exit 1; }; \
+	 printf '%s\n' "$$t" > .hf_token; chmod 600 .hf_token; echo "Saved to .hf_token (git-ignored)."
+
+# Runs the whole pipeline (clean, encode, extract skills, compare models, select, export) and copies the
+# exported model bundle to artifacts/deployment. Reuses the prepared data in clean/ when it is there.
 bundle:
 	@if [ -f artifacts/deployment/manifest.json ]; then echo "artifacts/deployment already exists: skipping (delete it to rebuild)."; exit 0; fi; \
 	 test -x $(PY) || { echo "Run  make venv  first."; exit 1; }; \
@@ -60,37 +70,16 @@ translation:
 	$(PY) -m recommender.translation prepare
 	$(PY) -m recommender.translation check --deep
 
-check:
-	PYTHON=$(PY) sh deploy/preflight.sh
+# The app only loads the exported bundle; it never trains a model.
+run:
+	@test -x $(PY) || { echo "Run  make venv  first."; exit 1; }
+	@test -f artifacts/deployment/manifest.json || { echo "Build the model bundle first:  make bundle"; exit 1; }
+	$(PY) -m streamlit run app.py
 
-env:
-	@test -f .env.deploy || { cp .env.deploy.example .env.deploy; echo "Created .env.deploy"; }
-
-# The container runs as user 10001, not as you: make sure it can read the project files and the bundle.
-perms:
-	@chmod -R a+rX app.py recommender m9_skills .streamlit docker artifacts 2>/dev/null || true
-
-up: env perms
-	@docker info >/dev/null 2>&1 || { echo "Docker Desktop is not running. Open it, wait until it says it is running, then run make up again."; exit 1; }
-	$(COMPOSE) up --build -d
-	@PORT=$$(grep -s '^DEPLOY_PORT=' .env.deploy | cut -d= -f2); PORT=$${PORT:-8501}; \
-	 echo "Waiting for the app on port $$PORT (the first start loads the models) ..."; \
-	 for i in $$(seq 1 60); do \
-	   if curl -fsS "http://127.0.0.1:$$PORT/_stcore/health" >/dev/null 2>&1; then echo "Healthy. Open http://127.0.0.1:$$PORT and submit a profile to test the model."; exit 0; fi; sleep 5; done; \
-	 echo "Not healthy after 5 minutes. Run  make logs"; exit 1
-
-down: env
-	$(COMPOSE) down
-
-logs: env
-	$(COMPOSE) logs --tail=100 app
-
-local-docker: venv bundle translation check up
-
-# ---- AWS (EC2). The only thing you fill in is .env.aws ----
+# ---- Deploy to AWS (one EC2 server). The only file you fill in is .env.aws ----
 .env.aws:
 	@cp .env.aws.example .env.aws; chmod 600 .env.aws; \
-	 echo "Created .env.aws. Open it, paste your AWS access key and secret key, save, then run this command again."; exit 1
+	 echo "Created .env.aws. Open it, paste the three key lines from the Learner Lab (access key, secret key, session token), save, then run this command again."; exit 1
 
 aws-tools:
 	@test -x $(PY) || { echo "Run  make venv  first."; exit 1; }
@@ -102,17 +91,8 @@ aws-plan: .env.aws aws-tools
 aws-deploy: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py --apply
 
-aws-destroy: .env.aws aws-tools
-	$(PY) deploy/aws/deploy.py --destroy
-
-# Presentation access: make aws-allow CIDR=203.0.113.7/32 (or CIDR=me); undo with make aws-revoke CIDR=...
-aws-allow: .env.aws aws-tools
-	@test -n "$(CIDR)" || { echo "Usage: make aws-allow CIDR=203.0.113.7/32   (CIDR=me for your current IP, 0.0.0.0/0 for everyone)"; exit 1; }
-	$(PY) deploy/aws/deploy.py --allow $(CIDR)
-
-aws-revoke: .env.aws aws-tools
-	@test -n "$(CIDR)" || { echo "Usage: make aws-revoke CIDR=203.0.113.7/32"; exit 1; }
-	$(PY) deploy/aws/deploy.py --revoke $(CIDR)
+aws-status: .env.aws aws-tools
+	$(PY) deploy/aws/deploy.py --status
 
 aws-update: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py --update
@@ -123,14 +103,23 @@ aws-rollback: .env.aws aws-tools
 aws-versions: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py --versions
 
-aws-status: .env.aws aws-tools
-	$(PY) deploy/aws/deploy.py --status
-
 MINUTES ?= 30
 aws-logs: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py --logs --minutes $(MINUTES)
 
-# ---- Tests and CI: no raw dataset and no AWS needed ----
+# Presentation access: make aws-allow CIDR=203.0.113.7/32 (or CIDR=me); undo with make aws-revoke CIDR=...
+aws-allow: .env.aws aws-tools
+	@test -n "$(CIDR)" || { echo "Usage: make aws-allow CIDR=203.0.113.7/32   (CIDR=me for your current IP, 0.0.0.0/0 for everyone)"; exit 1; }
+	$(PY) deploy/aws/deploy.py --allow $(CIDR)
+
+aws-revoke: .env.aws aws-tools
+	@test -n "$(CIDR)" || { echo "Usage: make aws-revoke CIDR=203.0.113.7/32"; exit 1; }
+	$(PY) deploy/aws/deploy.py --revoke $(CIDR)
+
+aws-destroy: .env.aws aws-tools
+	$(PY) deploy/aws/deploy.py --destroy
+
+# ---- Checks: no raw dataset and no AWS needed ----
 dev-tools:
 	@test -x $(PY) || { echo "Run  make venv  first."; exit 1; }
 	@$(PY) -c 'import pytest, cfnlint, shellcheck_py' 2>/dev/null || $(PY) -m pip install --no-cache-dir -q -r requirements-dev.txt
@@ -139,7 +128,7 @@ test: dev-tools
 	$(PY) -m pytest -q tests
 
 lint: dev-tools
-	$(VENV)/bin/shellcheck docker/*.sh deploy/preflight.sh deploy/pin-base-image.sh deploy/aws/*.sh
+	$(VENV)/bin/shellcheck docker/*.sh deploy/pin-base-image.sh deploy/aws/*.sh
 	$(VENV)/bin/cfn-lint deploy/aws/ec2-stack.json
 	@grep -Eq '^FROM python:3\.12-slim-bookworm@sha256:[0-9a-f]{64}' Dockerfile.deploy \
 	  || echo "WARN  Dockerfile.deploy base image is not pinned to a digest: run  make pin-base"

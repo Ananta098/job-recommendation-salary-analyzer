@@ -44,11 +44,29 @@ def check_translation(path=None, deep=False):
     return root
 
 
+DESCRIPTION_CHARS = 600
+
+
+def shorten(value):
+    """Keep the first part of a long vacancy description, cut at a sentence or word end.
+
+    Translating full descriptions on CPU was the slowest step of a search."""
+    value = str(value).strip()
+    if len(value) <= DESCRIPTION_CHARS:
+        return value
+    cut = value[:DESCRIPTION_CHARS]
+    end = cut.rfind('. ')
+    if end < DESCRIPTION_CHARS // 2:
+        end = cut.rfind(' ')
+    return cut[:end + 1].strip() + ' …'
+
+
 class EnglishAdapter:
     def __init__(self, path=None, verify=True):
         self.root = check_translation(path, deep=True) if verify else translation_path(path)
         self.lock = threading.Lock()
         self.models = {}
+        self.cache = {}  # public catalog text only (Russian -> English), never applicant profiles
         self.regions = json.loads((self.root/'regions.json').read_text(encoding='utf-8')) if (self.root/'regions.json').exists() else {}
 
     def _load(self, direction):
@@ -82,7 +100,9 @@ class EnglishAdapter:
             for start in range(0,len(chunks),8):
                 inputs = tokenizer(chunks[start:start+8],return_tensors='pt',padding=True,truncation=False)
                 with torch.inference_mode():
-                    generated = model.generate(**inputs,max_new_tokens=480,num_beams=2)
+                    # Greedy decoding (one beam) is about twice as fast on CPU, so it is used for the
+                    # displayed vacancy text. The profile (en-ru) feeds the model, so it keeps two beams.
+                    generated = model.generate(**inputs,max_new_tokens=480,num_beams=2 if direction == 'en-ru' else 1)
                 for i,value in zip(owners[start:start+8],tokenizer.batch_decode(generated,skip_special_tokens=True)):
                     translated[i].append(value)
             for i,parts in translated.items():
@@ -106,6 +126,21 @@ class EnglishAdapter:
         # Only public catalog text is cached, never an applicant profile.
         return self.translate([text],'ru-en')[0]
 
+    def catalog_text(self, texts):
+        """Translate public vacancy text, reusing earlier translations across searches."""
+        missing = [t for t in dict.fromkeys(texts) if t not in self.cache]
+        if missing:
+            if len(self.cache) > 5000:
+                self.cache.clear()
+            self.cache.update(zip(missing,self.translate(missing,'ru-en')))
+        return {t:self.cache[t] for t in texts}
+
+    def warm_up(self):
+        """Load both translation models once at start-up instead of on the first search."""
+        with self.lock:
+            for direction in MODELS:
+                self._load(direction)
+
     def results(self, frame):
         """Return an English display/download table without Russian source columns."""
         import pandas as pd
@@ -114,10 +149,12 @@ class EnglishAdapter:
                   ('professionalSphereName','Professional field')]
         out = pd.DataFrame({'Rank':frame['rank'].tolist()})
         # Batch distinct uncached strings to keep output translation practical on CPU.
-        texts = list(dict.fromkeys(str(v) for source,_ in fields if source in frame for v in frame[source].fillna('')))
-        translated = dict(zip(texts,self.translate(texts,'ru-en')))
+        values = {source:[shorten(v) if source=='job_text' else str(v) for v in frame[source].fillna('')]
+                  for source,_ in fields if source in frame}
+        texts = list(dict.fromkeys(v for column in values.values() for v in column))
+        translated = self.catalog_text(texts)
         for source,label in fields:
-            out[label] = [translated[str(v)] for v in frame[source].fillna('')] if source in frame else ''
+            out[label] = [translated[v] for v in values[source]] if source in values else ''
         out['Listed minimum salary (RUB)'] = frame['salaryMin_vacancy'].tolist()
         def experience(value):
             try:

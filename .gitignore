@@ -13,7 +13,6 @@ results/final/reference_rankings.npz
 .env
 .env.*
 !.env.example
-!.env.deploy.example
 !.env.aws.example
 .streamlit/secrets.toml
 *.pem
@@ -21,7 +20,6 @@ results/final/reference_rankings.npz
 .aws/
 # Hugging Face key saved by notebook 04
 .hf_token
-deploy/aws/deployment.local.json
 *.tfstate
 *.tfstate.*
 .terraform/

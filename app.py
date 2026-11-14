@@ -67,7 +67,9 @@ def load_model(path, manifest_signature):
 @st.cache_resource(show_spinner='Loading English language support…')
 def load_english(path, manifest_signature):
     from recommender.translation import EnglishAdapter
-    return EnglishAdapter(path)
+    adapter = EnglishAdapter(path)
+    adapter.warm_up()
+    return adapter
 
 
 try:
@@ -317,7 +319,7 @@ with right:
                 short, truncated = shorten(row['Description'])
                 st.markdown(f'<div class="desc">{esc(short)}</div>', unsafe_allow_html=True)
                 if truncated or row['Skills']:
-                    with st.expander('Full description and requirements'):
+                    with st.expander('Description and requirements'):
                         st.write(row['Description'])
                         if row['Skills']:
                             st.write('**Skills:**', row['Skills'])

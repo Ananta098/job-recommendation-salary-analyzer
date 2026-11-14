@@ -45,4 +45,4 @@ The final rerun uses the same evaluated M8 configuration and reproduces its refe
 
 Notebook 05 (last section, `recommender/terminology.py`) recomputes M8 and M9 + region for the test applicants, checks them against `results/final/metrics_grouped.csv`, and splits applicants by how many of their invited vacancies' words appear in their CV. Skill-aware reranking gives no measurable gain in any subgroup, including the low-overlap third where terminology differs most (difference about 0.001 grouped Recall@10, confidence interval includes zero). Only about one in eight low-overlap applicants has a skill the dictionary recognises, so the skill score rarely changes the ranking. Vocabulary overlap itself strongly drives accuracy (low-overlap third about 0.17 versus high-overlap third about 0.71 grouped Recall@10). The next step is broader skill coverage, not a new reranking formula. Exact figures: `results/final/terminology_subgroups.csv`.
 
-See `docs/PROJECT_HANDBOOK.md` for the single execution procedure and `docs/FINAL_REVIEW.md` for verification and external deployment limits.
+See `README.md` for how to run the pipeline, the app and the AWS deployment.

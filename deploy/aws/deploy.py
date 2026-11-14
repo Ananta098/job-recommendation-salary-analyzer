@@ -592,7 +592,6 @@ def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--root',type=Path,default=ROOT);p.add_argument('--package-only',action='store_true')
     p.add_argument('--env-file',type=Path,help='Credentials file (default: .env.aws in the project folder)')
-    p.add_argument('--config',type=Path,help='Optional JSON settings (older style); .env.aws is the simpler route')
     p.add_argument('--region');p.add_argument('--bucket');p.add_argument('--allowed-cidr')
     p.add_argument('--stack-name');p.add_argument('--instance-type',choices=INSTANCE_TYPES);p.add_argument('--profile')
     action=p.add_mutually_exclusive_group()
@@ -617,12 +616,6 @@ def main(argv=None):
         raise DeployError(f'{env_path.name} still has placeholder values: '+', '.join(unfilled)+'. Replace them with your own values.')
     for key in SECRET_KEYS+('AWS_DEFAULT_REGION','AWS_PROFILE'):
         if key in env and not env[key].startswith('PASTE_'):os.environ[key]=env[key]
-    if a.config:
-        config_path=a.config.expanduser()
-        if not config_path.is_absolute():config_path=ROOT/config_path
-        config=json.loads(config_path.read_text(encoding='utf-8'))
-        for key in ['region','bucket','allowed_cidr','stack_name','instance_type','profile']:
-            if getattr(a,key) is None:setattr(a,key,config.get(key) or None)
     a.region=a.region or env.get('AWS_DEFAULT_REGION') or os.environ.get('AWS_DEFAULT_REGION') or os.environ.get('AWS_REGION')
     a.bucket=a.bucket or env.get('S3_BUCKET');a.allowed_cidr=a.allowed_cidr or env.get('ALLOWED_CIDR')
     a.stack_name=a.stack_name or env.get('STACK_NAME') or 'job-recommender'
@@ -665,7 +658,7 @@ def main(argv=None):
     (root/'artifacts').mkdir(exist_ok=True)
     (root/'artifacts/ec2-plan.json').write_text(json.dumps(plan,indent=2)+'\n', encoding='utf-8')
     print(json.dumps(plan,indent=2))
-    if '0.0.0.0/0' in cidr:print('WARNING: ALLOWED_CIDR opens the app to the whole internet over plain HTTP. See the HTTPS option in the handbook.')
+    if '0.0.0.0/0' in cidr:print('WARNING: ALLOWED_CIDR opens the app to the whole internet over plain HTTP. Use it only for a short demo and revoke it afterwards.')
     if not a.apply:
         print('Plan only: nothing was changed in AWS. Run  make aws-deploy  (first time) or  make aws-update  (new version).');return
     d.connect().deploy(allowed,cidr,commit)

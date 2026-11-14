@@ -42,7 +42,7 @@ def check_bundle(path=None, deep=False):
             f'Model bundle missing at {bundle}. Restore the complete trusted bundle here, '
             'set MODEL_BUNDLE to its folder, or rebuild with '
             '`python -m recommender.pipeline run --run-dir artifacts/runs/run-01`. '
-            'See docs/PROJECT_HANDBOOK.md. Starting Streamlit does not train a model.')
+            'See README.md. Starting Streamlit does not train a model.')
     try:
         manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
         if not isinstance(manifest, dict) or not REQUIRED.issubset(manifest):
