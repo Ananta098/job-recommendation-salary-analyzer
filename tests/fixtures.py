@@ -148,12 +148,12 @@ def is_real(folder):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--out', type=Path, required=True, help='Folder that receives deployment/ and translation/')
+    parser.add_argument('--out', type=Path, required=True, help='Folder that receives recommender/ and translation/')
     args = parser.parse_args()
-    for name in ['deployment', 'translation']:
+    for name in ['recommender', 'translation']:
         if is_real(args.out / name):
             raise SystemExit(f'{args.out / name} holds a real bundle; refusing to overwrite it with a fixture.')
-    build_bundle(args.out / 'deployment')
+    build_bundle(args.out / 'recommender')
     build_translation(args.out / 'translation')
     print('Fixture bundle and translation assets written to', args.out)
 
