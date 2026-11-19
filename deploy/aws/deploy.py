@@ -81,25 +81,25 @@ def forbidden(rel):
     """Paths that must never leave this computer, whatever the allowlist says."""
     parts=Path(rel).parts
     return (any(p.startswith('.env') or p in ('.hf_token','.aws','.git','.venv') or p.startswith('.venv') for p in parts)
-            or parts[0] in ('datasets','clean','notebooks','results') or rel.endswith(('.pem','.key','.csv.gz'))
-            or (parts[0]=='clean' and rel.endswith('.csv')))
+            or parts[0] in ('data','notebooks','results') or rel.startswith('deploy/.state/') or rel.endswith(('.pem','.key','.csv.gz'))
+            or (parts[0]=='data' and rel.endswith('.csv')))
 
 
 def allowlist(root):
     """Verify the bundle and return the only files that may leave this computer."""
-    if not (root/'artifacts/deployment/manifest.json').exists():raise DeployError('Model bundle missing: artifacts/deployment (run  make bundle).')
+    if not (root/'models/recommender/manifest.json').exists():raise DeployError('Model bundle missing: models/recommender (run  make bundle).')
     import sys
     sys.path.insert(0,str(root))
     from recommender.bundle import check_bundle
-    check_bundle(root/'artifacts/deployment',deep=True)
+    check_bundle(root/'models/recommender',deep=True)
     from recommender.translation import check_translation
-    check_translation(root/'artifacts/translation',deep=True)
-    allowed=['Dockerfile.deploy','.dockerignore','requirements-app.txt','requirements-app.lock.txt','app.py','.streamlit/config.toml']+HOST_FILES
-    allowed.extend(p.relative_to(root).as_posix() for p in (root/'docker').glob('*.sh'))
-    for directory in ['recommender','m9_skills']:
+    check_translation(root/'models/translation',deep=True)
+    allowed=['deploy/Dockerfile','.dockerignore','requirements/app.txt','requirements/app.lock.txt','.streamlit/config.toml']+HOST_FILES
+    allowed.extend(p.relative_to(root).as_posix() for p in (root/'deploy/docker').glob('*.sh'))
+    for directory in ['recommender','recommender/skills','app']:
         allowed.extend(p.relative_to(root).as_posix() for p in (root/directory).glob('*.py'))
-    allowed.extend(p.relative_to(root).as_posix() for p in (root/'artifacts/deployment').rglob('*') if p.is_file())
-    allowed.extend(p.relative_to(root).as_posix() for p in (root/'artifacts/translation').rglob('*') if p.is_file() and '.cache' not in p.parts)
+    allowed.extend(p.relative_to(root).as_posix() for p in (root/'models/recommender').rglob('*') if p.is_file())
+    allowed.extend(p.relative_to(root).as_posix() for p in (root/'models/translation').rglob('*') if p.is_file() and '.cache' not in p.parts)
     missing=[rel for rel in allowed if not (root/rel).is_file()]
     if missing:raise DeployError('Files needed for the server are missing: '+', '.join(missing[:5]))
     blocked=[rel for rel in allowed if forbidden(rel)]
@@ -191,7 +191,7 @@ class Deployment:
     """All AWS calls for one stack."""
     def __init__(self,args,env,root):
         self.a,self.env,self.root=args,env,root
-        self.status_path=root/'artifacts/ec2-status.json'
+        self.status_path=root/'deploy/.state/ec2-status.json'
         self.session=None
 
     # ---------- connection and lookups ----------
@@ -334,7 +334,7 @@ BASE=/opt/job-recommender
 mkdir -p "$BASE/releases" "$BASE/bin"
 printf 'BUCKET=%s\\nSTACK=%s\\nREGION=%s\\n' '{b}' '{s}' '{r}' > "$BASE/instance.env"
 DIR="$BASE/releases/{v}"
-if [ ! -f "$DIR/Dockerfile.deploy" ]; then
+if [ ! -f "$DIR/deploy/aws/install-host.sh" ]; then
   TMP=$(mktemp /tmp/package.XXXXXX)
   aws s3 cp 's3://{b}/{k}' "$TMP" --region '{r}' --only-show-errors
   echo '{h}  '"$TMP" | sha256sum --check --status || {{ echo 'Package checksum mismatch: refusing to install'; rm -f "$TMP"; exit 1; }}
@@ -607,7 +607,7 @@ def main(argv=None):
     a=p.parse_args(argv)
     root=a.root.expanduser()
     if not root.is_absolute():root=ROOT/root
-    root=root.resolve();out=root/'artifacts/ec2-deployment.tar.gz'
+    root=root.resolve();out=root/'deploy/.state/ec2-deployment.tar.gz'
     env_path=(a.env_file.expanduser() if a.env_file else root/'.env.aws')
     env=load_env(env_path)
     touches_aws=any([a.apply,a.update,a.rollback,a.versions,a.status,a.logs,a.destroy,a.allow,a.revoke])
@@ -655,8 +655,8 @@ def main(argv=None):
           'estimated_cost_usd':{'per_hour':round(hourly+storage,4),'per_8h_day':round((hourly+storage)*8,2),
                                 'note':f'{a.instance_type} ${hourly}/h + {EBS_GB} GB gp3 disk; on-demand us-east-1 prices, excludes data transfer'},
           'log_retention_days':int(env.get('LOG_RETENTION_DAYS','14')),'apply':a.apply}
-    (root/'artifacts').mkdir(exist_ok=True)
-    (root/'artifacts/ec2-plan.json').write_text(json.dumps(plan,indent=2)+'\n', encoding='utf-8')
+    (root/'deploy/.state').mkdir(parents=True,exist_ok=True)
+    (root/'deploy/.state/ec2-plan.json').write_text(json.dumps(plan,indent=2)+'\n', encoding='utf-8')
     print(json.dumps(plan,indent=2))
     if '0.0.0.0/0' in cidr:print('WARNING: ALLOWED_CIDR opens the app to the whole internet over plain HTTP. Use it only for a short demo and revoke it afterwards.')
     if not a.apply:

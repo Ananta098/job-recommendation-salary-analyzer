@@ -1,11 +1,13 @@
-# Private source data and generated local artifacts
-datasets/*.csv
-datasets/*.zip
-clean/*.csv
-clean/*.npy
-artifacts/
-m9_skills/outputs/**/*.jsonl
-m9_skills/outputs/**/unmatched_structured.csv
+# Private source data, generated data and trained models
+data/raw/*.csv
+data/raw/*.zip
+data/processed/*.csv
+data/processed/*.npy
+data/processed/*.json
+models/
+deploy/.state/
+recommender/skills/outputs/**/*.jsonl
+recommender/skills/outputs/**/unmatched_structured.csv
 results/final/*per_applicant*.csv
 results/final/reference_rankings.npz
 

@@ -31,7 +31,7 @@ def load_hf_token(root=ROOT):
 
 
 def resolve_bundle(path=None):
-    return project_path(path or os.environ.get('MODEL_BUNDLE') or 'artifacts/deployment')
+    return project_path(path or os.environ.get('MODEL_BUNDLE') or 'models/recommender')
 
 
 def check_bundle(path=None, deep=False):
@@ -41,7 +41,7 @@ def check_bundle(path=None, deep=False):
         raise FileNotFoundError(
             f'Model bundle missing at {bundle}. Restore the complete trusted bundle here, '
             'set MODEL_BUNDLE to its folder, or rebuild with '
-            '`python -m recommender.pipeline run --run-dir artifacts/runs/run-01`. '
+            '`python -m recommender.pipeline run --run-dir models/runs/run-01`. '
             'See README.md. Starting Streamlit does not train a model.')
     try:
         manifest = json.loads(manifest_path.read_text(encoding='utf-8'))

@@ -2,6 +2,12 @@
 import html
 import os
 import re
+import sys
+from pathlib import Path
+
+# The app lives in app/; the recommender package is in the project folder one level up.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import streamlit as st
 from recommender.bundle import check_bundle
 from recommender.translation import check_translation

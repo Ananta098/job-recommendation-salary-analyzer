@@ -13,7 +13,7 @@ and `validation/pre_change_compatibility.json` before any future merge.
 
 Both sides have the same complete ID sets as the existing pipeline, without
 missing or duplicate entities, and normalized titles agree. Raw sidecar order
-is different from clean/M8 catalog order: **never join by row number**.
+is different from data/processed/M8 catalog order: **never join by row number**.
 `compatibility.align_sidecar` validates IDs, side, dictionary identity and row
 uniqueness, then returns evidence in the requested ID order. All added columns
 use `m9_cv_` or `m9_vacancy_` prefixes, preserving existing `cv_skills`, `job_skills`,
@@ -73,7 +73,7 @@ charts, remaining errors, a custom Russian example cell, and ID-safe attachment.
 No previous notebook needs editing.
 
 ```sh
-python3 -m m9_skills.validation --cases m9_skills/validation/russian_validation_cases.csv --baseline m9_skills/dictionary.json --expanded m9_skills/dictionary.v2.json --output m9_skills/validation/my_review_run
+python3 -m recommender.skills.validation --cases recommender/skills/validation/russian_validation_cases.csv --baseline recommender/skills/dictionary.json --expanded recommender/skills/dictionary.v2.json --output recommender/skills/validation/my_review_run
 ```
 
 For human validation, make a copy of `russian_validation_cases.csv` and inspect
@@ -91,7 +91,7 @@ all evidence, then copy `validation/dictionary_alias_decisions.csv`, fill the
 reviewer's decision/name/date/source/reason, and compile a new version:
 
 ```sh
-python3 -m m9_skills.review --dictionary m9_skills/dictionary.v2.json --review my_alias_decisions.csv --output m9_skills/dictionary.v3.json
+python3 -m recommender.skills.review --dictionary recommender/skills/dictionary.v2.json --review my_alias_decisions.csv --output recommender/skills/dictionary.v3.json
 ```
 
 The compiler records decisions without claiming the entire seed is human-approved.
@@ -100,7 +100,7 @@ aliases still need human review too. Use a fresh output directory for every run.
 Full-data extraction with v2 is reproducible with:
 
 ```sh
-python3 -m m9_skills.workflow extract --raw 'datasets/HSE_dataset(D4).csv' --dictionary m9_skills/dictionary.v2.json --output m9_skills/outputs/my_v2_run
+python3 -m recommender.skills.workflow extract --raw 'data/raw/HSE_dataset(D4).csv' --dictionary recommender/skills/dictionary.v2.json --output recommender/skills/outputs/my_v2_run
 ```
 
 ## Visualizations
@@ -112,7 +112,7 @@ The accompanying CSV/JSON includes all professional spheres. Denominators are
 unique vacancies, not repeated interactions. Coverage is not accuracy.
 
 Plotting uses matplotlib, already listed in project requirements. Regenerate the
-overview with `python3 -m m9_skills.validation_plots` and the paths shown in notebook
+overview with `python3 -m recommender.skills.validation_plots` and the paths shown in notebook
 07. Raw source paths/IDs and skill excerpts remain private with the D4 dataset.
 
 This guide covers extraction validation. The separate completed ranking experiment is now in `recommender/experiment.py`, `results/final/` and root notebook 07. M0–M8 remain unchanged. Dictionary human review remains pending.

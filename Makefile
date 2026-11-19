@@ -3,9 +3,9 @@ SHELL := /bin/bash
 PY312 ?= $(shell command -v python3.12 2>/dev/null || echo /opt/homebrew/opt/python@3.12/bin/python3.12)
 VENV  ?= .venv
 PY    := $(VENV)/bin/python
-RAW   ?= datasets/HSE_dataset(D4).csv
+RAW   ?= data/raw/HSE_dataset(D4).csv
 ifndef RUN
-RUN := artifacts/runs/run-$(shell date +%Y%m%d-%H%M%S)
+RUN := models/runs/run-$(shell date +%Y%m%d-%H%M%S)
 endif
 
 .PHONY: help venv hf-key bundle translation run \
@@ -16,8 +16,8 @@ help:
 	@echo "Build and run"
 	@echo "  make venv          create .venv (Python 3.12) and install every requirement"
 	@echo "  make hf-key        optional: save your Hugging Face key to .hf_token (git-ignored)"
-	@echo "  make bundle        train, compare and export the final model to artifacts/deployment (skipped if it exists)"
-	@echo "  make translation   download the English-interface models into artifacts/translation"
+	@echo "  make bundle        train, compare and export the final model to models/recommender (skipped if it exists)"
+	@echo "  make translation   download the English-interface models into models/translation"
 	@echo "  make run           start the app on http://localhost:8501"
 	@echo ""
 	@echo "Deploy to AWS"
@@ -53,28 +53,28 @@ hf-key:
 	 printf '%s\n' "$$t" > .hf_token; chmod 600 .hf_token; echo "Saved to .hf_token (git-ignored)."
 
 # Runs the whole pipeline (clean, encode, extract skills, compare models, select, export) and copies the
-# exported model bundle to artifacts/deployment. Reuses the prepared data in clean/ when it is there.
+# exported model bundle to models/recommender. Reuses the prepared data in data/processed/ when it is there.
 bundle:
-	@if [ -f artifacts/deployment/manifest.json ]; then echo "artifacts/deployment already exists: skipping (delete it to rebuild)."; exit 0; fi; \
+	@if [ -f models/recommender/manifest.json ]; then echo "models/recommender already exists: skipping (delete it to rebuild)."; exit 0; fi; \
 	 test -x $(PY) || { echo "Run  make venv  first."; exit 1; }; \
-	 test -f "$(RAW)" || { echo "Raw dataset missing: $(RAW)"; echo "Put HSE_dataset(D4).csv into datasets/ (see datasets/README.md), then run make bundle again."; exit 1; }; \
-	 if [ -f clean/d4_clean.csv ] && ls clean/sbert_test_*.npy >/dev/null 2>&1; then REUSE=--reuse-prepared; \
-	   echo "Reusing the prepared data in clean/ (fast)."; else REUSE=; \
-	   echo "No prepared data in clean/ (fresh clone): full rebuild from the raw dataset. This can take an hour or more."; fi; \
+	 test -f "$(RAW)" || { echo "Raw dataset missing: $(RAW)"; echo "Put HSE_dataset(D4).csv into data/raw/ (see data/README.md), then run make bundle again."; exit 1; }; \
+	 if [ -f data/processed/d4_clean.csv ] && ls data/processed/sbert_test_*.npy >/dev/null 2>&1; then REUSE=--reuse-prepared; \
+	   echo "Reusing the prepared data in data/processed/ (fast)."; else REUSE=; \
+	   echo "No prepared data in data/processed/ (fresh clone): full rebuild from the raw dataset. This can take an hour or more."; fi; \
 	 $(PY) -m recommender.pipeline run --run-dir "$(RUN)" --raw "$(RAW)" $$REUSE && \
-	 mkdir -p artifacts && cp -R "$(RUN)/artifacts/deployment" artifacts/deployment && \
+	 mkdir -p models && cp -R "$(RUN)/models/recommender" models/recommender && \
 	 $(PY) -m recommender.bundle check --deep
 
 translation:
-	@test -f artifacts/deployment/manifest.json || { echo "Build the model bundle first:  make bundle"; exit 1; }
+	@test -f models/recommender/manifest.json || { echo "Build the model bundle first:  make bundle"; exit 1; }
 	$(PY) -m recommender.translation prepare
 	$(PY) -m recommender.translation check --deep
 
 # The app only loads the exported bundle; it never trains a model.
 run:
 	@test -x $(PY) || { echo "Run  make venv  first."; exit 1; }
-	@test -f artifacts/deployment/manifest.json || { echo "Build the model bundle first:  make bundle"; exit 1; }
-	$(PY) -m streamlit run app.py
+	@test -f models/recommender/manifest.json || { echo "Build the model bundle first:  make bundle"; exit 1; }
+	$(PY) -m streamlit run app/streamlit_app.py
 
 # ---- Deploy to AWS (one EC2 server). The only file you fill in is .env.aws ----
 .env.aws:
@@ -83,7 +83,7 @@ run:
 
 aws-tools:
 	@test -x $(PY) || { echo "Run  make venv  first."; exit 1; }
-	@$(PY) -c 'import boto3' 2>/dev/null || $(PY) -m pip install --no-cache-dir -q -r requirements-deploy.txt
+	@$(PY) -c 'import boto3' 2>/dev/null || $(PY) -m pip install --no-cache-dir -q -r requirements/deploy.txt
 
 aws-plan: .env.aws aws-tools
 	$(PY) deploy/aws/deploy.py
@@ -122,21 +122,21 @@ aws-destroy: .env.aws aws-tools
 # ---- Checks: no raw dataset and no AWS needed ----
 dev-tools:
 	@test -x $(PY) || { echo "Run  make venv  first."; exit 1; }
-	@$(PY) -c 'import pytest, cfnlint, shellcheck_py' 2>/dev/null || $(PY) -m pip install --no-cache-dir -q -r requirements-dev.txt
+	@$(PY) -c 'import pytest, cfnlint, shellcheck_py' 2>/dev/null || $(PY) -m pip install --no-cache-dir -q -r requirements/dev.txt
 
 test: dev-tools
 	$(PY) -m pytest -q tests
 
 lint: dev-tools
-	$(VENV)/bin/shellcheck docker/*.sh deploy/pin-base-image.sh deploy/aws/*.sh
+	$(VENV)/bin/shellcheck deploy/docker/*.sh deploy/pin-base-image.sh deploy/aws/*.sh
 	$(VENV)/bin/cfn-lint deploy/aws/ec2-stack.json
-	@grep -Eq '^FROM python:3\.12-slim-bookworm@sha256:[0-9a-f]{64}' Dockerfile.deploy \
-	  || echo "WARN  Dockerfile.deploy base image is not pinned to a digest: run  make pin-base"
+	@grep -Eq '^FROM python:3\.12-slim-bookworm@sha256:[0-9a-f]{64}' deploy/Dockerfile \
+	  || echo "WARN  deploy/Dockerfile base image is not pinned to a digest: run  make pin-base"
 
 image-test:
 	@if ! docker info >/dev/null 2>&1; then echo "SKIP  image build: Docker is not running here (GitHub Actions builds it on every push)"; \
-	 elif [ ! -f artifacts/deployment/manifest.json ]; then echo "SKIP  image build: no bundle in artifacts/ (GitHub Actions uses a fixture bundle)"; \
-	 else docker build -f Dockerfile.deploy -t job-recommender:ci . \
+	 elif [ ! -f models/recommender/manifest.json ]; then echo "SKIP  image build: no bundle in models/ (GitHub Actions uses a fixture bundle)"; \
+	 else docker build -f deploy/Dockerfile -t job-recommender:ci . \
 	   && docker run --rm --read-only --tmpfs /tmp:rw,size=512m --entrypoint python job-recommender:ci -m recommender.smoke; fi
 
 ci: test lint image-test

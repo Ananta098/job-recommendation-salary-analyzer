@@ -50,10 +50,10 @@ def overlap_table(data, test_ids, profiles):
 
 
 def run(root, skills_dir, tolerance=1e-6):
-    from m9_skills.extraction import Extractor
-    from m9_skills.compatibility import align_sidecar
+    from recommender.skills.extraction import Extractor
+    from recommender.skills.compatibility import align_sidecar
     out = root / 'results/final'
-    data = pd.read_csv(root / 'clean/d4_clean.csv', encoding='utf-8-sig', keep_default_na=False, low_memory=False)
+    data = pd.read_csv(root / 'data/processed/d4_clean.csv', encoding='utf-8-sig', keep_default_na=False, low_memory=False)
     data['is_positive'] = data.is_positive.astype(int)
     jobs = data.drop_duplicates('idVacancy').reset_index(drop=True)
     groups = pd.factorize(clean_title(jobs.vacancyName) + ' | ' + region_key(jobs.regionName))[0]
@@ -62,15 +62,15 @@ def run(root, skills_dir, tolerance=1e-6):
     profiles = data.drop_duplicates('idCv').set_index('idCv')
     test = profiles.loc[test_ids]
 
-    extractor = Extractor(root / 'm9_skills/dictionary.v2.json')
+    extractor = Extractor(root / 'recommender/skills/dictionary.v2.json')
     cv_skills = evidence_vectors(align_sidecar(list(test_ids), Path(skills_dir) / 'cv_skills.jsonl', 'cv', extractor.fingerprint),
                                  extractor.dictionary, 'cv')
     job_skills = evidence_vectors(align_sidecar(jobs.idVacancy.tolist(), Path(skills_dir) / 'vacancy_skills.jsonl', 'vacancy',
                                                 extractor.fingerprint), extractor.dictionary, 'vacancy')
     tfidf = TfidfVectorizer(min_df=3, max_features=120_000, sublinear_tf=True, dtype=np.float32)
     documents = tfidf.fit_transform(text(jobs, 'vacancy'))
-    job_emb = np.load(root / f'clean/sbert_jobs_{MODEL}.npy').astype(np.float32)
-    test_emb = np.load(root / f'clean/sbert_test_{MODEL}.npy').astype(np.float32)
+    job_emb = np.load(root / f'data/processed/sbert_jobs_{MODEL}.npy').astype(np.float32)
+    test_emb = np.load(root / f'data/processed/sbert_test_{MODEL}.npy').astype(np.float32)
 
     rows, features = candidates(tfidf.transform(text(test, 'cv')), test_emb, documents, job_emb, test, jobs, cv_skills, job_skills)
     weights = pd.read_csv(out / 'development_skill_weights.csv')
@@ -118,7 +118,7 @@ def run(root, skills_dir, tolerance=1e-6):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--root', type=Path, default=ROOT)
-    parser.add_argument('--skills', type=Path, default=Path('m9_skills/outputs/v2_validation_run'),
+    parser.add_argument('--skills', type=Path, default=Path('recommender/skills/outputs/v2_validation_run'),
                         help='Folder with cv_skills.jsonl and vacancy_skills.jsonl (make bundle regenerates them)')
     parser.add_argument('--tolerance', type=float, default=1e-6,
                         help='Allowed gap to the published Recall@10 (keep the default with the pinned environment)')

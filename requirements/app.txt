@@ -1,4 +1,4 @@
--c requirements-app.lock.txt
+-c app.lock.txt
 # Frozen serving versions used in the verified local environment.
 # Docker installs the CPU torch wheel separately before this file.
 numpy==1.26.4

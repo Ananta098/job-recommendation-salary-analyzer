@@ -7,7 +7,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from scipy import sparse
-from m9_skills.extraction import Extractor
+from recommender.skills.extraction import Extractor
 from .bundle import check_bundle
 from .shared import region_key,grouped_rank,clean_title,text
 from .core import candidates,rerank,profile,online_skill_vector,FEATURE_NAMES

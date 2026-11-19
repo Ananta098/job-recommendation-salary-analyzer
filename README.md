@@ -9,12 +9,12 @@ Given an applicant's profile (desired job title, CV text, skills, region), the s
 
 ## 1. Problem and dataset
 
-**Dataset.** HSE D4, a Russian resume and vacancy dataset from an HSE hackathon: <https://www.kaggle.com/datasets/darysha/hse-hackathon>. It is not in this repository (about 1 GB); see `datasets/README.md` for where to put it.
+**Dataset.** HSE D4, a Russian resume and vacancy dataset from an HSE hackathon: <https://www.kaggle.com/datasets/darysha/hse-hackathon>. It is not in this repository (about 1 GB); see `data/README.md` for where to put it.
 
 - **What a row is:** one application, that is one resume paired with one vacancy, with the texts of both and whether the employer invited the applicant.
-- **Size** (`figures/D4_summary.csv`): 150,493 rows, 65,714 resumes, 43,756 vacancies. After removing duplicates 93,755 rows remain (`results/cleaning_report.csv`).
+- **Size** (`results/figures/D4_summary.csv`): 150,493 rows, 65,714 resumes, 43,756 vacancies. After removing duplicates 93,755 rows remain (`results/cleaning_report.csv`).
 - **Labels:** an invitation is our only sign that a vacancy was relevant. The invitation rate is 13.9%, and 14,033 applicants have at least one invitation; these are the applicants we can evaluate on.
-- **Why we rank the whole catalog:** an applicant has only 2.29 applications on average and a median of 1 (`figures/D4_summary.csv`). Re-ordering one or two applied jobs says nothing, so each model ranks all 43,756 vacancies for each applicant and we check whether the invited ones come out near the top.
+- **Why we rank the whole catalog:** an applicant has only 2.29 applications on average and a median of 1 (`results/figures/D4_summary.csv`). Re-ordering one or two applied jobs says nothing, so each model ranks all 43,756 vacancies for each applicant and we check whether the invited ones come out near the top.
 - **Privacy:** gender, age and birthday are never loaded.
 
 **Scope change.** The proposal also included salary analysis. Following the professor's feedback the project focuses on job recommendation only. The salary work is kept as supplementary material in `notebooks/archive/` and is not used by the model or the app.
@@ -23,15 +23,15 @@ Given an applicant's profile (desired job title, CV text, skills, region), the s
 
 | # | Step | Notebook | Code | Output |
 |---|---|---|---|---|
-| 1 | Check the raw data: structure, IDs, label balance, missing values, duplicates | `01_check_data.ipynb` | - | `figures/D4_*.png`, `figures/D4_summary.csv` |
-| 2 | Clean: remove duplicates, build CV and vacancy texts, skills, English titles, evaluation set | `02_clean_data.ipynb` | `recommender/cleaning.py` | `clean/d4_clean.csv`, `results/cleaning_report.csv` |
+| 1 | Check the raw data: structure, IDs, label balance, missing values, duplicates | `01_check_data.ipynb` | - | `results/figures/D4_*.png`, `results/figures/D4_summary.csv` |
+| 2 | Clean: remove duplicates, build CV and vacancy texts, skills, English titles, evaluation set | `02_clean_data.ipynb` | `recommender/cleaning.py` | `data/processed/d4_clean.csv`, `results/cleaning_report.csv` |
 | 3 | Baseline models M0-M5: popularity, TF-IDF, BM25, region | `03_models.ipynb` | `recommender/core.py`, `shared.py` | `results/baselines/` |
-| 4 | Sentence-BERT models M6-M7 and the hybrid M8 | `04_sentence_bert.ipynb` | `recommender/core.py` | `clean/sbert_*.npy`, `results/baselines/*_all.csv` |
-| 5 | Skill extraction and normalisation for M9 | `06_pull_and_normalize_skills.ipynb` | `m9_skills/` | `m9_skills/outputs/`, `m9_skills/validation/` |
-| 6 | Compare M8, M9 and the learned rerankers; select on the development set; export the model | `07_rerankers_and_final_model.ipynb` | `recommender/experiment.py` | `results/final/metrics_*.csv`, `selection.json`, `artifacts/deployment/` |
+| 4 | Sentence-BERT models M6-M7 and the hybrid M8 | `04_sentence_bert.ipynb` | `recommender/core.py` | `data/processed/sbert_*.npy`, `results/baselines/*_all.csv` |
+| 5 | Skill extraction and normalisation for M9 | `06_pull_and_normalize_skills.ipynb` | `recommender/skills/` | `recommender/skills/outputs/`, `recommender/skills/validation/` |
+| 6 | Compare M8, M9 and the learned rerankers; select on the development set; export the model | `07_rerankers_and_final_model.ipynb` | `recommender/experiment.py` | `results/final/metrics_*.csv`, `selection.json`, `models/recommender/` |
 | 7 | Significance tests, regions, research question | `05_significance_and_regions.ipynb` | `recommender/analysis.py`, `terminology.py` | `results/final/significance.csv`, `terminology_subgroups.csv` |
-| 8 | Web app with an English interface | - | `app.py`, `recommender/serving.py`, `translation.py`, `profile_form.py` | the app on port 8501 |
-| 9 | Deployment on AWS EC2 | - | `Dockerfile.deploy`, `deploy/aws/`, `Makefile` | a public address |
+| 8 | Web app with an English interface | - | `app/streamlit_app.py`, `recommender/serving.py`, `translation.py`, `profile_form.py` | the app on port 8501 |
+| 9 | Deployment on AWS EC2 | - | `deploy/Dockerfile`, `deploy/aws/`, `Makefile` | a public address |
 
 Steps 2 and 4 to 7 are also run in order by one command, `python -m recommender.pipeline run` (this is what `make bundle` calls). The notebooks show the same work with explanations and saved outputs.
 
@@ -121,12 +121,12 @@ More detail on each model is in `docs/final_model_verdict.md`.
    git clone https://github.com/Ananta098/job-recommendation-salary-analyzer.git
    cd job-recommendation-salary-analyzer
    ```
-2. Download the dataset from the Kaggle link above and save it as `datasets/HSE_dataset(D4).csv`.
+2. Download the dataset from the Kaggle link above and save it as `data/raw/HSE_dataset(D4).csv`.
 3. Create the environment.
    ```sh
    make venv
    ```
-4. Build the model. This cleans the data, encodes all vacancies, compares the models and exports the final one to `artifacts/deployment/`. On a fresh clone it takes an hour or more on a laptop CPU; later runs are skipped if the bundle exists.
+4. Build the model. This cleans the data, encodes all vacancies, compares the models and exports the final one to `models/recommender/`. On a fresh clone it takes an hour or more on a laptop CPU; later runs are skipped if the bundle exists.
    ```sh
    make bundle
    ```
@@ -193,43 +193,50 @@ make ci     # tests + shellcheck + cfn-lint + Docker image build
 
 ## 11. Project structure
 
+The folders follow the order of the work: data, notebooks, pipeline code, results, trained models, app, deployment.
+
 ```text
 .
-├── README.md
-├── Makefile                 all commands (make help)
-├── app.py                   Streamlit app
+├── data/                    everything the models read
+│   ├── raw/                 HSE D4 and the salary files go here (not in Git; see data/README.md)
+│   ├── lookup/              550 job titles translated to English
+│   └── processed/           cleaned data and Sentence-BERT embeddings (generated, not in Git)
 ├── notebooks/               01-07: the study step by step, with saved outputs
 │   └── archive/             supplementary salary analysis (not used by the model)
-├── recommender/             pipeline code
+├── recommender/             Python package: the whole pipeline and the serving code
 │   ├── cleaning.py          data cleaning (same logic as notebook 02)
 │   ├── shared.py, core.py   split, metrics, scoring, M5-M8
 │   ├── experiment.py        model comparison, selection and export
 │   ├── analysis.py          significance tests and regional analysis
 │   ├── terminology.py       research-question subgroup analysis
-│   ├── pipeline.py          runs every step in order
+│   ├── pipeline.py          runs every step in order (make bundle)
 │   ├── bundle.py            checks the exported model bundle
 │   ├── serving.py           loads the bundle and ranks vacancies
 │   ├── translation.py       English <-> Russian adapter for the app
 │   ├── profile_form.py      structured profile form
-│   └── smoke.py             quick "does it rank" test used in the image
-├── m9_skills/               skill dictionaries, extraction and validation for M9
-├── datasets/                raw data goes here (not in Git); see its README
-├── lookup/                  job titles translated to English
-├── clean/                   cleaned data and embeddings (generated, not in Git)
+│   ├── smoke.py             quick "does it rank" test used in the image
+│   └── skills/              M9 skill dictionaries, extraction and validation
 ├── results/
 │   ├── baselines/           results of notebooks 03-04 (M0-M8)
-│   └── final/               results of the final pipeline run
-├── figures/                 charts from notebooks 01, 03 and 04
-├── docs/final_model_verdict.md   model decision in detail
-├── artifacts/               model bundle and translation models (generated, not in Git)
-├── Dockerfile.deploy, docker/    container image
+│   ├── final/               results of the final pipeline run
+│   ├── figures/             charts from notebooks 01, 03 and 04
+│   └── cleaning_report.csv  what each cleaning step removed
+├── models/                  trained model bundle and translation models (generated by make bundle / make translation, not in Git)
+├── app/                     Streamlit web app (streamlit_app.py)
 ├── deploy/
-│   ├── pin-base-image.sh    pins the Docker base image
-│   └── aws/                 CloudFormation template, deploy.py, on-server scripts
+│   ├── Dockerfile           the container image the server runs
+│   ├── docker/              start-up and install scripts used inside the image
+│   ├── aws/                 CloudFormation template, deploy.py and on-server scripts
+│   └── pin-base-image.sh    pins the Docker base image
+├── docs/                    final_model_verdict.md: the model decision in detail
 ├── tests/                   pytest suite and fixture bundle
-├── .github/workflows/ci.yml GitHub Actions
-└── requirements*.txt        pinned packages (app, experiment, deploy, dev)
+├── requirements/            pinned packages: app, app.lock, experiment, deploy, dev
+├── requirements.txt         installs everything for the notebooks and the pipeline (make venv)
+├── Makefile                 all commands (make help)
+└── README.md
 ```
+
+Hidden files at the top level are tool settings: `.github/workflows/ci.yml` (GitHub Actions), `.streamlit/config.toml` (app theme and port), `.dockerignore`, `.gitignore` and `.env.aws.example` (template for your AWS keys).
 
 ## 12. References
 

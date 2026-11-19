@@ -58,7 +58,7 @@ def run(root, results=None):
     for (mode,family),index in result.groupby(['mode','family']).groups.items():
         result.loc[index,'holm_adjusted_permutation_p']=holm(result.loc[index,'paired_permutation_p'])
     result.to_csv(out/'significance.csv',index=False)
-    df=pd.read_csv(root/'clean/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
+    df=pd.read_csv(root/'data/processed/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
     df['region']=region_key(df.localityName);cv=df.drop_duplicates('idCv');jobs=df.drop_duplicates('idVacancy').copy();jobs['region']=region_key(jobs.regionName)
     train,dev,test=split(df)
     table=pd.DataFrame({'applicants':cv.groupby('region').size(),'vacancies':jobs.groupby('region').size(),

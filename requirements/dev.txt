@@ -1,5 +1,5 @@
 # Test and lint tools for  make test / make ci  and GitHub Actions.
-# The app's own versions stay pinned in requirements-app.txt and requirements-app.lock.txt.
+# The app's own versions stay pinned in requirements/app.txt and requirements/app.lock.txt.
 pytest==8.3.4
 cfn-lint==1.20.0
 shellcheck-py==0.10.0.1

@@ -44,7 +44,7 @@ if docker image inspect "$IMAGE" >/dev/null 2>&1; then
   log "image $IMAGE is already on this server"
 else
   log "building $IMAGE"
-  docker build --quiet -f "$SRC/Dockerfile.deploy" -t "$IMAGE" "$SRC" >/dev/null
+  docker build --quiet -f "$SRC/deploy/Dockerfile" -t "$IMAGE" "$SRC" >/dev/null
 fi
 
 # 2. smoke test

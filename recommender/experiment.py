@@ -23,8 +23,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
-from m9_skills.extraction import Extractor
-from m9_skills.compatibility import align_sidecar
+from recommender.skills.extraction import Extractor
+from recommender.skills.compatibility import align_sidecar
 from .shared import gold_for, evaluate, grouped_rank, digest, MODEL, WEIGHTS, split
 from .core import clean_title, region_key, text, candidates, rerank, evidence_vectors, FEATURE_NAMES
 
@@ -55,7 +55,7 @@ def run(root,output,encoder_path,bundle_dir):
         if path.exists() and any(path.iterdir()):raise ValueError(f'Choose an empty output directory: {path}')
         path.mkdir(parents=True,exist_ok=True)
     started=time.perf_counter()
-    data=pd.read_csv(root/'clean/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
+    data=pd.read_csv(root/'data/processed/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
     data['is_positive']=data.is_positive.astype(int)
     jobs=data.drop_duplicates('idVacancy').reset_index(drop=True)
     groups=pd.factorize(clean_title(jobs.vacancyName)+' | '+region_key(jobs.regionName))[0]
@@ -64,8 +64,8 @@ def run(root,output,encoder_path,bundle_dir):
     ids=np.concatenate([train_ids,dev_ids,test_ids]);ntrain=len(train_ids);ndev=len(dev_ids)
     profiles=data.drop_duplicates('idCv').set_index('idCv').loc[ids]
     print(f'Train {ntrain}, development {ndev}, test {len(test_ids)}; {len(jobs)} jobs',flush=True)
-    dictionary=root/'m9_skills/dictionary.v2.json';extractor=Extractor(dictionary)
-    sidecars=root/'m9_skills/outputs/v2_validation_run'
+    dictionary=root/'recommender/skills/dictionary.v2.json';extractor=Extractor(dictionary)
+    sidecars=root/'recommender/skills/outputs/v2_validation_run'
     cv_records=align_sidecar(ids.tolist(),sidecars/'cv_skills.jsonl','cv',extractor.fingerprint)
     cvskills=evidence_vectors(cv_records,extractor.dictionary,'cv');del cv_records
     job_records=align_sidecar(jobs.idVacancy.tolist(),sidecars/'vacancy_skills.jsonl','vacancy',extractor.fingerprint)
@@ -73,9 +73,9 @@ def run(root,output,encoder_path,bundle_dir):
     print('Skill evidence aligned',flush=True)
     tfidf=TfidfVectorizer(min_df=3,max_features=120_000,sublinear_tf=True,dtype=np.float32)
     documents=tfidf.fit_transform(text(jobs,'vacancy'))
-    jobemb=np.load(root/f'clean/sbert_jobs_{MODEL}.npy').astype(np.float32)
-    devemb=np.load(root/f'clean/sbert_val_{MODEL}.npy').astype(np.float32)
-    testemb=np.load(root/f'clean/sbert_test_{MODEL}.npy').astype(np.float32)
+    jobemb=np.load(root/f'data/processed/sbert_jobs_{MODEL}.npy').astype(np.float32)
+    devemb=np.load(root/f'data/processed/sbert_val_{MODEL}.npy').astype(np.float32)
+    testemb=np.load(root/f'data/processed/sbert_test_{MODEL}.npy').astype(np.float32)
     if jobemb.shape!=(len(jobs),384) or devemb.shape!=(ndev,384) or testemb.shape!=(len(test_ids),384):
         raise ValueError('Embedding cache shape mismatch')
     print('TF-IDF and embedding caches loaded',flush=True)
@@ -85,7 +85,7 @@ def run(root,output,encoder_path,bundle_dir):
     encoder_max_difference=float(np.abs(check-testemb[:16]).max())
     print('Encoder/cache max difference:',encoder_max_difference,flush=True)
     if encoder_max_difference>.001:raise ValueError('Encoder does not match cached test inputs; rebuild all caches consistently')
-    cache=root/'artifacts/training_embeddings.npy';cache_meta=cache.with_suffix('.json')
+    cache=root/'data/processed/training_embeddings.npy';cache_meta=cache.with_suffix('.json')
     signature=hashlib.sha256(('\n'.join(train_ids)+'\n'+'\n'.join(profiles.iloc[:ntrain].cv_text.str[:400])+'\n'+str(encoder_path)).encode()).hexdigest()
     if cache.exists() and cache_meta.exists() and json.loads(cache_meta.read_text(encoding='utf-8')).get('signature')==signature:
         trainemb=np.load(cache)
@@ -210,7 +210,7 @@ def run(root,output,encoder_path,bundle_dir):
     bundle_manifest={p.relative_to(bundle_dir).as_posix():digest(p) for p in bundle_dir.rglob('*') if p.is_file()}
     (bundle_dir/'manifest.json').write_text(json.dumps(bundle_manifest,indent=2)+'\n', encoding='utf-8')
     manifest={'python':platform.python_version(),'versions':metadata['versions'],'encoder_revision':encoder_path.name,
-              'input_hashes':{p.relative_to(root).as_posix():digest(p) for p in [root/'clean/d4_clean.csv',dictionary,*[(root/f'clean/sbert_{x}_{MODEL}.npy') for x in ['jobs','val','test']],sidecars/'cv_skills.jsonl',sidecars/'vacancy_skills.jsonl']},
+              'input_hashes':{p.relative_to(root).as_posix():digest(p) for p in [root/'data/processed/d4_clean.csv',dictionary,*[(root/f'data/processed/sbert_{x}_{MODEL}.npy') for x in ['jobs','val','test']],sidecars/'cv_skills.jsonl',sidecars/'vacancy_skills.jsonl']},
               'split_hashes':{name:hashlib.sha256('\n'.join(ids[sl]).encode()).hexdigest() for name,sl in portions.items()},
               'source_hashes':{'recommender/'+p.name:digest(p) for p in Path(__file__).resolve().parent.glob('*.py')},
               'encoder_cache_max_difference':encoder_max_difference,'train_examples':len(y),'train_positive_rows':int(y.sum()),
@@ -229,7 +229,7 @@ def run(root,output,encoder_path,bundle_dir):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root',type=Path,default=ROOT);p.add_argument('--output',type=Path,default=Path('results/final'))
-    p.add_argument('--bundle',type=Path,default=Path('artifacts/deployment'));p.add_argument('--encoder',type=Path,required=True)
+    p.add_argument('--bundle',type=Path,default=Path('models/recommender'));p.add_argument('--encoder',type=Path,required=True)
     a=p.parse_args();run(project_path(a.root),project_path(a.output,project_path(a.root)),project_path(a.encoder,project_path(a.root)),project_path(a.bundle,project_path(a.root)))
 
 if __name__=='__main__':main()

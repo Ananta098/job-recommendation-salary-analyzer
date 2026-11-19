@@ -2,7 +2,7 @@
 
 The real bundle (about 1.2 GB) is git-ignored, so CI builds these instead:
 
-    python -m tests.fixtures --out artifacts      # writes artifacts/deployment and artifacts/translation
+    python -m tests.fixtures --out models      # writes models/recommender and models/translation
 
 The fixture bundle follows the same file contract and manifest as the real one, so the
 integrity checks, the serving code and the Docker image build run unchanged. Its encoder is
@@ -73,7 +73,7 @@ def build_bundle(out, with_encoder=True):
     import joblib
     from scipy import sparse
     from sklearn.feature_extraction.text import TfidfVectorizer
-    from m9_skills.extraction import Extractor
+    from recommender.skills.extraction import Extractor
     from recommender.shared import text, evidence_vectors
     from recommender.core import FEATURE_NAMES
     out = Path(out)
@@ -88,7 +88,7 @@ def build_bundle(out, with_encoder=True):
                      'datePublished': '2023-04-0%d' % (1 + i % 9), 'professionalSphereName': 'Тест'})
     jobs = pd.DataFrame(rows)
     jobs.to_csv(out / 'catalog.csv', index=False)
-    dictionary = ROOT / 'm9_skills' / 'dictionary.v2.json'
+    dictionary = ROOT / 'recommender' / 'skills' / 'dictionary.v2.json'
     shutil.copyfile(dictionary, out / 'dictionary.json')
     extractor = Extractor(out / 'dictionary.json')
     records = [{'m9_vacancy_evidence': extractor.extract_fields(

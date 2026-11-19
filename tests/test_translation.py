@@ -32,7 +32,7 @@ def test_missing_translation_folder_is_explained(tmp_path):
 
 
 def test_real_translation_assets():
-    path = ROOT / 'artifacts' / 'translation'
+    path = ROOT / 'models' / 'translation'
     if not (path / 'manifest.json').exists():
         pytest.skip('Real translation assets not present (git-ignored).')
     assert check_translation(path, deep=True) == path.resolve()

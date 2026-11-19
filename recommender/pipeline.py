@@ -1,6 +1,6 @@
 """Single execution flow: prepare -> skills -> compare/export -> analyze -> review.
 
-python -m recommender.pipeline run --run-dir artifacts/runs/run-01 --reuse-prepared
+python -m recommender.pipeline run --run-dir models/runs/run-01 --reuse-prepared
 python -m recommender.pipeline review
 """
 import argparse
@@ -22,13 +22,25 @@ def copy_file(source, target):
     shutil.copy2(source, target)
 
 
+# Runs made before the folder restructure recorded their inputs under the old paths
+# (clean/, m9_skills/). Map those keys to today's layout so --reuse-prepared still verifies them.
+LEGACY_PATHS = {'clean/': 'data/processed/', 'm9_skills/': 'recommender/skills/'}
+
+
+def current_path(rel):
+    for old, new in LEGACY_PATHS.items():
+        if rel.startswith(old):
+            return new + rel[len(old):]
+    return rel
+
+
 def review(root, results=None, bundle=None):
     import pandas as pd
     root=project_path(root)
     results=project_path(results,root) if results else root/'results/final'
-    bundle=project_path(bundle,root) if bundle else root/'artifacts/deployment'
+    bundle=project_path(bundle,root) if bundle else root/'models/recommender'
     source_root=Path(__file__).resolve().parent.parent
-    for file in list((source_root/'recommender').glob('*.py'))+[source_root/'app.py',source_root/'deploy/aws/deploy.py']:
+    for file in list((source_root/'recommender').glob('*.py'))+[source_root/'app/streamlit_app.py',source_root/'deploy/aws/deploy.py']:
         ast.parse(file.read_text(encoding='utf-8'))
     selection=json.loads((results/'selection.json').read_text(encoding='utf-8'))
     grouped=pd.read_csv(results/'metrics_grouped.csv',index_col=0)
@@ -81,7 +93,7 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
         raise ValueError('Choose a NEW empty --run-dir; existing runs are never overwritten')
     if workspace==root or root.is_relative_to(workspace):
         raise ValueError('Run directory must not contain the source repository')
-    raw=project_path(raw,root) if raw else root/'datasets/HSE_dataset(D4).csv'
+    raw=project_path(raw,root) if raw else root/'data/raw/HSE_dataset(D4).csv'
     if not raw.is_file():raise FileNotFoundError('Supply D4 at '+str(raw))
     workspace.mkdir(parents=True,exist_ok=True)
     state={'status':'running','steps':[],'root':str(workspace),'reuse_prepared':reuse}
@@ -91,16 +103,16 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
         value=function();state['steps'].append(name);write(workspace/'pipeline_status.json',state)
         return value
     try:
-        for rel in ['lookup/job_titles_ru_en.csv','m9_skills/dictionary.v2.json','results/baselines/metrics_grouped_all.csv']:
+        for rel in ['data/lookup/job_titles_ru_en.csv','recommender/skills/dictionary.v2.json','results/baselines/metrics_grouped_all.csv']:
             copy_file(root/rel,workspace/rel)
-        target=workspace/'datasets/HSE_dataset(D4).csv';target.parent.mkdir(exist_ok=True)
+        target=workspace/'data/raw/HSE_dataset(D4).csv';target.parent.mkdir(exist_ok=True)
         try:target.symlink_to(raw)
         except OSError:copy_file(raw,target)
         if reuse:
             def reuse_inputs():
                 previous=json.loads((root/'results/final/run_manifest.json').read_text(encoding='utf-8'))
-                inputs=previous['input_hashes']
-                coverage_path=root/'m9_skills/outputs/v2_validation_run/coverage.json'
+                inputs={current_path(rel):expected for rel,expected in previous['input_hashes'].items()}
+                coverage_path=root/'recommender/skills/outputs/v2_validation_run/coverage.json'
                 coverage=json.loads(coverage_path.read_text(encoding='utf-8'))
                 if digest(raw)!=coverage['source_sha256']:
                     raise ValueError('Raw D4 differs from the recorded extraction input')
@@ -108,20 +120,20 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
                 # fresh clone does not have them. Rebuild them from raw D4 with the same dictionary
                 # and accept them only if they match the recorded hashes.
                 absent=[rel for rel in inputs if rel.endswith('_skills.jsonl') and not (root/rel).is_file()]
-                regenerated=workspace/'m9_skills/outputs/_regenerated'
+                regenerated=workspace/'recommender/skills/outputs/_regenerated'
                 if absent:
-                    from m9_skills.workflow import extract
+                    from recommender.skills.workflow import extract
                     print('Skill-evidence files not found; regenerating from raw D4 (a few minutes).',flush=True)
-                    extract(raw,regenerated,dictionary=workspace/'m9_skills/dictionary.v2.json')
+                    extract(raw,regenerated,dictionary=workspace/'recommender/skills/dictionary.v2.json')
                 for rel,expected in inputs.items():
                     source=regenerated/Path(rel).name if rel in absent else root/rel
                     if not source.is_file() or digest(source)!=expected:
                         raise ValueError('Prepared input changed; do a full rebuild (omit --reuse-prepared): '+rel)
                     copy_file(source,workspace/rel)
                 if absent:shutil.rmtree(regenerated)
-                copy_file(coverage_path,workspace/'m9_skills/outputs/v2_validation_run/coverage.json')
+                copy_file(coverage_path,workspace/'recommender/skills/outputs/v2_validation_run/coverage.json')
                 for name in ['training_embeddings.npy','training_embeddings.json']:
-                    if (root/'artifacts'/name).exists():copy_file(root/'artifacts'/name,workspace/'artifacts'/name)
+                    if (root/'data/processed'/name).exists():copy_file(root/'data/processed'/name,workspace/'data/processed'/name)
                 write(workspace/'prepared_inputs.json',{'policy':'Reused only after checking every recorded input hash and the raw D4 hash','input_hashes':inputs})
             step('verify_and_reuse_prepared_inputs',reuse_inputs)
         else:
@@ -140,24 +152,24 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
                 from .shared import split
                 import torch
                 torch.set_num_threads(4)
-                data=pd.read_csv(workspace/'clean/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
+                data=pd.read_csv(workspace/'data/processed/d4_clean.csv',encoding='utf-8-sig',keep_default_na=False,low_memory=False)
                 jobs=data.drop_duplicates('idVacancy');_,dev,test=split(data)
                 profiles=data.drop_duplicates('idCv').set_index('idCv')
                 model=SentenceTransformer(str(encoder),device='cpu',local_files_only=True,tokenizer_kwargs={'fix_mistral_regex':False})
-                provenance={'encoder_revision':ENCODER_REVISION,'clean_sha256':digest(workspace/'clean/d4_clean.csv'),'parts':{}}
+                provenance={'encoder_revision':ENCODER_REVISION,'clean_sha256':digest(workspace/'data/processed/d4_clean.csv'),'parts':{}}
                 import hashlib
                 for side,ids,texts in [('jobs',jobs.idVacancy.tolist(),jobs.job_text.str[:400].tolist()),
                                        ('val',list(dev),profiles.loc[dev].cv_text.str[:400].tolist()),
                                        ('test',list(test),profiles.loc[test].cv_text.str[:400].tolist())]:
                     array=model.encode(texts,batch_size=64,normalize_embeddings=True,show_progress_bar=True,convert_to_numpy=True).astype(np.float32)
-                    path=workspace/f'clean/sbert_{side}_{MODEL}.npy';np.save(path,array)
+                    path=workspace/f'data/processed/sbert_{side}_{MODEL}.npy';np.save(path,array)
                     provenance['parts'][side]={'ids_sha256':hashlib.sha256('\n'.join(ids).encode()).hexdigest(),'file_sha256':digest(path),'rows':len(ids)}
                 write(workspace/'prepared_inputs.json',provenance)
             step('encode_catalog_and_evaluation_profiles',embeddings)
-            from m9_skills.workflow import extract
-            step('extract_and_normalize_skills',lambda:extract(raw,workspace/'m9_skills/outputs/v2_validation_run',dictionary=workspace/'m9_skills/dictionary.v2.json'))
+            from recommender.skills.workflow import extract
+            step('extract_and_normalize_skills',lambda:extract(raw,workspace/'recommender/skills/outputs/v2_validation_run',dictionary=workspace/'recommender/skills/dictionary.v2.json'))
         from .experiment import run as experiment
-        results=workspace/'results/final';bundle=workspace/'artifacts/deployment'
+        results=workspace/'results/final';bundle=workspace/'models/recommender'
         step('train_compare_select_and_export',lambda:experiment(workspace,results,encoder,bundle))
         from .analysis import run as analyze
         step('paired_significance_and_region_counts',lambda:analyze(workspace,results))
@@ -166,7 +178,7 @@ def run(root, run_dir, encoder=None, raw=None, reuse=False):
         state['status']='complete';state.pop('active_step',None)
         state['results']=str(results);state['bundle']=str(bundle)
         write(workspace/'pipeline_status.json',state)
-        print('\nComplete. To serve this run from the source repository:\nMODEL_BUNDLE="'+str(bundle)+'" streamlit run app.py',flush=True)
+        print('\nComplete. To serve this run from the source repository:\nMODEL_BUNDLE="'+str(bundle)+'" streamlit run app/streamlit_app.py',flush=True)
     except Exception as error:
         state['status']='failed';state['error']=str(error);write(workspace/'pipeline_status.json',state)
         raise

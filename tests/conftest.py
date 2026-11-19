@@ -44,7 +44,7 @@ def translation_dir(tmp_path):
 @pytest.fixture()
 def real_bundle():
     """The private bundle, when this computer has it. Git and CI do not."""
-    path = ROOT / 'artifacts' / 'deployment'
+    path = ROOT / 'models' / 'recommender'
     if not (path / 'manifest.json').exists():
-        pytest.skip('Real model bundle not present (artifacts/ is git-ignored); fixture tests cover the contract.')
+        pytest.skip('Real model bundle not present (models/ is git-ignored); fixture tests cover the contract.')
     return path

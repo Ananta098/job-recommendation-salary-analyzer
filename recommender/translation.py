@@ -17,7 +17,7 @@ CYRILLIC = re.compile('[А-Яа-яЁё]')
 
 
 def translation_path(path=None):
-    return project_path(path or os.environ.get('TRANSLATION_BUNDLE') or 'artifacts/translation')
+    return project_path(path or os.environ.get('TRANSLATION_BUNDLE') or 'models/translation')
 
 
 def check_translation(path=None, deep=False):
@@ -25,7 +25,7 @@ def check_translation(path=None, deep=False):
     if not (root/'manifest.json').is_file():
         raise FileNotFoundError(f'English translation assets missing at {root}. Run '
                                 '`python -m recommender.translation prepare` once with Internet access, '
-                                'or restore the complete artifacts/translation folder.')
+                                'or restore the complete models/translation folder.')
     manifest = json.loads((root/'manifest.json').read_text(encoding='utf-8'))
     required = {'regions.json'}
     for direction in MODELS:

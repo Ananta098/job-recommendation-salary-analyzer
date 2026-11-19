@@ -19,18 +19,18 @@ def clean_data(root):
 
         # Work from the project folder, even when Jupyter opens inside notebooks/
 
-        RAW_FILE    = "datasets/HSE_dataset(D4).csv"
-        LOOKUP_FILE = "lookup/job_titles_ru_en.csv"
-        OUT_FILE    = "clean/d4_clean.csv"
+        RAW_FILE    = "data/raw/HSE_dataset(D4).csv"
+        LOOKUP_FILE = "data/lookup/job_titles_ru_en.csv"
+        OUT_FILE    = "data/processed/d4_clean.csv"
 
-        # If the raw file has another name, take the csv in datasets/ that has "hse" in its name
+        # If the raw file has another name, take the csv in data/raw/ that has "hse" in its name
         if not Path(RAW_FILE).exists():
-            found = [p for p in Path("datasets").glob("*.csv") if "hse" in p.name.lower()]
+            found = [p for p in Path("data/raw").glob("*.csv") if "hse" in p.name.lower()]
             if not found:
-                raise FileNotFoundError("Put the HSE csv file in the datasets/ folder")
+                raise FileNotFoundError("Put the HSE csv file in the data/raw/ folder")
             RAW_FILE = str(found[0])
 
-        os.makedirs("clean", exist_ok=True)
+        os.makedirs("data/processed", exist_ok=True)
         os.makedirs("results", exist_ok=True)
 
         steps = []   # a short log of each step, saved at the end for the report

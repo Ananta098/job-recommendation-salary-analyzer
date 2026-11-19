@@ -1,5 +1,5 @@
 #!/bin/sh
-# Pin Dockerfile.deploy to the current digest of python:3.12-slim-bookworm (make pin-base).
+# Pin deploy/Dockerfile to the current digest of python:3.12-slim-bookworm (make pin-base).
 # Needs only curl and python3 (no Docker). Re-run deliberately to take base-image security updates.
 set -eu
 cd "$(dirname "$0")/.."
@@ -14,6 +14,6 @@ case "$digest" in
   sha256:*) ;;
   *) echo "Could not resolve the digest of python:$TAG (no internet access to Docker Hub?)"; exit 1 ;;
 esac
-sed -i.bak -E "s#^FROM python:3\.12-slim-bookworm(@sha256:[0-9a-f]{64})?#FROM python:3.12-slim-bookworm@$digest#" Dockerfile.deploy
-rm -f Dockerfile.deploy.bak
-echo "Pinned Dockerfile.deploy to python:$TAG@$digest"
+sed -i.bak -E "s#^FROM python:3\.12-slim-bookworm(@sha256:[0-9a-f]{64})?#FROM python:3.12-slim-bookworm@$digest#" deploy/Dockerfile
+rm -f deploy/Dockerfile.bak
+echo "Pinned deploy/Dockerfile to python:$TAG@$digest"

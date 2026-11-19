@@ -17,11 +17,12 @@ ALLOWED_CIDR=203.0.113.10/32
 @pytest.fixture()
 def project(tmp_path, monkeypatch):
     root = tmp_path / 'project'
-    (root / 'artifacts').mkdir(parents=True)
-    (root / 'app.py').write_text('print("app")\n', encoding='utf-8')
+    (root / 'deploy' / '.state').mkdir(parents=True)
+    (root / 'app').mkdir()
+    (root / 'app' / 'streamlit_app.py').write_text('print("app")\n', encoding='utf-8')
     (root / '.env.aws').write_text(ENV, encoding='utf-8')
     deploy = load_deploy()
-    monkeypatch.setattr(deploy, 'allowlist', lambda r: ['app.py'])
+    monkeypatch.setattr(deploy, 'allowlist', lambda r: ['app/streamlit_app.py'])
     monkeypatch.setattr(deploy, 'wait_for_app', lambda *a, **k: True)
     monkeypatch.setattr(deploy, 'check_health', lambda url: True)
     monkeypatch.setattr(deploy, 'git_info', lambda r: 'abc1234')
@@ -36,7 +37,7 @@ def run(deploy, root, *args):
 
 
 def status(root):
-    return json.loads((root / 'artifacts' / 'ec2-status.json').read_text(encoding='utf-8'))
+    return json.loads((root / 'deploy' / '.state' / 'ec2-status.json').read_text(encoding='utf-8'))
 
 
 def test_placeholders_block_every_aws_command(project):
@@ -53,7 +54,7 @@ def test_plan_changes_nothing_and_shows_cost(project, capsys, monkeypatch):
     run(deploy, root)
     out = capsys.readouterr().out
     assert fake.calls == []
-    plan = json.loads((root / 'artifacts' / 'ec2-plan.json').read_text(encoding='utf-8'))
+    plan = json.loads((root / 'deploy' / '.state' / 'ec2-plan.json').read_text(encoding='utf-8'))
     assert plan['estimated_cost_usd']['per_hour'] > 0.08 and plan['git_commit'] == 'abc1234'
     assert 'fake-secret' not in out and 'ASIAFAKE' not in out and 'fake-session' not in out
 
@@ -180,7 +181,7 @@ def test_status_logs_versions_and_destroy(project, monkeypatch, capsys):
     assert 'Health: OK' in out and 'Streamlit started' in out and '* ' in out
     run(deploy, root, '--destroy')
     assert fake.stack is None and not [k for (_, k) in fake.objects if k.startswith('job-recommender/')]
-    assert not (root / 'artifacts' / 'ec2-status.json').exists()
+    assert not (root / 'deploy' / '.state' / 'ec2-status.json').exists()
 
 
 def test_shell_values_are_validated(project):
