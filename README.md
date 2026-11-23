@@ -243,3 +243,11 @@ Hidden files at the top level are tool settings: `.github/workflows/ci.yml` (Git
 - **Dataset:** HSE hackathon resume and vacancy data (D4), <https://www.kaggle.com/datasets/darysha/hse-hackathon>.
 - **Sentence-BERT model:** `paraphrase-multilingual-MiniLM-L12-v2`, <https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2>. Reimers and Gurevych, "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks", EMNLP 2019.
 - **Translation models:** Helsinki-NLP OPUS-MT, <https://huggingface.co/Helsinki-NLP/opus-mt-en-ru> and <https://huggingface.co/Helsinki-NLP/opus-mt-ru-en>. Tiedemann and Thottingal, "OPUS-MT: Building open translation services for the World", EAMT 2020.
+
+## 13. Use of AI Tools
+
+We used Claude (Anthropic) as a writing and editing assistant. It helped
+draft parts of this README,such as compilation and helped
+restructure and format the final report and presentation. All code, data
+processing, experiments and results are our own work. We reviewed and
+tested every command and claim in this repository before submission.
